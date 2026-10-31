@@ -1,0 +1,73 @@
+{
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "animFps": 12,
+  "palette": {"bg": "#0d0d0d", "ink": "#ffffff", "accent": "#e8301c", "accent2": "#2bd96b", "paper": "#ece6d8"},
+  "finish": {"grain": 0.08, "vignette": 0.4, "halftone": 0.12},
+  "scenes": [
+    {
+      "id": "hook",
+      "duration": 2.6,
+      "background": {"kind": "solid", "color": "#1f6fd1"},
+      "layers": [
+        {"type": "text", "text": "$1", "style": "impact", "size": 46, "y": 36, "anim": "slam", "fx": {"extrude": 14, "extrudeColor": "#0b2a55"}},
+        {"type": "badge", "text": "INVESTED IN 1990", "at": 0.5, "y": 62, "color": "#7a0f12", "size": 5.6},
+        {"type": "shape", "kind": "ellipse", "at": 1.1, "x": 50, "y": 36, "w": 74, "h": 26, "color": "#ffd400", "stroke": 9, "draw": 7}
+      ]
+    },
+    {
+      "id": "turn",
+      "duration": 2.8,
+      "transition": {"type": "zoom"},
+      "background": {"kind": "void"},
+      "layers": [
+        {"type": "text", "text": "is worth\nthis much today", "style": "grotesk", "size": 8.5, "y": 30, "anim": "words", "stagger": 4, "accent": ["today"], "accentColor": "#2bd96b", "underline": "scribble", "underlineColor": "#ffffff"},
+        {"type": "counter", "from": 1, "to": 24.6, "decimals": 2, "prefix": "$", "duration": 1.4, "at": 0.9, "y": 58, "size": 26, "color": "#2bd96b", "fx": {"glow": "#2bd96b88"}}
+      ]
+    },
+    {
+      "id": "chart",
+      "duration": 3.2,
+      "transition": {"type": "whip-left"},
+      "background": {"kind": "grid", "color": "#ece6d8"},
+      "layers": [
+        {"type": "text", "text": "COMPOUND", "style": "impact", "size": 24, "y": 20, "color": "#111111", "anim": "letters", "fx": {"doubled": true}},
+        {"type": "chart", "kind": "line", "marker": true, "data": [1, 1.2, 1.5, 2, 2.9, 4.4, 7, 11.5, 18, 24.6], "at": 0.4, "y": 58, "w": 84, "draw": 30},
+        {"type": "badge", "text": "MONEY MAKES MONEY", "at": 1.6, "y": 84, "color": "#1d6b33", "anim": "pop"}
+      ]
+    },
+    {
+      "id": "ui",
+      "duration": 3.4,
+      "transition": {"type": "flash"},
+      "background": {"kind": "mesh", "color": "#6a2bd9", "color2": "#e8301c"},
+      "layers": [
+        {"type": "ui", "kind": "notification", "label": "Bank", "title": "Interest paid", "text": "+$0.09 while you slept", "y": 30, "w": 86, "anim": "slide-down"},
+        {"type": "ui", "kind": "search", "text": "how does compound interest work", "at": 0.8, "y": 52, "w": 86, "anim": "pop"},
+        {"type": "cursor", "at": 1.6, "path": [{"x": 80, "y": 80, "t": 1.6}, {"x": 62, "y": 54, "t": 2.3, "click": true}]}
+      ]
+    },
+    {
+      "id": "thesis",
+      "duration": 2.8,
+      "transition": {"type": "desat"},
+      "background": {"kind": "paper", "color": "#efe9dc"},
+      "layers": [
+        {"type": "text", "text": "time", "style": "serif-italic", "size": 22, "y": 30, "color": "#111111", "anim": "focus"},
+        {"type": "text", "text": "beats", "style": "script", "size": 12, "y": 44, "color": "#e8301c", "at": 0.4, "anim": "pop"},
+        {"type": "text", "text": "TIMING", "style": "impact", "size": 30, "y": 60, "color": "#111111", "at": 0.8, "anim": "slam", "fx": {"extrude": 10, "extrudeColor": "#c9b994"}}
+      ]
+    },
+    {
+      "id": "cta",
+      "duration": 3.0,
+      "transition": {"type": "circle"},
+      "background": {"kind": "studio", "color": "#1a1a1a"},
+      "layers": [
+        {"type": "text", "text": "START WITH $1", "style": "impact", "size": 15, "y": 34, "anim": "words", "stagger": 4, "accent": ["$1"], "accentColor": "#2bd96b"},
+        {"type": "ui", "kind": "button", "text": "Follow for part 2", "at": 0.8, "y": 56, "w": 70, "accent": "#e8301c", "anim": "pop"}
+      ]
+    }
+  ]
+}

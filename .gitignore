@@ -4,3 +4,6 @@ out/
 *.mov
 *.wav
 .DS_Store
+remotion/out/
+remotion/public/*
+!remotion/public/.gitkeep
