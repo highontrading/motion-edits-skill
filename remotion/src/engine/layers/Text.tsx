@@ -5,7 +5,7 @@ import {typeStyles} from '../lib/fonts';
 import {clamp01, decay, iclamp, rand} from '../lib/motion';
 import {resolveTime} from '../lib/time';
 import type {TextFx, TextLayer, Word} from '../types';
-import {shade} from '../fx/Backgrounds';
+import {resolveSrc, shade} from '../fx/Backgrounds';
 import {DrawPath} from './Shape';
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9$%€£₹]/g, '');
@@ -148,7 +148,7 @@ const TextBlockInner: React.FC<{layer: TextLayer; startFrame: number}> = ({layer
 		const uf = f - u.start;
 		const col = u.accent ? accentColor : color;
 		const txt = caps ? u.text.toUpperCase() : u.text;
-		let style: React.CSSProperties = {display: 'inline-block', whiteSpace: 'pre', color: fxStyle.color ?? col};
+		let style: React.CSSProperties = {display: 'inline-block', whiteSpace: 'pre', color: layer.fill && !u.accent ? 'transparent' : fxStyle.color ?? col};
 		let content: React.ReactNode = txt;
 
 		if (anim === 'karaoke') {
@@ -232,9 +232,18 @@ const TextBlockInner: React.FC<{layer: TextLayer; startFrame: number}> = ({layer
 		<div
 			style={{
 				fontFamily: st.fontFamily,
-				fontWeight: st.fontWeight,
+				fontWeight: layer.weight ?? st.fontWeight,
 				fontStyle: st.fontStyle,
 				fontSize,
+				...(layer.fill
+					? {
+							backgroundImage: /^(linear|radial|conic|repeating)-gradient/.test(layer.fill) ? layer.fill : `url(${resolveSrc(layer.fill)})`,
+							backgroundSize: 'cover',
+							backgroundPosition: 'center',
+							WebkitBackgroundClip: 'text',
+							backgroundClip: 'text',
+						}
+					: {}),
 				lineHeight: layer.lineHeight ?? st.lineHeight,
 				letterSpacing: `${layer.tracking ?? st.tracking}em`,
 				textAlign: layer.align ?? 'center',
@@ -258,7 +267,7 @@ const TextBlockInner: React.FC<{layer: TextLayer; startFrame: number}> = ({layer
 				/>
 			) : null}
 			{byLine.map((ln, li) => (
-				<div key={li}>
+				<div key={li} style={layer.lineSizes?.[li] ? {fontSize: fontSize * layer.lineSizes[li]} : undefined}>
 					{ln.map(({u, i}) => renderUnit(u, i))}
 					{li === byLine.length - 1 && caretOn ? <span style={{display: 'inline-block', width: '0.06em', height: '0.9em', background: layer.leadColor ?? color, verticalAlign: 'middle'}} /> : null}
 				</div>

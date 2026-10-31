@@ -4,7 +4,7 @@ import {CaptionTrack} from './Captions';
 import {defaultPalette, SpecContext} from './context';
 import {FinishPass} from './fx/Finish';
 import {resolveSrc} from './fx/Backgrounds';
-import {layoutScenes, resolveTime, videoDuration} from './lib/time';
+import {layoutScenes, resolveTime, setBeats, videoDuration} from './lib/time';
 import {CUT_FRAMES, OVERLAP_CUTS, SceneView} from './Scene';
 import {CutOverlay, overlayPost, overlayPre} from './transitions/CutOverlay';
 import type {VideoSpec, Word} from './types';
@@ -26,17 +26,41 @@ export const specDurationInFrames = (spec: VideoSpec) => {
 export const SpecVideo: React.FC<SpecVideoProps> = ({spec, postFinish}) => {
 	const {fps, durationInFrames} = useVideoConfig();
 	const words = specWords(spec);
+	setBeats(typeof spec.beats === 'object' ? spec.beats : undefined);
 	const palette = useMemo(() => ({...defaultPalette, ...spec.palette}), [spec.palette]);
 	const total = durationInFrames / fps;
 	const scenes = useMemo(() => layoutScenes(spec, words, fps, total), [spec, words, fps, total]);
 
 	const musicVol = spec.audio?.musicVolume ?? 0.35;
 	const duck = spec.audio?.duckTo;
+	// speech regions with pauses < 0.6 s merged, so the bed doesn't pump between words
+	const speech = useMemo(() => {
+		const out: [number, number][] = [];
+		for (const w of words) {
+			const last = out[out.length - 1];
+			if (last && w.s - last[1] < 0.6) last[1] = Math.max(last[1], w.e);
+			else out.push([w.s, w.e]);
+		}
+		return out;
+	}, [words]);
+	const fadeOut = spec.audio?.musicFadeOut ?? 0.6;
 	const musicVolume = (f: number) => {
-		if (duck === undefined || !words.length) return musicVol;
 		const t = f / fps;
-		const speaking = words.some((w) => t >= w.s - 0.15 && t <= w.e + 0.25);
-		return speaking ? duck : musicVol;
+		let v = musicVol;
+		if (duck !== undefined && speech.length) {
+			// distance outside the nearest speech region; attack 0.13 s before, release 0.33 s after
+			let k = 1;
+			for (const [s, e] of speech) {
+				if (t >= s - 0.13 && t <= e + 0.33) {
+					const into = t < s ? (s - t) / 0.13 : t > e ? (t - e) / 0.33 : 0;
+					k = Math.min(k, into);
+				}
+			}
+			v = duck + (musicVol - duck) * k;
+		}
+		const total = durationInFrames / fps;
+		if (fadeOut > 0 && t > total - fadeOut) v *= Math.max(0, (total - t) / fadeOut);
+		return v;
 	};
 
 	// lets `embed` layers render any scene (frozen on its last frame) inside a box
@@ -64,14 +88,7 @@ export const SpecVideo: React.FC<SpecVideoProps> = ({spec, postFinish}) => {
 								/>
 							</AbsoluteFill>
 						</SpecContext.Provider>
-						{(s.sfx ?? []).map((x, k) => {
-							const at = resolveTime(x.at ?? 0, words, s.from / fps) ?? s.from / fps;
-							return (
-								<Sequence key={k} from={Math.round(at * fps) - s.from}>
-									<Audio src={resolveSrc(x.src)} volume={x.volume ?? 0.8} />
-								</Sequence>
-							);
-						})}
+
 					</Sequence>
 				);
 			})}
@@ -108,7 +125,25 @@ export const SpecVideo: React.FC<SpecVideoProps> = ({spec, postFinish}) => {
 			</AbsoluteFill>
 
 			{spec.audio?.vo ? <Audio src={resolveSrc(spec.audio.vo)} /> : null}
-			{spec.audio?.music ? <Audio src={resolveSrc(spec.audio.music)} volume={musicVolume} loop /> : null}
+			{spec.audio?.music ? (
+				<Audio
+					src={resolveSrc(spec.audio.music)}
+					volume={musicVolume}
+					loop={spec.audio.musicLoop ?? true}
+					startFrom={Math.round((spec.audio.musicStart ?? 0) * fps)}
+				/>
+			) : null}
+			{/* scene SFX are mounted at the top level so whooshes/risers can lead into a cut and ring past it */}
+			{scenes.flatMap((s, i) =>
+				(s.sfx ?? []).map((x, k) => {
+					const at = resolveTime(x.at ?? 0, words, s.from / fps) ?? s.from / fps;
+					return (
+						<Sequence key={`ssfx${i}-${k}`} from={Math.max(0, Math.round(at * fps))}>
+							<Audio src={resolveSrc(x.src)} volume={x.volume ?? 0.8} />
+						</Sequence>
+					);
+				}),
+			)}
 			{(spec.audio?.sfx ?? []).map((x, k) => {
 				const at = resolveTime(x.at, words, 0, true) ?? 0;
 				return (

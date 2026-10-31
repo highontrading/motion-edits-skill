@@ -67,8 +67,9 @@ export const BadgeView: React.FC<{layer: BadgeLayer; startFrame: number}> = ({la
 						size,
 						color: fg,
 						caps: st.caps,
-						anim: anim === 'words' ? 'words' : anim === 'typewriter' ? 'typewriter' : 'none',
+						anim: anim === 'words' ? 'words' : anim === 'typewriter' ? 'typewriter' : anim === 'swap' ? 'swap' : 'none',
 						sync: layer.sync,
+						stagger: layer.stagger,
 						lineHeight: 1.02,
 						accentColor: palette.accent,
 					}}

@@ -1,6 +1,8 @@
 import React from 'react';
 import {Sequence, useCurrentFrame, useVideoConfig} from 'remotion';
-import {useSceneFrameOf, useSpec} from '../context';
+import {useCamera, useSceneFrameOf, useSpec} from '../context';
+import {ParticlesView} from './Particles';
+import {clamp01} from '../lib/motion';
 import type {Layer, TextLayer} from '../types';
 import {typeStyles} from '../lib/fonts';
 import {BadgeView} from './Badge';
@@ -61,6 +63,12 @@ export const LayerView: React.FC<{layer: Layer; index: number}> = ({layer, index
 	const frameOf = useSceneFrameOf();
 	const u = width / 1080;
 
+	const cam = useCamera();
+	if (layer.type === 'particles') {
+		const ps = frameOf(layer.at, 0);
+		const pe = layer.until !== undefined ? frameOf(layer.until, sceneDurationInFrames) : 1e9;
+		return frame >= ps && frame < pe ? <ParticlesView layer={layer} startFrame={ps} /> : null;
+	}
 	if (layer.type === 'cursor') {
 		const start = frameOf(layer.at, 0);
 		return frame >= start ? <CursorView layer={layer} /> : null;
@@ -142,8 +150,25 @@ export const LayerView: React.FC<{layer: Layer; index: number}> = ({layer, index
 			break;
 	}
 
-	const transforms = [ent.transform, ex.transform, idle, layer.rotate ? `rotate(${layer.rotate}deg)` : ''].filter(Boolean).join(' ');
-	const filter = [ent.filter, ex.filter, layer.blur ? `blur(${layer.blur * u}px)` : ''].filter(Boolean).join(' ');
+	// parallax: layers off depth 1 move more/less than the camera; rack focus blurs layers off the focus plane
+	let depthT = '';
+	let focusBlur = 0;
+	if (layer.depth !== undefined) {
+		const d = layer.depth - 1;
+		const drift = (cam.scale - 1) * cam.parallax * 6;
+		depthT = `translate(${d * (cam.tx * 0.35 + drift * ((layer.x ?? 50) - 50) / 50)}px, ${d * cam.ty * 0.35}px) scale(${1 + d * (cam.scale - 1)})`;
+		if (cam.focusDepth !== undefined) focusBlur = Math.round(Math.abs(layer.depth - cam.focusDepth) * 16);
+	}
+	let tiltT = '';
+	if (layer.tilt || layer.tiltTo) {
+		const a = layer.tilt ?? [0, 0];
+		const b = layer.tiltTo ?? a;
+		const p = clamp01(f / Math.max(1, end - start));
+		tiltT = `perspective(${1200 * u}px) rotateX(${a[0] + (b[0] - a[0]) * p}deg) rotateY(${a[1] + (b[1] - a[1]) * p}deg)`;
+	}
+	const transforms = [depthT, tiltT, ent.transform, ex.transform, idle, layer.rotate ? `rotate(${layer.rotate}deg)` : ''].filter(Boolean).join(' ');
+	const totalBlur = (layer.blur ?? 0) + focusBlur;
+	const filter = [ent.filter, ex.filter, totalBlur ? `blur(${totalBlur * u}px)` : ''].filter(Boolean).join(' ');
 	const opacity = (layer.opacity ?? 1) * Number(ent.opacity ?? 1) * Number(ex.opacity ?? 1);
 
 	if (full) {

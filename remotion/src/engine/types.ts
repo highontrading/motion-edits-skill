@@ -8,7 +8,11 @@
 export type TimeRef =
 	| number
 	| {word: string; nth?: number; after?: number; offset?: number}
-	| {wordIndex: number; offset?: number};
+	| {wordIndex: number; offset?: number}
+	/** n-th beat / downbeat / strong onset (0-based) from spec.beats (tools/beats.py output) */
+	| {beat: number; offset?: number}
+	| {downbeat: number; offset?: number}
+	| {onset: number; offset?: number};
 
 export type Word = {w: string; s: number; e: number};
 
@@ -26,6 +30,12 @@ export type Pos = {
 	opacity?: number;
 	/** static gaussian blur in px (depth-of-field planes, foreground ghost type) */
 	blur?: number;
+	/** 3D tilt [rotateX, rotateY] in degrees (UI planes 6–18°, cards, posters) */
+	tilt?: [number, number];
+	/** animate the tilt to this value across the layer's lifetime (slow 3D drift) */
+	tiltTo?: [number, number];
+	/** parallax depth: 1 = moves with the camera, <1 = far (moves less), >1 = near (moves more). Also drives rack focus. */
+	depth?: number;
 };
 
 export type Timing = {
@@ -47,7 +57,15 @@ export type TypeStyleName =
 	| 'marker' // Permanent Marker
 	| 'mono' // JetBrains Mono — prompts, terminals, code
 	| 'condensed' // Oswald — subtitles / captions
-	| 'pixel'; // VT323 — bitmap/retro
+	| 'pixel' // VT323 — bitmap/retro
+	| 'geometric' // Poppins Black — heavy geometric caps
+	| 'rounded' // Nunito Black — friendly rounded (SF Pro Rounded class)
+	| 'slab' // Roboto Slab ExtraBold
+	| 'typewriter' // Special Elite — typed documents
+	| 'signature' // Mrs Saint Delafield — signature script
+	| 'bebas' // Bebas Neue — tall condensed caps
+	| 'didone' // DM Serif Display — high-contrast fashion serif
+	| 'tech'; // Space Grotesk — techy UI display
 
 export type TextFx = {
 	/** 3D extrude depth in px (stacked text-shadows). */
@@ -112,6 +130,12 @@ export type TextLayer = Pos &
 		cps?: number;
 		/** colour of not-yet-spoken words for anim 'karaoke' (default 35% ink) */
 		dimColor?: string;
+		/** font weight override (where the family has it) */
+		weight?: number;
+		/** per-line size multipliers for stacked lockups, e.g. [0.45, 1.6, 0.45] = small/HUGE/small */
+		lineSizes?: number[];
+		/** fill letters with a gradient / image instead of a flat colour: CSS gradient string or image src */
+		fill?: string;
 	};
 
 export type BadgeLayer = Pos &
@@ -123,8 +147,10 @@ export type BadgeLayer = Pos &
 		textColor?: string;
 		style?: TypeStyleName;
 		size?: number;
-		anim?: 'wipe' | 'pop' | 'words' | 'typewriter';
+		/** 'swap': text holds alternatives "A | B | C" swapped in place; the badge resizes around each word */
+		anim?: 'wipe' | 'pop' | 'words' | 'typewriter' | 'swap';
 		sync?: boolean;
+		stagger?: number;
 	};
 
 export type ImageAnim =
@@ -278,6 +304,23 @@ export type ChartLayer = Pos &
  * scene becomes the content of a phone, TV, window or post in the next scene (v76, v77, v51).
  * Combine with camera {settle, origin} so the next scene starts zoomed into the box and pulls back.
  */
+/** Ambient particles — in 41/82 references (dust motes, sparkles, embers, bokeh, confetti, snow). */
+export type ParticlesLayer = Timing & {
+	type: 'particles';
+	kind?: 'dust' | 'sparkle' | 'embers' | 'bokeh' | 'confetti' | 'snow';
+	count?: number;
+	color?: string;
+	/** size multiplier */
+	size?: number;
+	/** speed multiplier */
+	speed?: number;
+	seed?: number;
+	opacity?: number;
+	z?: number;
+	/** restrict to a region in % [x, y, w, h] */
+	area?: [number, number, number, number];
+};
+
 export type EmbedLayer = Pos &
 	Timing & {
 		type: 'embed';
@@ -308,6 +351,7 @@ export type Layer =
 	| CursorLayer
 	| ChartLayer
 	| EmbedLayer
+	| ParticlesLayer
 	| GroupLayer;
 
 export type BackgroundKind =
@@ -379,6 +423,10 @@ export type Transition = {
 	color?: string;
 	/** for 'object': image src of the wiping object */
 	src?: string;
+	/** for 'zoom': zoom INTO this point [x, y] % (a door, a screen, an eye) instead of the centre */
+	target?: [number, number];
+	/** for 'zoom': peak scale at the cut (default 1.55; 3–6 for a true zoom-through into an object) */
+	peak?: number;
 };
 
 export type Camera = {
@@ -396,6 +444,10 @@ export type Camera = {
 	shake?: number;
 	/** transform origin in % for settle/punch (e.g. the centre of an embed box for nested reveals) */
 	origin?: [number, number];
+	/** rack focus: which `depth` plane is sharp, changing over time (layers off the plane blur ~6px per depth unit) */
+	focus?: {at: TimeRef; depth: number; frames?: number}[];
+	/** parallax amount for `depth` layers during drift/pan (px of extra travel per depth unit). Default 60 */
+	parallax?: number;
 };
 
 export type Grade = {
@@ -487,12 +539,20 @@ export type VideoSpec = {
 		vo?: string;
 		music?: string;
 		musicVolume?: number;
-		/** duck music under VO to this volume */
+		/** duck music under VO to this volume (smooth: ~4f attack, ~10f release, holds through pauses < 0.6s) */
 		duckTo?: number;
+		/** start the music file at this many seconds in */
+		musicStart?: number;
+		/** fade the music out over the last N seconds of the video (default 0.6) */
+		musicFadeOut?: number;
+		/** loop the music if shorter than the video (default true) */
+		musicLoop?: boolean;
 		sfx?: {src: string; at: TimeRef; volume?: number}[];
 	};
 	/** word timestamps of the VO (from tools/transcribe.py) — or a path to the json under public/ */
 	words?: Word[] | string;
+	/** beat grid from tools/beats.py ({beats, downbeats, onsets}) or a path to it under public/ — enables beat TimeRefs */
+	beats?: {beats: number[]; downbeats?: number[]; onsets?: number[]} | string;
 	captions?: Captions;
 	finish?: Finish;
 	/** layers drawn above every scene without camera motion: film-frame borders, HUDs, vote bars, watermarks, logos */

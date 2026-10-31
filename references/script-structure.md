@@ -12,7 +12,7 @@ Read this before step 2 of the workflow (script and beat sheet). The output of t
 |---|---|---|
 | 1 | **VO starts on frame 0.** No intro, no logo, no silence. The first word lands at 0.0–0.1 s. | measured: 74/76 VO videos |
 | 2 | **The first sentence is the hook and is 8–15 words long** (median 11). It ends at ~4.3 s (p25 2.5 s, p75 5.1 s). Its first 3 words must already carry the shock: a number, a famous name, "you", or a contradiction. | measured |
-| 3 | **One clause = one scene = one visual idea.** A scene holds about 6 spoken words (p25 4.4, p75 7.9) and lasts ~2–2.8 s. The median sentence is 8 words / 2.8 s, so long sentences split into 2 scenes at the comma. | measured; stated in 70+/82 breakdowns |
+| 3 | **One clause = one scene = one visual idea.** A scene holds about 6 spoken words (p25 4.4, p75 7.9) and lasts ~2–2.8 s. The median sentence is 8 words / 2.8 s, so long sentences split into 2 scenes at the comma. | measured; it is the stated script→visual rule in most breakdowns |
 | 4 | **Cut on the first syllable of the clause, not on the beat.** The first word of the new clause starts a median 0.02 s after the cut (IQR −0.05 to +0.09 s). 75% of cuts fall within 0.15 s of a word start. In the engine: `"start": {"word": "...", "offset": -0.1}`. | measured |
 | 5 | **The noun becomes a literal prop; the claim or verb becomes type.** Only 1–3 words per clause get display type. | v05 v06 v10 v11 v13 v14 v15 v21 v25 v27 v37 v47 v53 … |
 | 6 | **Abstract or pivot lines go on an empty card** (black, a flat colour, or blank paper) with one accent word. Concrete lines get a full set. This alternation is the rhythm. | v09 v10 v11 v15 v19 v29 v31 v34 v55 v56 v57 v64 v68 |
@@ -232,7 +232,7 @@ Work through these in order and stop at the first one that reads in under a seco
 4. **The period-correct device** for the era: a retro computer for "the future of computing" (v19), a typewriter for 1890s facts (v30), an old phone for nostalgia (v81).
 5. **Emoji rebus** for sensitive or hard-to-show consequences (v71: baby, money with wings, angry face).
 
-**Object-as-letter** (5 videos): replace a letter of the keyword with an object that means the word. Eggs as the O's in FOOD (v10), a logo as the "I" in AI and a lightbulb as the "i" in "think" (v59), a prohibition sign as the "o" in "not" or "doesn't" (v59 v81). Engine gap: there is no glyph-replacement option, so place an `image` over a space in the word manually (`text` with a gap + `image w≈size×0.6` at the letter's x), or build a custom component.
+**Object-as-letter** (3 videos, 5 instances): replace a letter of the keyword with an object that means the word. Eggs as the O's in FOOD (v10), a logo as the "I" in AI and a lightbulb as the "i" in "think" (v59), a prohibition sign as the "o" in "not" or "doesn't" (v59 v81). Engine gap: there is no glyph-replacement option, so place an `image` over a space in the word manually (`text` with a gap + `image w≈size×0.6` at the letter's x), or build a custom component.
 
 **Symbol motifs**: one recurring object carries the idea through every scene, reinvented per set.
 - A hero prop travels through 10 worlds (v12 popcorn bucket and price tag; v50 the painting).
@@ -440,7 +440,7 @@ All brand names below are invented placeholders. Each script was timed against t
 
 | Technique | Frequency | Status / how to build |
 |---|---|---|
-| Object-as-letter (an icon replaces a glyph) | 5 videos (v10 v59 v81) | No glyph-replacement option. Place an `image` in a gap of the `text` manually, or add a `text.glyphs: [{index, src}]` option that measures the letter box and swaps it. |
+| Object-as-letter (an icon replaces a glyph) | 3 videos (v10 v59 v81) | No glyph-replacement option. Place an `image` in a gap of the `text` manually, or add a `text.glyphs: [{index, src}]` option that measures the letter box and swaps it. |
 | Two-tier text with the hero keyword trailing the pill by ~0.3 s | 6 videos (v08 v13 v14 v16 v25 v45) | Possible with `captions` + `text` `at: {word, offset: 0.3}`, but there is no paraphrase-aware sync. Write the hero text with the spoken keyword inside it. |
 | Ghost pre-show of the next line (~30% opacity, then solid on its word) | v42 v02 | `anim: ghost` covers single lines; a `preview` opacity before `at` would generalise it. |
 | Same set regraded for a reversal | v26 v17 | `grade.drainAt` covers drain to B/W. There is no timed tint change mid-scene (`grade.tintAt`). |

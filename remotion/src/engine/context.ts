@@ -27,6 +27,11 @@ export const SpecContext = createContext<SpecCtx>({
 
 export const useSpec = () => useContext(SpecContext);
 
+/** Live camera state of the current scene, for per-layer parallax and rack focus. */
+export type CameraState = {tx: number; ty: number; scale: number; focusDepth?: number; parallax: number};
+export const CameraContext = createContext<CameraState>({tx: 0, ty: 0, scale: 1, parallax: 60});
+export const useCamera = () => useContext(CameraContext);
+
 /** Convert a TimeRef into a frame number relative to the current scene. */
 export const useSceneFrameOf = () => {
 	const {words, sceneStartSec} = useSpec();

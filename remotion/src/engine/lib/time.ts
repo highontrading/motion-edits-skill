@@ -24,10 +24,20 @@ export const resolveWord = (words: Word[], ref: {word: string; nth?: number; aft
 	return undefined;
 };
 
+type Beats = {beats: number[]; downbeats?: number[]; onsets?: number[]};
+let BEATS: Beats = {beats: []};
+/** Register the beat grid for {beat|downbeat|onset} refs (set once per render by SpecVideo). */
+export const setBeats = (b: Beats | undefined) => {
+	BEATS = b ?? {beats: []};
+};
+
 /** Resolve a TimeRef to absolute seconds. Numbers are relative to `base` (scene start) unless `absolute`. */
 export const resolveTime = (ref: TimeRef | undefined, words: Word[], base = 0, absolute = false): number | undefined => {
 	if (ref === undefined) return undefined;
 	if (typeof ref === 'number') return absolute ? ref : base + ref;
+	if ('beat' in ref) return BEATS.beats[ref.beat] !== undefined ? BEATS.beats[ref.beat] + (ref.offset ?? 0) : undefined;
+	if ('downbeat' in ref) return BEATS.downbeats?.[ref.downbeat] !== undefined ? BEATS.downbeats[ref.downbeat] + (ref.offset ?? 0) : undefined;
+	if ('onset' in ref) return BEATS.onsets?.[ref.onset] !== undefined ? BEATS.onsets[ref.onset] + (ref.offset ?? 0) : undefined;
 	if ('wordIndex' in ref) {
 		const w = words[ref.wordIndex];
 		return w ? w.s + (ref.offset ?? 0) : undefined;

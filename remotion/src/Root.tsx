@@ -17,6 +17,10 @@ const calculateMetadata: CalculateMetadataFunction<SpecVideoProps> = async ({pro
 		const words = (await res.json()) as Word[] | {words: Word[]};
 		spec = {...spec, words: Array.isArray(words) ? words : words.words};
 	}
+	if (typeof spec.beats === 'string') {
+		const res = await fetch(staticFile(spec.beats));
+		spec = {...spec, beats: await res.json()};
+	}
 	const fps = spec.fps ?? 30;
 	return {
 		props: {spec, postFinish: props.postFinish},

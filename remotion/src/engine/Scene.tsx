@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
 import {custom} from '../custom';
-import {useSceneFrameOf} from './context';
+import {CameraContext, useSceneFrameOf} from './context';
 import {SceneBackground} from './fx/Backgrounds';
 import {Stepped} from './lib/stepped';
 import {clamp01, curves, decay, decaySpeed, iclamp, ramp, rampSpeed, rand, wiggle} from './lib/motion';
@@ -173,8 +173,9 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 		const p = ramp(ef, outF, 1.45);
 		const sp = rampSpeed(ef, outF, 1.45);
 		if (outType === 'zoom') {
-			scale *= 1 + 0.55 * p;
+			scale *= 1 + ((outT?.peak ?? 1.55) - 1) * p;
 			blur += sp * 9 * u;
+			if (outT?.target) origin = outT.target;
 		}
 		const [ox, oy] = whipVec(outType);
 		if (ox || oy) {
@@ -242,11 +243,20 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 	if (useMb) filterParts.push(`url(#${mbId})`);
 
 	const Custom = scene.custom ? custom[scene.custom] : undefined;
+
+	// rack focus: interpolate the in-focus depth plane between keys (~6 frames per pull)
+	let focusDepth: number | undefined;
+	for (const k of cam.focus ?? []) {
+		const kf = frameOf(k.at, 0);
+		if (f < kf) break;
+		const n = k.frames ?? 6;
+		focusDepth = focusDepth === undefined || f - kf >= n ? k.depth : focusDepth + (k.depth - focusDepth) * clamp01((f - kf) / n);
+	}
 	const bgBleed = (1 + (2 * Math.abs(tx)) / width + (2 * Math.abs(ty)) / height + Math.abs(rot) / 40) / Math.min(1, scale);
 
 	// animated letterbox (bars close in over ~7 frames, expo-out)
 	const lbTarget = scene.letterbox ?? 0;
-	const lb = lbTarget === prevLetterbox ? lbTarget : prevLetterbox + (lbTarget - prevLetterbox) * decay(f + 1, 0.62);
+	const lb = lbTarget === prevLetterbox ? lbTarget : prevLetterbox + (lbTarget - prevLetterbox) * decay(f + 1, 0.5);
 
 	return (
 		<AbsoluteFill
@@ -280,10 +290,12 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 				<AbsoluteFill style={{transform: bgBleed > 1.001 ? `scale(${bgBleed})` : undefined}}>
 					<SceneBackground bg={scene.background} sceneIndex={index} />
 				</AbsoluteFill>
-				{Custom ? <Custom {...(scene.customProps ?? {})} /> : null}
-				{(scene.layers ?? []).map((l, i) => (
-					<LayerView key={i} layer={l} index={i + 1} />
-				))}
+				<CameraContext.Provider value={{tx, ty, scale, focusDepth, parallax: cam.parallax ?? 60}}>
+					{Custom ? <Custom {...(scene.customProps ?? {})} /> : null}
+					{(scene.layers ?? []).map((l, i) => (
+						<LayerView key={i} layer={l} index={i + 1} />
+					))}
+				</CameraContext.Provider>
 			</AbsoluteFill>
 			{g.tint ? <AbsoluteFill style={{background: g.tint, mixBlendMode: 'color'}} /> : null}
 			{lb > 0.05 ? (

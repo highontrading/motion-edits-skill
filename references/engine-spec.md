@@ -21,13 +21,15 @@ npx remotion still  src/index.ts MotionVideo out/frame.jpg --frame=120 --props=.
 | `animFps` | **Stepped animation**: 12 = collage/stop-motion feel (most of the reference library), 15 = a bit smoother, 0 = silky. Cuts stay frame-accurate. A scene can override it. |
 | `palette` | `{bg, ink, accent, accent2, paper}`, used as defaults by every layer. |
 | `words` | VO word timestamps: an array, or a path under `public/` to the JSON from `tools/transcribe.py`. Enables word refs and `sync`. |
-| `audio` | `{vo, music, musicVolume=0.35, duckTo, sfx:[{src, at, volume}]}`. `duckTo` (e.g. 0.12) ducks the music whenever someone is speaking. |
+| `audio` | `{vo, music, musicVolume=0.35, duckTo, musicStart, musicFadeOut=0.6, musicLoop=true, sfx:[{src, at, volume}]}`. `duckTo` (e.g. 0.12) ducks the music smoothly under speech, holding through pauses under 0.6 s. Scene `sfx` can lead into and ring past their scene. |
+| `beats` | beat grid (`tools/beats.py` output, or a path to it) used by beat TimeRefs |
 | `overlay` | layers drawn above every scene without camera motion (film-frame border, HUD, vote bar, series badge, logo) |
 | `captions` | Persistent subtitle track from `words`: `{enabled, style: pill\|bar\|karaoke\|bold, y, maxWords, color, activeColor, bg, font, size}`. |
 | `finish` | `{grain=0.07, vignette=0.35, halftone, scanlines, paper, chroma, letterbox}`. Texture over everything. |
 | `scenes` | An ordered list of scenes. |
 
 ## Time references (`TimeRef`)
+- `{"beat": 8}`, `{"downbeat": 2}` and `{"onset": 5}` (0-based) work when `spec.beats` is set (the output of `tools/beats.py`, inline or a path under `public/`). Use them to lock cuts to the music in music-led edits.
 - A number is seconds. For a scene `start` it's absolute; for a layer `at`/`until` it's relative to the scene start.
 - `{"word": "exploded"}` is the moment that word is spoken: the first match at or after the scene start, or after the video start for scene `start`. Add `nth`, `offset` (seconds, e.g. `-0.12` so the cut leads the word), or multi-word `"word": "think small"`.
 - `{"wordIndex": 42}` points at a word by its index in the transcript.
@@ -53,6 +55,7 @@ npx remotion still  src/index.ts MotionVideo out/frame.jpg --frame=120 --props=.
 - `start` / `duration`: if `start` is missing, the scene follows the previous one. If `duration` is missing, the scene runs until the next scene's start.
 - **Camera:** every scene gets an expo-out **settle** from `settle` to 1 (the most consistent pattern in the library; ~1.08–1.15). `drift` is a slow push across the scene. `punch` adds 4-frame punch-ins on words. `pan` takes `[{at, x, y, frames}]` and moves the virtual camera to centre on (x, y)%, for exploring a big collage canvas.
 - **`letterbox`**: % of the height per bar. Bars close in over ~7 frames when the value changes between scenes (UI scenes inside bars vs. full-bleed posters, v04 v78).
+- **Camera `focus`**: `[{at, depth, frames=6}]` racks focus between depth planes. Layers with `depth` off the focus plane blur ~16 px per depth unit. Camera `parallax` (default 60) sets how strongly `depth` layers separate during drift.
 - **Camera `origin`**: `[x, y]` % is the transform origin for settle and punch moves.
 - **Grade:** `drainAt` drains the colour to B/W over 6 frames on a story beat.
 
@@ -63,7 +66,7 @@ npx remotion still  src/index.ts MotionVideo out/frame.jpg --frame=120 --props=.
 | type | what happens | from |
 |---|---|---|
 | `cut` | hard cut (the incoming scene still settles) | everywhere |
-| `zoom` | **zoom-punch / velocity-matched**: the outgoing zoom ramps ×1.45/frame into the cut at peak speed with blur; the incoming scene starts at 1.18× and settles | v11 v12 v15 v25 v37 |
+| `zoom` | (`target: [x, y]` to zoom *into* a point such as a door, screen or eye; `peak` = scale at the cut, 1.55 default, 3–6 for a true zoom-through) **zoom-punch / velocity-matched**: the outgoing zoom ramps ×1.45/frame into the cut at peak speed with blur; the incoming scene starts at 1.18× and settles | v11 v12 v15 v25 v37 |
 | `whip-left/right/up/down` | **momentum cut**: both shots share one motion curve; the outgoing accelerates out, the incoming keeps moving the same way and decays; directional blur | v05 v18 v20 v26 |
 | `spin` | rotation ramps into the cut, the incoming unwinds | v17 |
 | `flash` | 1 white frame, then decays (~55%/frame) | v12 v17 v28 |
@@ -94,7 +97,9 @@ All visual layers share **position** (`x`, `y` = centre in %, `w` = width % of f
  "anim": "words", "sync": true, "accent": ["pratfall", "effect"], "accentColor": "#2bd96b",
  "fx": {"extrude": 10, "extrudeColor": "#0b2a55"}, "underline": "scribble", "highlight": "#e8301c"}
 ```
-- `style`: `impact` (Anton, the default keyword voice) · `grotesk` (Archivo Black) · `clean` (Inter) · `serif` (Playfair) · `serif-italic` (Instrument Serif) · `script` (Caveat) · `marker` · `mono` · `condensed` (Oswald) · `pixel` (VT323).
+- `style`: also `geometric` (Poppins Black) · `rounded` (Nunito Black) · `slab` · `typewriter` (Special Elite) · `signature` · `bebas` · `didone` (DM Serif Display) · `tech` (Space Grotesk).
+- `weight` overrides the font weight. `lineSizes: [0.45, 1.6, 0.45]` sets per-line size multipliers for small/HUGE/small stacks. `fill` fills the letters with a CSS gradient or an image `src` (halftone, photo, texture).
+- `style` (core set): `impact` (Anton, the default keyword voice) · `grotesk` (Archivo Black) · `clean` (Inter) · `serif` (Playfair) · `serif-italic` (Instrument Serif) · `script` (Caveat) · `marker` · `mono` · `condensed` (Oswald) · `pixel` (VT323).
 - `size` is % of frame width; keywords in the references run 12–30. `\n` sets manual breaks; long text auto-wraps, and anything still too wide auto-shrinks to fit.
 - `anim`: `pop` · `slam` (lands from 1.45× + blur) · `words` (word-by-word) · `ghost` (grey small → solid) · `focus` (blur → sharp) · `letters` (per-letter tumble) · `typewriter` (`cps`, `leadColor`) · `scramble` · `mask` (L→R wipe) · `rise` (from behind a line) · `none`.
 - `karaoke`: the whole text shows in `dimColor` and each word lights up when spoken (needs `sync`) or every `stagger` frames.
@@ -103,7 +108,7 @@ All visual layers share **position** (`x`, `y` = centre in %, `w` = width % of f
 - `fx`: `extrude` (3D depth px), `extrudeColor`, `doubled` (same-colour offset copy), `shadow`, `stroke` (outline type), `glow`, `blend` (`difference` for colour-flipping type).
 
 ### `badge`
-Label badge (`variant`: `stitched` dashed inner border · `solid` · `outline` · `pill` · `tape`), `color`, `textColor`, `size`, `anim`: `wipe|pop|words|typewriter`.
+Label badge (`anim: "swap"` with `"A | B | C"` swaps words and the badge resizes around each one; `variant`: `stitched` dashed inner border · `solid` · `outline` · `pill` · `tape`), `color`, `textColor`, `size`, `anim`: `wipe|pop|words|typewriter`.
 
 ### `image`
 `src` (under `public/` or a URL), `cutout: true` (white paper edge + contact shadow, for PNG cut-outs from `tools/cutout.py`), `print: true` (bordered photo print), `shadow`: `soft|hard|long|none`, `anim`: `pop|drop|rise|slide-*|fade|focus|spin-in|stamp`, `float` (bob px), `jitter` (stop-motion px), `grayscale`, `halftone`, `swap: {src, at, glow}` (swap in place on a word with a glow flash), `cycle: {srcs, every=3, until}` (flicker-montage through several images). Extra `anim` values: `swing` (pendulum hang) and `flip` (3D card flip in).
@@ -127,7 +132,10 @@ Label badge (`variant`: `stitched` dashed inner border · `solid` · `outline` �
 ### `embed`
 `scene` (another scene's `id`), `mode`: `last` (frozen on that scene's final frame, the default) or `live`, `radius`, `aspect`, `shadow`. It renders that scene inside the box: the scene becomes a phone screen, TV, post or window. Pair it with `transition: {type: "shrink"}` for nested reveals.
 
-Every positioned layer also takes `blur` (px). Use it for depth-of-field planes, e.g. a huge blurred copy of a word in the foreground.
+Every positioned layer also takes `blur` (px), `tilt: [rotX, rotY]` and `tiltTo` (3D planes; UI at 6–18°), and `depth` (parallax and rack-focus plane: <1 far, >1 near).
+
+### `particles`
+`kind`: `dust` · `sparkle` · `embers` · `bokeh` · `confetti` · `snow`, plus `count`, `color`, `size`, `speed`, `seed`, `opacity`, `area: [x, y, w, h]` %. Seen in 41/82 references; use for atmosphere at low counts. Use it for depth-of-field planes, e.g. a huge blurred copy of a word in the foreground.
 
 ### `cursor`
 `path: [{x, y, t, click}]` (t = seconds in the scene). A click dips the cursor and pulses a ring.
