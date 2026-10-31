@@ -64,7 +64,7 @@ Saturation is a beat-level switch: crush it 65 → 0 in 4 f between lines, or bl
 | (+2) | CTA | dark card, one keyword in quotes, held 1 s | `black` |
 
 ## 7. Example VideoSpec (1:1, asset-free, 120 BPM ⇒ beat = 0.5 s)
-Scene starts are beat refs against an inline 120 BPM grid. For a real track, replace `beats` with the `tools/beats.py` output path and add `"audio": {"music": "PLACEHOLDER_track.mp3"}`. With a VO, anchor on words instead and add `"snap": "beat"`. **Give the last scene a `duration` (or set the top-level `duration`).** With no VO, the video length is the last scene's start + duration; without either, the video comes out 1 s long. (Frame 45 here is the 1-frame white `flash` into `line2`, on beat 3.)
+Scene starts are beat refs against an inline 120 BPM grid. For a real track, replace `beats` with the `tools/beats.py` output path and add `"audio": {"music": "PLACEHOLDER_track.mp3"}`. With a VO, anchor on words instead and add `"snap": "beat"`. **Give the last scene a `duration` (or set the top-level `duration`).** With no VO, the video length is the last scene's start + duration; without either, the last scene defaults to 2.5 s. (Frame 45 here is the 1-frame white `flash` into `line2`, on beat 3.)
 ```json
 {
   "width": 1080, "height": 1080, "fps": 30, "animFps": 15, "duration": 10.5,

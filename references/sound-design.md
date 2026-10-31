@@ -258,7 +258,7 @@ Spec skeleton for a music-only edit:
     "sfx": [{"src": "sfx/impact.wav", "at": 0, "volume": 0.6}]}
  ]}
 ```
-(starts = consecutive downbeats from `beats.py`; here 123 BPM, one bar = 1.95 s. With `"beats": "beats.json"` on the spec, write them as `{"downbeat": 0}`, `{"downbeat": 1}`, … instead. The whoosh leads the whip by 0.2 s and the riser ends on the flash; they can be global as here, or scene `sfx` with a negative `at`. The impact sits inside s3. **Give the last scene a `duration`** (or set top-level `duration`): with no VO, the video length is the last scene's start + duration, and without it the render is 1 s long.)
+(starts = consecutive downbeats from `beats.py`; here 123 BPM, one bar = 1.95 s. With `"beats": "beats.json"` on the spec, write them as `{"downbeat": 0}`, `{"downbeat": 1}`, … instead. The whoosh leads the whip by 0.2 s and the riser ends on the flash; they can be global as here, or scene `sfx` with a negative `at`. The impact sits inside s3. **Give the last scene a `duration`** (or set top-level `duration`): with no VO, the video length is the last scene's start + duration, and without it the last scene defaults to 2.5 s.)
 
 ---
 
