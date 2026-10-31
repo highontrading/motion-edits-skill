@@ -1,6 +1,8 @@
 import React, {useMemo} from 'react';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
+import {rand} from '../lib/motion';
 import type {Finish as FinishSpec} from '../types';
+import {grainTile, noiseTile} from './noise';
 
 /**
  * Global finishing pass. Every high-end reference carries texture on top of everything:
@@ -9,18 +11,14 @@ import type {Finish as FinishSpec} from '../types';
  */
 export const Grain: React.FC<{opacity: number; seedEvery?: number}> = ({opacity, seedEvery = 2}) => {
 	const frame = useCurrentFrame();
-	const seed = Math.floor(frame / seedEvery) % 24;
-	const id = `grain-${seed}`;
+	const k = Math.floor(frame / seedEvery);
+	// one cached tile, jumped to a pseudo-random offset every `seedEvery` frames
+	const ox = Math.floor(rand(k) * 256);
+	const oy = Math.floor(rand(k + 101) * 256);
 	return (
-		<AbsoluteFill style={{pointerEvents: 'none', mixBlendMode: 'overlay', opacity}}>
-			<svg width="100%" height="100%" preserveAspectRatio="none">
-				<filter id={id}>
-					<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves={2} seed={seed} stitchTiles="stitch" />
-					<feColorMatrix type="saturate" values="0" />
-				</filter>
-				<rect width="100%" height="100%" filter={`url(#${id})`} />
-			</svg>
-		</AbsoluteFill>
+		<AbsoluteFill
+			style={{pointerEvents: 'none', mixBlendMode: 'overlay', opacity, backgroundImage: grainTile(3), backgroundRepeat: 'repeat', backgroundPosition: `${ox}px ${oy}px`}}
+		/>
 	);
 };
 
@@ -59,19 +57,16 @@ export const Scanlines: React.FC<{opacity: number}> = ({opacity}) => (
 	/>
 );
 
-export const PaperMultiply: React.FC<{opacity: number}> = ({opacity}) => {
-	return (
-		<AbsoluteFill style={{pointerEvents: 'none', mixBlendMode: 'multiply', opacity}}>
-			<svg width="100%" height="100%" preserveAspectRatio="none">
-				<filter id="paper-mul">
-					<feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves={4} seed={7} />
-					<feColorMatrix type="matrix" values="0 0 0 0 0.93  0 0 0 0 0.9  0 0 0 0 0.84  0 0 0 -1.4 1.25" />
-				</filter>
-				<rect width="100%" height="100%" filter="url(#paper-mul)" />
-			</svg>
-		</AbsoluteFill>
-	);
-};
+export const PaperMultiply: React.FC<{opacity: number}> = ({opacity}) => (
+	<AbsoluteFill
+		style={{
+			pointerEvents: 'none',
+			mixBlendMode: 'multiply',
+			opacity,
+			backgroundImage: noiseTile('paper', 512, '0.035', 4, 7, '0 0 0 0 0.93  0 0 0 0 0.9  0 0 0 0 0.84  0 0 0 -1.4 1.25'),
+		}}
+	/>
+);
 
 export const Letterbox: React.FC<{pct: number}> = ({pct}) => (
 	<AbsoluteFill style={{pointerEvents: 'none'}}>

@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Img, OffthreadVideo, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {useSpec} from '../context';
+import {noiseTile} from './noise';
 import type {Background} from '../types';
 
 export const resolveSrc = (src: string) => (/^(https?:|data:|blob:)/.test(src) ? src : staticFile(src.replace(/^\/+/, '')));
@@ -24,8 +25,8 @@ export const alpha = (hex: string, a: number) => {
 	return `rgba(${r}, ${g}, ${b}, ${a})`;
 };
 
-/** Noise texture layer generated with feTurbulence. */
-const Noise: React.FC<{freq: string; octaves?: number; seed?: number; matrix: string; blend?: React.CSSProperties['mixBlendMode']; opacity?: number; id: string}> = ({
+/** Cached noise texture layer (SVG tile rasterised once, repeated). */
+const Noise: React.FC<{freq: string; octaves?: number; seed?: number; matrix: string; blend?: React.CSSProperties['mixBlendMode']; opacity?: number; id: string; tile?: number}> = ({
 	freq,
 	octaves = 3,
 	seed = 3,
@@ -33,17 +34,13 @@ const Noise: React.FC<{freq: string; octaves?: number; seed?: number; matrix: st
 	blend = 'multiply',
 	opacity = 1,
 	id,
-}) => (
-	<AbsoluteFill style={{mixBlendMode: blend, opacity}}>
-		<svg width="100%" height="100%" preserveAspectRatio="none">
-			<filter id={id} x="0" y="0" width="100%" height="100%">
-				<feTurbulence type="fractalNoise" baseFrequency={freq} numOctaves={octaves} seed={seed} stitchTiles="stitch" />
-				<feColorMatrix type="matrix" values={matrix} />
-			</filter>
-			<rect width="100%" height="100%" filter={`url(#${id})`} />
-		</svg>
-	</AbsoluteFill>
-);
+	tile,
+}) => {
+	// low frequencies need big tiles so the repeat isn't visible
+	const lowest = Math.min(...freq.split(' ').map(Number));
+	const size = tile ?? (lowest < 0.02 ? 1024 : lowest < 0.1 ? 512 : 256);
+	return <AbsoluteFill style={{mixBlendMode: blend, opacity, backgroundImage: noiseTile(id.replace(/\d+/g, ''), size, freq, octaves, seed, matrix), backgroundRepeat: 'repeat'}} />;
+};
 
 /** grey noise whose alpha = strength (multiply darkens, screen lightens) */
 const greyMatrix = (strength: number) => `0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 ${-strength} ${strength}`;
