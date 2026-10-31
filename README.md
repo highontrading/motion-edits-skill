@@ -64,6 +64,9 @@ python3 tools/render.py work/my.spec.json out/my-video.mp4
 python3 tools/review_render.py out/my-video.mp4 out/review/
 ```
 
+## Render speed
+Remotion renders in a headless browser, so speed depends on the CPU. On a 4-core cloud container a 25 s 1080×1920 video took about 30 minutes, roughly 2 s per frame. A modern laptop or desktop is several times faster. Use stills and `--draft` (half resolution) while iterating, and render full size once.
+
 ## Notes
 - The reference videos themselves are **not** in this repo; only their analysis is. Everything the skill produces is original: it learns techniques, never copies creators' branding, characters, end cards or scripts.
 - Use only music, SFX, logos, footage and likenesses you own or have licensed.
