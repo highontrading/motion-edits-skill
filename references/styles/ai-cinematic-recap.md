@@ -45,13 +45,13 @@ Two or three voices, switched by rhetorical register (v63, v64, v45 each use 3�
 ## 4. Motion signature
 - **`animFps: 0`** for plates. Give tabletop, archival or hook sections `animFps: 15` (v47 v64 v67 mix 15 and 30, v56's hook is stepped at ~18). The texture shift signals the change of mode.
 - **Settle:** start at 103–110% and decay over 15–25 f: `camera.settle` 1.06–1.1, `settleR` 0.85. Diorama entrances can start defocused and rack in while pulling back (v64): `transition: focus`.
-- **Cut at peak velocity:** end shots on an accelerating move and start the next decelerating (v67). Use `zoom`/`whip-*` on 1/3 of cuts.
+- **Cut at peak velocity:** end shots on an accelerating move and start the next decelerating (v67). Use `zoom`/`whip-*` on 1/3 of cuts, or `camera.exit: {zoom: 1.25, frames: 8}` into a plain cut.
 - **Cut mix** (135 classified): plain cut 37% · `flash`/burn/bloom 15% · `whip-*` 14% · `zoom` 5% · `circle` (iris/portal) 5% · `invert` 2–3 f as chapter markers (v34 v56 v68) · `focus`/`slide`/object 2% each.
 - **Sync:** big events (flashes, strobes, cuts) on the beat within ±2 f. Small type trails the VO by 0.1–0.3 s (v56). Captions trail the noun by ~0.2 s (v45).
 - **Easing:** weighted expo-out with no bounce (4-frame ramps, 15–40-frame decays, v67). Hung objects (portraits, signs) use image `swing`.
 
 ## 5. Recurring devices
-1. **Iris portal from a point already in the picture** (lamp, red dot, palms, chart endpoint) (v63: almost every transition). Use `transition: circle`; the origin is fixed (see gaps).
+1. **Iris portal from a point already in the picture** (lamp, red dot, palms, chart endpoint) (v63: almost every transition). Use `transition: circle` with `at: [x, y]` on that point.
 2. **Invert flash as a chapter marker**: 2 frames, no other graphics (v68 v34 v56).
 3. **Name tags and labels pinned to people/objects**: `badge` next to the subject (v56 v67).
 4. **Evidence desk**: grid paper, aged photo cards tilted 5–15°, tape, a newspaper with a highlighter (`shape rect` at low opacity) (v63 v67).
@@ -88,7 +88,7 @@ Two or three voices, switched by rhetorical register (v63, v64, v45 each use 3�
        {"type": "text", "text": "MOON ROCK", "style": "grotesk", "size": 16, "y": 40, "at": 0.3, "color": "#d71a24", "anim": "slam",
         "fx": {"extrude": 6, "extrudeColor": "#7a0c10", "shadow": true}}
      ]},
-    {"id": "who", "duration": 3.0, "transition": {"type": "whip-left"},
+    {"id": "who", "duration": 3.0, "transition": {"type": "circle", "at": [62, 38]},
      "background": {"kind": "image", "src": "PLACEHOLDER_plate_curator_office_warm.jpg", "dim": 0.1},
      "camera": {"settle": 1.06, "settleR": 0.85, "pan": [{"at": 1.2, "x": 60, "y": 50, "frames": 24}]},
      "layers": [
@@ -136,6 +136,7 @@ Two or three voices, switched by rhetorical register (v63, v64, v45 each use 3�
 
 ## 9. Engine notes and gaps
 - **Tracked or perspective-pinned graphics** (titles on façades, tags tracked to a moving chest, v56 v45): not supported. Possible fix: a corner-pin field (`quad: [[x,y]×4]`) on text/badge layers plus keyframed positions.
-- **Iris that grows from a point in the picture** (v63, ~8 uses): `circle` has a fixed origin. Possible fix: `transition.origin: [x, y]`.
+- An iris growing from a point in the picture (v63) is covered by `circle` with `at`.
+- Static perspective on a title (a façade) can be faked with `tilt`. It does not track a moving plate.
 - **Pixel-materialise titles** (v68: type assembles from glowing fragments in 4 f): there is no text anim for it. `scramble` is the nearest. Possible fix: `anim: "pixel"`.
 - **Image-to-video plates**: use the `video` layer with user-supplied clips. The engine cannot animate a still beyond camera moves and layer motion.

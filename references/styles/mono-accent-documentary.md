@@ -126,4 +126,5 @@ Rule: greys + one accent. Real colour appears only as (a) the selective-colour s
 ## 9. Engine notes and gaps
 - Selective colour on a *single* photo or footage clip (keep one object in colour inside one image): not possible without a matte. Possible fix: `image.colorMask` taking a mask PNG, or supply the subject as a separate cut-out.
 - Text tucked behind a subject in AI stills (v73): needs a roto'd cut-out layer above the text. `tools/cutout.py` can make it.
-- Grade "colour returns" (B/W → colour) inside one scene: `drainAt` only goes *to* grey. Possible fix: `grade.fillAt`, or split into two scenes with a `cut`.
+- Grade "colour returns" (B/W → colour) inside one scene: `drainAt` only goes *to* grey. Split into two scenes with a `desat` cut (the incoming colour returns), or add a `grade.fillAt`.
+- Rack focus inside a still is possible: put the background image and the cut-out on separate `depth` planes and animate `camera.focus`.

@@ -64,45 +64,36 @@ Saturation is a beat-level switch: crush it 65 → 0 in 4 f between lines, or bl
 | (+2) | CTA | dark card, one keyword in quotes, held 1 s | `black` |
 
 ## 7. Example VideoSpec (1:1, asset-free, 120 BPM ⇒ beat = 0.5 s)
-Durations are whole beats. Compute them from `tools/beats.py` for your track and add `"audio": {"music": "PLACEHOLDER_track.mp3"}`.
+Scene starts are beat refs against an inline 120 BPM grid. For a real track, replace `beats` with the `tools/beats.py` output path and add `"audio": {"music": "PLACEHOLDER_track.mp3"}`. With a VO, anchor on words instead and add `"snap": "beat"`. **Always set the top-level `duration` when scenes start on beat refs.** The engine currently computes the composition length before it registers the beat grid, so without it the video comes out 1 s long.
 ```json
 {
-  "width": 1080, "height": 1080, "fps": 30, "animFps": 15,
+  "width": 1080, "height": 1080, "fps": 30, "animFps": 15, "duration": 10.5,
+  "beats": {"beats": [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0, 12.5, 13.0, 13.5, 14.0, 14.5, 15.0, 15.5],
+            "downbeats": [0.0, 2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0]},
   "palette": {"bg": "#060606", "ink": "#ffffff", "accent": "#e07b2a", "accent2": "#4eb45f", "paper": "#beb1a5"},
   "finish": {"grain": 0.1, "halftone": 0.12, "vignette": 0.45, "chroma": 2},
   "scenes": [
-    {"id": "line1", "duration": 1.5,
-     "background": {"kind": "paper", "color": "#9c8371"},
-     "camera": {"settle": 1.14, "settleR": 0.8, "drift": 0.03},
+    {"id": "line1", "start": {"beat": 0}, "background": {"kind": "paper", "color": "#9c8371"}, "camera": {"settle": 1.14, "settleR": 0.8, "drift": 0.03},
      "layers": [
        {"type": "text", "text": "KEEP", "style": "grotesk", "size": 22, "y": 30, "anim": "slam"},
        {"type": "text", "text": "your", "style": "script", "size": 14, "y": 47, "caps": false, "color": "#e07b2a", "at": 0.5, "anim": "pop", "fx": {"extrude": 5, "extrudeColor": "#7a4318"}},
        {"type": "text", "text": "HEAD DOWN", "style": "impact", "size": 26, "y": 66, "at": 1.0, "color": "#060606", "anim": "letters", "stagger": 1}
      ]},
-    {"id": "line2", "duration": 2.0, "transition": {"type": "flash", "frames": 1},
-     "background": {"kind": "radial", "color": "#3a3a3a", "color2": "#060606"},
-     "camera": {"settle": 1.12, "settleR": 0.8, "punch": [{"at": 1.0, "scale": 1.1, "frames": 4}]},
+    {"id": "line2", "start": {"beat": 3}, "transition": {"type": "flash", "frames": 1}, "background": {"kind": "radial", "color": "#3a3a3a", "color2": "#060606"}, "camera": {"settle": 1.12, "settleR": 0.8, "punch": [{"at": 1.0, "scale": 1.1, "frames": 4}]},
      "layers": [
        {"type": "badge", "text": "WHILE THEY", "variant": "solid", "color": "#ffffff", "textColor": "#060606", "size": 6, "y": 30, "anim": "wipe"},
        {"type": "text", "text": "TALK\nTALK\nTALK", "style": "impact", "size": 20, "y": 62, "lineHeight": 0.82, "at": 1.0, "anim": "words", "stagger": 2}
      ]},
-    {"id": "line3-scroll", "duration": 2.0, "transition": {"type": "whip-left"},
-     "background": {"kind": "solid", "color": "#880a0c"},
-     "camera": {"settle": 1.1, "settleR": 0.8, "pan": [{"at": 0.2, "x": 80, "y": 50, "frames": 40}]},
+    {"id": "line3-scroll", "start": {"beat": 7}, "transition": {"type": "whip-left"}, "background": {"kind": "solid", "color": "#880a0c"}, "camera": {"settle": 1.1, "settleR": 0.8, "pan": [{"at": 0.2, "x": 80, "y": 50, "frames": 40}]},
      "layers": [
-       {"type": "text", "text": "LOUDERRRRRR", "style": "impact", "size": 40, "x": 50, "y": 50, "w": 260, "color": "#ffffff", "anim": "mask",
-        "fx": {"stroke": 3, "strokeColor": "#4e0c09", "shadow": true}}
+       {"type": "text", "text": "LOUDERRRRRR", "style": "impact", "size": 40, "x": 50, "y": 50, "w": 260, "color": "#ffffff", "anim": "mask", "fx": {"stroke": 3, "strokeColor": "#4e0c09", "shadow": true}}
      ]},
-    {"id": "line4", "duration": 2.0, "transition": {"type": "desat"},
-     "background": {"kind": "halftone", "color": "#1e3d22"},
-     "camera": {"settle": 1.12, "settleR": 0.8},
+    {"id": "line4", "start": {"beat": 11}, "transition": {"type": "desat"}, "background": {"kind": "halftone", "color": "#1e3d22"}, "camera": {"settle": 1.12, "settleR": 0.8},
      "layers": [
        {"type": "text", "text": "LET THEM", "style": "grotesk", "size": 10, "y": 32, "color": "#4eb45f", "anim": "slam"},
        {"type": "text", "text": "SEE IT", "style": "impact", "size": 30, "y": 54, "at": 0.5, "color": "#ffffff", "anim": "slam", "fx": {"glow": "#4eb45f88"}}
      ]},
-    {"id": "finale", "duration": 3.0, "transition": {"type": "zoom"},
-     "background": {"kind": "solid", "color": "#4e0c09"},
-     "camera": {"settle": 1.25, "settleR": 0.9, "drift": 0.02},
+    {"id": "finale", "start": {"beat": 15}, "duration": 3.0, "transition": {"type": "zoom"}, "background": {"kind": "solid", "color": "#4e0c09"}, "camera": {"settle": 1.25, "settleR": 0.9, "drift": 0.02},
      "layers": [
        {"type": "text", "text": "WHEN IT'S DONE", "style": "impact", "size": 26, "y": 46, "color": "#a77849", "anim": "slam", "fx": {"extrude": 10, "extrudeColor": "#2a0705"}},
        {"type": "shape", "kind": "burst", "x": 50, "y": 46, "w": 90, "h": 50, "color": "#e07b2a", "stroke": 4, "at": 0.5, "z": -1}
@@ -114,7 +105,7 @@ In `line3-scroll`, `w: 260` lets the stretched word run past the frame and the c
 
 ## 8. Do / don't
 **Do**
-- Run `tools/beats.py` first and make every scene length a whole number of beats.
+- Run `tools/beats.py` first, set `spec.beats`, and start every scene on `{"beat": n}` (or a downbeat for bar-long scenes).
 - Give every line one hue + black/white. Change the font when the world changes.
 - Put one thing in front of the type in at least half the scenes.
 
@@ -124,7 +115,9 @@ In `line3-scroll`, `w: 260` lets the stretched word run past the frame and the c
 - Use more than one flash per bar. Flashes lose power fast.
 
 ## 9. Engine notes and gaps
-- **Beat-referenced timing** (needed by every music-led piece: v18 v23 v28 v33 v36 v40, and the CTAs of v39/v61): `TimeRef` only knows seconds and VO words. Possible fix: a `{"beat": n, "offset": s}` ref resolved from `spec.beats` (the `tools/beats.py` output), plus scene `duration` in beats.
+- **Beat timing is covered**: `spec.beats` plus `{"beat": n}` / `{"downbeat": n}` / `{"onset": n}` refs, and `scene.snap`. Layer `at` also accepts beat refs (they are absolute), so slams can sit on onsets.
+- **Bug:** `specDurationInFrames` (SpecVideo.tsx) runs before `setBeats`, so beat-anchored scenes resolve to `undefined` and the composition defaults to 1 s. Workaround: set `duration`. Fix: call `setBeats` inside `specDurationInFrames`/`calculateMetadata`.
+- **Scene length in beats** is not a field. Give every scene a beat `start` and let the next start end it.
 - **Smear frames / motion-stretch on whips**: not built in. `whip-*` adds directional blur, which is the closest substitute.
 - **Layout "falling apart" physics** ("wrecked", v28): needs a custom component.
 - **Text on a spiral path** (v23): there is no text-on-path. Possible fix: `text.path` (an SVG path).

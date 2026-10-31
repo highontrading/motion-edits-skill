@@ -41,7 +41,7 @@ Grade as story: drain to B/W on the refusal or failure beat (`grade.drainAt`), a
 Change the display face with the set when the prop suggests one (road sign → condensed, newspaper → serif, CRT → pixel), but keep one heavy grotesk as the main voice (v12 v21).
 
 ## 4. Motion signature
-- **`animFps: 12`** (8/12 refs at 12 fps; v22/v70 at 15; v12/v16 render on ones at 18). Run UI typing and counters at full rate by giving those scenes `animFps: 0` (v10).
+- **`animFps: 12`** (8/12 refs at 12 fps; v22/v70 at 15; v12/v16 render on ones at 18). Keep UI typing, counters and footage at full rate with `smooth: true` on those layers (v10: collage at 12 fps, UI typing on every frame).
 - **Settle:** `camera.settle` 1.10–1.15, `settleR` 0.75–0.82. Decelerate-only: peak speed in frames 1–4 with no bounce (v10). Props may overshoot by one drawing (v08).
 - **Drift:** 0.02–0.03 per scene. **Punch** 1.08–1.12 on the number or the name.
 - **Cut mix** (234 classified transitions): plain cut 52% · `zoom` (velocity-matched) 10% · `black` 1–3 f 8% · `whip-*` 6% · `flash`/`invert` 5% · `slide` 4% · `desat`/`ink` ≈2% each. v11 and v15 run almost every cut as a `zoom`. Pick **one** dominant grammar per video.
@@ -98,11 +98,10 @@ Change the display face with the set when the prop suggests one (road sign → c
     {"id": "proof", "duration": 2.8, "transition": {"type": "zoom"},
      "background": {"kind": "grid", "color": "#dcdcdc"},
      "camera": {"settle": 1.12, "settleR": 0.8, "punch": [{"at": 1.6, "scale": 1.1}]},
-     "animFps": 0,
      "layers": [
-       {"type": "ui", "kind": "notification", "label": "Store", "title": "Today only", "text": "Was $199, now $79", "y": 30, "w": 84, "anim": "slide-down"},
+       {"type": "ui", "kind": "notification", "label": "Store", "title": "Today only", "text": "Was $199, now $79", "y": 30, "w": 84, "anim": "slide-down", "smooth": true},
        {"type": "badge", "text": "62% OFF", "variant": "stitched", "color": "#7a0f12", "size": 6.5, "y": 58, "at": 0.8, "anim": "wipe"},
-       {"type": "counter", "from": 199, "to": 79, "duration": 0.8, "mode": "flip", "prefix": "$", "style": "impact", "size": 22, "y": 74, "at": 1.4, "color": "#111111"}
+       {"type": "counter", "from": 199, "to": 79, "duration": 0.8, "mode": "flip", "prefix": "$", "style": "impact", "size": 22, "y": 74, "at": 1.4, "color": "#111111", "smooth": true}
      ]},
     {"id": "moral", "duration": 2.4, "transition": {"type": "invert"},
      "background": {"kind": "halftone", "color": "#de3333"},
@@ -115,9 +114,8 @@ Change the display face with the set when the prop suggests one (road sign → c
      ]},
     {"id": "cta", "duration": 2.6, "transition": {"type": "zoom"},
      "background": {"kind": "studio", "color": "#1a1a1a"},
-     "animFps": 0,
      "layers": [
-       {"type": "ui", "kind": "search", "text": "yourbrand.com", "y": 40, "w": 82, "theme": "light", "anim": "pop"},
+       {"type": "ui", "kind": "search", "text": "yourbrand.com", "y": 40, "w": 82, "theme": "light", "anim": "pop", "smooth": true},
        {"type": "cursor", "path": [{"x": 82, "y": 70, "t": 0.6}, {"x": 64, "y": 41, "t": 1.4, "click": true}]},
        {"type": "badge", "text": "LINK IN BIO", "variant": "stitched", "color": "#e8730c", "size": 6, "y": 58, "at": 1.5, "anim": "wipe"}
      ]}
@@ -131,7 +129,7 @@ To sync with a VO, add `"words": "vo.words.json"`. Replace each `duration` with 
 - Choose the prop before the type. If the prop explains the line, the type can be one word.
 - Keep 2–4 type treatments per video, with one heavy grotesk as the constant.
 - Put a black card between two saturated posters, and drop one in every ~10 s.
-- Step at 12 fps, but keep UI typing smooth (`animFps: 0` on those scenes).
+- Step at 12 fps, but keep UI typing smooth (`smooth: true` on those layers).
 
 **Don't**
 - Use crossfades. Use cuts, zooms, whips and black blinks.
@@ -140,6 +138,6 @@ To sync with a VO, add `"words": "vo.words.json"`. Replace each `duration` with 
 - Ship typos at 80% frame width: v16 and v62 ship "WIEGHT" and similar. Proofread every keyword.
 
 ## 9. Engine notes and gaps
-- Perspective-matched type on a surface (v11's notebook, v16's words painted on the pitch): not supported; `rotate` is 2D only. Possible fix: a `skew`/`tiltX` field on `Pos`.
+- Perspective type on a surface (v11's notebook, v16's words painted on the pitch): partly covered. `tilt: [50–60, 0]` lays a text layer back onto a floor plane. Corner-pinning to a photo's exact perspective is not available. Possible fix: a `quad` corner-pin field.
 - Tracked graphic masks on footage (v11's balaclava): needs a custom component that keyframes an image over a video.
 - Character gags (blinks, a flapping jaw, v05/v14): approximate with `image.swap` at 2–3 timestamps, or write a custom sprite component.

@@ -27,12 +27,21 @@ const scalePath = (d: string, w: number, h: number) => {
 	return d.replace(/-?\d+(\.\d+)?/g, (n) => String(((i++ % 2 === 0 ? w : h) * parseFloat(n)) / 100));
 };
 
-export const DrawPath: React.FC<{kind: string; progress: number; color: string; stroke: number; fill?: string}> = ({kind, progress, color, stroke, fill}) => {
+export const DrawPath: React.FC<{kind: string; progress: number; color: string; stroke: number; fill?: string; size?: [number, number]}> = ({
+	kind,
+	progress,
+	color,
+	stroke,
+	fill,
+	size,
+}) => {
 	const ref = useRef<HTMLDivElement>(null);
-	const [box, setBox] = useState<[number, number] | null>(null);
+	const [measured, setMeasured] = useState<[number, number] | null>(null);
 	useLayoutEffect(() => {
-		if (ref.current) setBox([ref.current.offsetWidth, ref.current.offsetHeight]);
-	}, []);
+		if (!size && ref.current) setMeasured([ref.current.offsetWidth, ref.current.offsetHeight]);
+	}, [size]);
+	// known size (shape layers) is used directly; measuring is only a fallback (text underlines)
+	const box = size ?? measured;
 	return (
 		<div ref={ref} style={{width: '100%', height: '100%'}}>
 			{box && box[0] > 0 ? (
@@ -56,7 +65,7 @@ export const DrawPath: React.FC<{kind: string; progress: number; color: string; 
 
 export const ShapeView: React.FC<{layer: ShapeLayer; startFrame: number}> = ({layer, startFrame}) => {
 	const frame = useCurrentFrame();
-	const {width} = useVideoConfig();
+	const {width, height} = useVideoConfig();
 	const {palette} = useSpec();
 	const f = frame - startFrame;
 	const draw = layer.draw ?? 7;
@@ -64,7 +73,14 @@ export const ShapeView: React.FC<{layer: ShapeLayer; startFrame: number}> = ({la
 	const scale = layer.kind === 'burst' ? 0.3 + 0.7 * decay(f + 1, 0.6) : 1;
 	return (
 		<div style={{width: '100%', height: '100%', transform: `scale(${scale}) rotate(${layer.kind === 'burst' ? f * 0.6 : 0}deg)`}}>
-			<DrawPath kind={layer.kind} progress={progress} color={layer.color ?? palette.ink} stroke={(layer.stroke ?? 7) * (width / 1080)} fill={layer.fill} />
+			<DrawPath
+				kind={layer.kind}
+				progress={progress}
+				color={layer.color ?? palette.ink}
+				stroke={(layer.stroke ?? 7) * (width / 1080)}
+				fill={layer.fill}
+				size={[((layer.w ?? 40) / 100) * width, layer.h !== undefined ? (layer.h / 100) * height : ((layer.w ?? 40) / 100) * width * 0.35]}
+			/>
 		</div>
 	);
 };

@@ -14,7 +14,7 @@ References (10): v04 v74 v75 v76 v77 v78 v79 v80 v81 v82. Cousins: keynote-clean
 | Light/dark flip | Alternate scene luma on almost every cut (≈35 ↔ 235, v04; v80 and v82 flip every 1–3 s). | 8/10 |
 | One brand accent | One green/lime family across all worlds (buttons, keywords, highlighter, CTA border). Native UI blues stay inside the UI. | 8/10 (v75 v76 v77 v78 v79 v81 v82 v83) |
 | Recurring chrome | A film-frame/Kodak border, a camcorder HUD, or an animated letterbox, so wildly different worlds read as one piece. | v74 v77 v78 v79 v80 v81 |
-| DOF + tilt | UI planes tilted 15–40° with near/far blur (6–15 px) look photographed. | v75 v80 v82 v04 |
+| DOF + tilt | UI planes tilted 15–40° with near/far blur (6–15 px) look photographed. Use `tilt` + `depth` + `camera.focus`. | v75 v80 v82 v04 |
 | Footage for the payoff | A single locked-off cinematic shot with ghosted captions in its negative space. | 7/10 |
 
 ## 2. Palette recipes
@@ -100,7 +100,7 @@ References (10): v04 v74 v75 v76 v77 v78 v79 v80 v81 v82. Cousins: keynote-clean
      "background": {"kind": "gradient", "color": "#1d4335", "color2": "#0b1a14"},
      "camera": {"settle": 1.07, "settleR": 0.8, "punch": [{"at": 1.4, "scale": 1.06, "frames": 10}]},
      "layers": [
-       {"type": "ui", "kind": "notification", "label": "Focus", "title": "47 interruptions today", "text": "longest focus block: 9 minutes", "theme": "light", "y": 30, "w": 86, "anim": "slide-down"},
+       {"type": "ui", "kind": "notification", "label": "Focus", "title": "47 interruptions today", "text": "longest focus block: 9 minutes", "theme": "light", "y": 30, "w": 86, "anim": "slide-down", "tilt": [14, -10], "tiltTo": [6, -4]},
        {"type": "text", "text": "That's not a schedule.", "style": "clean", "size": 7, "y": 56, "caps": false, "color": "#ffffff", "at": 1.0, "anim": "focus"},
        {"type": "text", "text": "It's a queue.", "style": "clean", "size": 12, "y": 64, "caps": false, "color": "#c8e04a", "at": 1.8, "anim": "focus"}
      ]},
@@ -136,7 +136,7 @@ References (10): v04 v74 v75 v76 v77 v78 v79 v80 v81 v82. Cousins: keynote-clean
 - Copy a real app's exact skin or another creator's end card. Build generic "chat / notification / note" UI and let the user supply their own branding.
 
 ## 9. Engine notes and gaps
-- **3D tilt + DOF of UI planes** (v80 v75 v82, 4/10): only 2D `rotate` and static `blur`. Possible fix: `tiltX/tiltY` on `Pos` plus an animated focus pull per layer.
+- **3D tilt + DOF of UI planes** (v80 v75 v82 v04): covered by `tilt`/`tiltTo` (UI at 6–18°, up to 40° for hero shots), `depth` per plane and `camera.focus` racks. Native app chrome is still generic.
 - **Text-selection highlight menus, app-icon labels, Notion/Spotify skins** (v77 v81): approximate with `text.highlight` and generic `ui` kinds.
 - **Marquee-scrolling poster type** (v78): not built in. Use a wide `text` with `camera.pan`, or add `anim: "marquee"`.
 - **Ghost captions composited into footage depth** (roto, v77 v79): needs a matte. Without one, place the type in the footage's negative space.

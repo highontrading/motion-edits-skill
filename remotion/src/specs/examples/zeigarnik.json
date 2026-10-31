@@ -1,0 +1,148 @@
+{
+  "spec": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "animFps": 15,
+    "duration": 25,
+    "words": "examples/zeigarnik/vo.words.json",
+    "audio": {"vo": "examples/zeigarnik/vo.wav"},
+    "palette": {"bg": "#101010", "ink": "#ffffff", "accent": "#e8301c", "accent2": "#2bd96b", "paper": "#efe9dc"},
+    "finish": {"grain": 0.07, "vignette": 0.35, "halftone": 0.12},
+    "scenes": [
+      {
+        "id": "hook",
+        "background": {"kind": "solid", "color": "#1f6fd1"},
+        "layers": [
+          {"type": "badge", "text": "YOUR BRAIN HATES", "y": 17, "color": "#7a0f12", "size": 5},
+          {"type": "text", "text": "UNFINISHED", "style": "impact", "size": 26, "y": 30, "at": {"word": "unfinished", "offset": -0.05}, "anim": "slam", "fx": {"extrude": 12, "extrudeColor": "#0b2a55"}},
+          {"type": "text", "text": "business", "style": "script", "size": 11, "y": 40, "at": {"word": "business"}, "anim": "pop", "color": "#ffd400"},
+          {"type": "ui", "kind": "progress", "title": "Task", "value": 0.87, "y": 60, "w": 74, "anim": "rise", "at": 0.3, "loop": "pulse"},
+          {"type": "particles", "kind": "dust", "count": 30}
+        ]
+      },
+      {
+        "id": "year",
+        "start": {"word": "In", "offset": -0.06},
+        "transition": {"type": "zoom"},
+        "background": {"kind": "paper"},
+        "layers": [
+          {"type": "counter", "from": 1900, "to": 1927, "duration": 0.9, "mode": "flip", "separator": "", "y": 36, "size": 20, "at": {"word": "1927", "offset": -0.3}},
+          {"type": "shape", "kind": "underline", "x": 50, "y": 46, "w": 60, "color": "#e8301c", "stroke": 10, "at": {"word": "1927", "offset": 0.4}},
+          {"type": "text", "text": "a psychologist noticed something strange", "style": "serif-italic", "size": 8, "y": 62, "color": "#111111", "sync": true, "anim": "focus", "at": {"word": "psychologist", "offset": -0.15}, "accent": ["strange"], "accentColor": "#e8301c"}
+        ]
+      },
+      {
+        "id": "waiters",
+        "start": {"word": "Waiters", "offset": -0.06},
+        "transition": {"type": "zoom"},
+        "background": {"kind": "wood"},
+        "layers": [
+          {"type": "text", "text": "WAITERS", "style": "bebas", "size": 22, "y": 15, "anim": "slam", "color": "#ffe9c2", "fx": {"shadow": true}},
+          {"type": "ui", "kind": "dialog", "title": "ORDER #27  ·  OPEN", "text": "2× coffee, 1× apple cake, 1× tea", "cps": 30, "y": 42, "w": 80, "anim": "drop", "theme": "light", "accent": "#1d6b33", "tilt": [8, -6]},
+          {"type": "badge", "text": "REMEMBERED", "at": {"word": "remembered"}, "y": 68, "color": "#1d6b33", "size": 6, "anim": "wipe"},
+          {"type": "particles", "kind": "dust", "count": 25, "color": "#ffd9a0"}
+        ]
+      },
+      {
+        "id": "forgot",
+        "start": {"word": "then", "offset": -0.06},
+        "transition": {"type": "invert"},
+        "background": {"kind": "concrete"},
+        "grade": {"drainAt": {"word": "paid"}},
+        "layers": [
+          {"type": "text", "text": "FORGOT", "style": "impact", "size": 30, "y": 28, "at": {"word": "forgot"}, "anim": "slam", "color": "#e8301c", "fx": {"doubled": true}},
+          {"type": "ui", "kind": "dialog", "title": "ORDER #27  ·  PAID", "text": "2× coffee, 1× apple cake, 1× tea", "cps": 400, "y": 54, "w": 76, "anim": "none", "theme": "light", "accent": "#1d6b33"},
+          {"type": "shape", "kind": "cross", "x": 50, "y": 54, "w": 62, "h": 16, "color": "#e8301c", "stroke": 14, "draw": 6, "at": {"word": "bill"}},
+          {"type": "text", "text": "the second the bill was paid", "style": "grotesk", "size": 5, "y": 72, "sync": true, "anim": "words", "at": {"word": "second", "offset": -0.15}, "color": "#111111"}
+        ]
+      },
+      {
+        "id": "named",
+        "start": {"word": "She", "offset": -0.06},
+        "transition": {"type": "flash"},
+        "background": {"kind": "halftone", "color": "#ffd400"},
+        "layers": [
+          {"type": "text", "text": "THE\nZEIGARNIK\nEFFECT", "style": "impact", "size": 19, "lineSizes": [0.45, 1, 0.62], "y": 40, "color": "#111111", "at": {"word": "zygarnik", "offset": -0.12}, "anim": "slam", "fx": {"extrude": 10, "extrudeColor": "#b38f00"}},
+          {"type": "shape", "kind": "ellipse", "x": 50, "y": 47, "w": 70, "h": 9, "color": "#e8301c", "stroke": 9, "at": {"word": "effect"}},
+          {"type": "particles", "kind": "sparkle", "count": 12, "area": [10, 25, 80, 35], "color": "#ffffff", "at": {"word": "effect"}}
+        ]
+      },
+      {
+        "id": "loaded",
+        "start": {"word": "Unfinished", "offset": -0.06},
+        "transition": {"type": "zoom"},
+        "background": {"kind": "void"},
+        "layers": [
+          {"type": "text", "text": "STAY LOADED", "style": "impact", "size": 20, "y": 28, "at": {"word": "stay", "offset": -0.1}, "anim": "words", "sync": true, "accent": ["loaded"], "accentColor": "#2bd96b"},
+          {"type": "ui", "kind": "progress", "title": "Memory · unfinished tasks", "value": 0.62, "y": 50, "w": 80, "theme": "dark", "accent": "#2bd96b", "at": {"word": "loaded", "offset": -0.2}, "anim": "rise"},
+          {"type": "particles", "kind": "bokeh", "count": 10, "color": "#2bd96b"}
+        ]
+      },
+      {
+        "id": "tabs",
+        "start": {"word": "like", "offset": -0.06},
+        "transition": {"type": "whip-left"},
+        "background": {"kind": "grid"},
+        "camera": {"rotate": [{"at": 0, "deg": -2, "frames": 24}]},
+        "layers": [
+          {"type": "ui", "kind": "window", "title": "unfinished-essay.doc", "text": "Chapter 2 …", "x": 42, "y": 30, "w": 70, "anim": "drop", "tilt": [10, 8]},
+          {"type": "ui", "kind": "window", "title": "reply to Sam?", "text": "Hey, about Friday …", "x": 54, "y": 40, "w": 70, "anim": "drop", "at": 0.15, "tilt": [10, 8]},
+          {"type": "ui", "kind": "window", "title": "gym plan (week 1)", "text": "Mon: …", "x": 48, "y": 50, "w": 70, "anim": "drop", "at": 0.3, "tilt": [10, 8]},
+          {"type": "text", "text": "TABS YOU\nNEVER CLOSED", "style": "grotesk", "size": 9, "y": 74, "color": "#111111", "sync": true, "anim": "words", "accent": ["never"], "accentColor": "#e8301c"}
+        ]
+      },
+      {
+        "id": "cliff",
+        "start": {"word": "That's", "offset": -0.06},
+        "transition": {"type": "zoom"},
+        "background": {"kind": "mesh", "color": "#6a2bd9", "color2": "#e8301c"},
+        "layers": [
+          {"type": "text", "text": "that's why", "style": "serif-italic", "size": 9, "y": 26, "anim": "focus"},
+          {"type": "text", "text": "CLIFFHANGERS", "style": "impact", "size": 24, "y": 38, "at": {"word": "cliffhangers", "offset": -0.05}, "anim": "slam", "fx": {"shadow": true}},
+          {"type": "text", "text": "work", "style": "script", "size": 13, "y": 50, "at": {"word": "work"}, "anim": "pop", "color": "#ffd400"}
+        ]
+      },
+      {
+        "id": "todo",
+        "start": {"word": "why writing", "offset": -0.06},
+        "background": {"kind": "paper", "color": "#f4efe4"},
+        "layers": [
+          {"type": "ui", "kind": "dialog", "title": "To-do", "text": "finish the edit", "cps": 26, "y": 36, "w": 78, "anim": "rise", "theme": "light", "accent": "#1d6b33"},
+          {"type": "shape", "kind": "check", "x": 22, "y": 40, "w": 14, "h": 8, "color": "#1d6b33", "stroke": 12, "at": {"word": "calms", "offset": -0.1}},
+          {"type": "badge", "text": "CALMS YOU DOWN", "at": {"word": "calms"}, "y": 62, "color": "#1d6b33", "size": 6, "anim": "pop"}
+        ]
+      },
+      {
+        "id": "stories",
+        "start": {"word": "and", "offset": -0.06},
+        "transition": {"type": "desat"},
+        "background": {"kind": "void"},
+        "layers": [
+          {"type": "text", "text": "and the best stories stop right before the", "style": "grotesk", "size": 8.5, "y": 40, "anim": "karaoke", "sync": true, "dimColor": "rgba(255,255,255,0.18)", "accent": ["stop"], "accentColor": "#e8301c"}
+        ]
+      },
+      {
+        "id": "answer",
+        "start": {"word": "answer", "offset": -0.04},
+        "transition": {"type": "black", "frames": 2},
+        "background": {"kind": "solid", "color": "#e8301c"},
+        "camera": {"settle": 1.0},
+        "layers": [
+          {"type": "text", "text": "ANSW—", "style": "impact", "size": 34, "y": 42, "anim": "none", "fx": {"extrude": 8, "extrudeColor": "#7a0f12"}}
+        ]
+      },
+      {
+        "id": "cta",
+        "start": {"word": "Follow", "offset": -0.06},
+        "transition": {"type": "circle"},
+        "background": {"kind": "studio", "color": "#1a1a1a"},
+        "layers": [
+          {"type": "text", "text": "PART 2", "style": "impact", "size": 28, "y": 34, "anim": "slam", "color": "#ffd400", "fx": {"extrude": 8, "extrudeColor": "#6b5600"}},
+          {"type": "text", "text": "the answer", "style": "serif-italic", "size": 9, "y": 45, "anim": "focus", "at": 0.3},
+          {"type": "ui", "kind": "button", "text": "Follow for part 2", "y": 60, "w": 70, "accent": "#e8301c", "anim": "pop", "at": 0.5, "loop": "pulse"}
+        ]
+      }
+    ]
+  }
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import {CalculateMetadataFunction, Composition, staticFile} from 'remotion';
 import {SpecVideo, specDurationInFrames, type SpecVideoProps} from './engine/SpecVideo';
 import type {VideoSpec, Word} from './engine/types';
+import {setBeats} from './engine/lib/time';
 import demo from './specs/demo.json';
 
 /**
@@ -21,6 +22,7 @@ const calculateMetadata: CalculateMetadataFunction<SpecVideoProps> = async ({pro
 		const res = await fetch(staticFile(spec.beats));
 		spec = {...spec, beats: await res.json()};
 	}
+	setBeats(typeof spec.beats === 'object' ? spec.beats : undefined);
 	const fps = spec.fps ?? 30;
 	return {
 		props: {spec, postFinish: props.postFinish},

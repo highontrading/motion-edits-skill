@@ -30,7 +30,7 @@ Rationed: v37 sets only **3 VO phrases** as type in 29 s. The rest is carried by
 
 | role | engine | size (% W) | treatment | evidence |
 |---|---|---|---|---|
-| Three-tier headline | `serif` caps: small dark line / huge red line / small dark line | 5 / 16–20 / 5 | built word by word 0.1–0.3 s after each word | v32 |
+| Three-tier headline | `serif` caps in one layer with `lineSizes: [0.4, 1.4, 0.4]`: small dark / huge red / small dark | 12 base (≈5 / 17 / 5) | `accent` on the middle line; built word by word 0.1–0.3 s after each word | v32 |
 | Title behind the figure | `impact` tall condensed, off-white | 22–26 (≈74% width) | `z` below the hero cut-out | v37 v39 |
 | Chunky typed caption | `grotesk`, white → grey with `fx.extrude` 3–5 grey + `shadow` | 9–14 | `anim: "typewriter"` or `"letters"`, stagger 1 | v66 |
 | Quote pill | `badge` `pill` | 4–5 | the empty container pops just before the phrase, then fills | v44 |
@@ -47,10 +47,10 @@ Rationed: v37 sets only **3 VO phrases** as type in 29 s. The rest is carried by
 
 ## 5. Recurring devices
 1. **Evolve the subject, don't replace it**: the same figure on the same plinth ink-dissolves into its next identity on each keyword (v32). Use `image.swap` with `glow`, or a scene split with `transition: ink`.
-2. **Spotlight iris for the twist** ("here's the crazy part"): `transition: circle`, or a `radial` background with a dark edge (v32).
+2. **Spotlight iris for the twist** ("here's the crazy part"): `transition: iris-close` with `at` on the hero, or a `radial` background with a dark edge (v32).
 3. **Card-flip portal**: the back of a card becomes the door to the next scene (v37 v44). Use `transition: flip`.
 4. **Hand of god**: a giant hand deals, merges or plants (v44 v32). Use an image `slide-*` with `shadow: "long"`.
-5. **Frame-edge peekers**: heads, hands and curtain swags at 20–40% of the frame edge with `blur` 14–24 (v44).
+5. **Frame-edge peekers**: heads, hands and curtain swags at 20–40% of the frame edge with `blur` 14–24 and `depth` 1.5–1.8, so they slide faster than the set during drift (v44).
 6. **Tall-canvas travel**: one long diorama explored with S-curve tilts, then a pull-out reveals the whole canvas as a summary (v32). Use `camera.pan`.
 7. **Map route / timeline** as period artefacts: `shape arrow` drawn over a `paper` map, `counter` years (v32).
 
@@ -60,7 +60,7 @@ Rationed: v37 sets only **3 VO phrases** as type in 29 s. The rest is carried by
 | 0–3 | Hook / thesis question | the hero card spins in on frame 1 under a spotlight | — |
 | 3–9 | Side A's assets, one prop per word | 3 tarot cards fly in on their words | `zoom` |
 | 9–15 | Side B's contrast | a new stage, colour-coded warm vs cool | `zoom` |
-| 15–18 | Twist | spotlight iris on the hero | `circle` |
+| 15–18 | Twist | spotlight iris on the hero | `iris-close` |
 | 18–28 | Evolution / proof | the figure morphs on its plinth per keyword; map route | `ink`, `zoom` |
 | 28–33 | Stakes switch (optional) | darker photoreal stage, cut every ~1 s on the music | `flash`, `cut` |
 | 33–36 | Payoff | wide tableau, the title behind the hero | `zoom` |
@@ -76,11 +76,12 @@ Rationed: v37 sets only **3 VO phrases** as type in 29 s. The rest is carried by
   "scenes": [
     {"id": "thesis", "duration": 3.0,
      "background": {"kind": "radial", "color": "#633432", "color2": "#100e0d"},
-     "camera": {"settle": 1.14, "settleR": 0.84, "drift": 0.03},
+     "camera": {"settle": 1.14, "settleR": 0.84, "drift": 0.03, "parallax": 80},
      "layers": [
-       {"type": "text", "text": "PAWN", "style": "impact", "size": 26, "y": 38, "z": 1, "anim": "mask"},
-       {"type": "image", "src": "PLACEHOLDER_pawn_card.png", "cutout": true, "shadow": "soft", "x": 50, "y": 46, "w": 46, "z": 2, "anim": "spin-in"},
-       {"type": "image", "src": "PLACEHOLDER_curtain_swag.png", "x": 12, "y": 10, "w": 60, "blur": 16, "z": 5}
+       {"type": "particles", "kind": "dust", "count": 40, "opacity": 0.5, "z": 0},
+       {"type": "text", "text": "PAWN", "style": "impact", "size": 26, "y": 38, "z": 1, "anim": "mask", "depth": 0.8},
+       {"type": "image", "src": "PLACEHOLDER_pawn_card.png", "cutout": true, "shadow": "soft", "x": 50, "y": 46, "w": 46, "z": 2, "anim": "spin-in", "depth": 1.1},
+       {"type": "image", "src": "PLACEHOLDER_curtain_swag.png", "x": 12, "y": 10, "w": 60, "blur": 16, "z": 5, "depth": 1.7}
      ]},
     {"id": "assets", "duration": 3.4, "transition": {"type": "zoom"},
      "background": {"kind": "fabric", "color": "#1f3a2a"},
@@ -91,13 +92,12 @@ Rationed: v37 sets only **3 VO phrases** as type in 29 s. The rest is carried by
        {"type": "badge", "text": "EXPENDABLE", "variant": "solid", "color": "#e9deca", "textColor": "#19191d", "size": 5, "x": 78, "y": 46, "rotate": 8, "at": 1.6, "anim": "pop"},
        {"type": "text", "text": "or so they say", "style": "script", "size": 8, "y": 64, "caps": false, "at": 2.2, "anim": "pop", "color": "#ce9936"}
      ]},
-    {"id": "twist", "duration": 2.8, "transition": {"type": "circle"},
+    {"id": "twist", "duration": 2.8, "transition": {"type": "iris-close", "at": [50, 46]},
      "background": {"kind": "radial", "color": "#2a2622", "color2": "#050505"},
      "camera": {"settle": 1.1, "settleR": 0.84, "punch": [{"at": 1.5, "scale": 1.1}]},
      "layers": [
-       {"type": "text", "text": "UNTIL", "style": "serif", "size": 5, "y": 32, "color": "#e9deca", "anim": "words"},
-       {"type": "text", "text": "THE LAST ROW", "style": "serif", "size": 18, "y": 40, "color": "#c92f31", "at": 0.35, "anim": "slam", "fx": {"shadow": true}},
-       {"type": "text", "text": "CHANGES EVERYTHING", "style": "serif", "size": 5, "y": 48, "color": "#e9deca", "at": 0.8, "anim": "words"}
+       {"type": "text", "text": "UNTIL\nTHE LAST ROW\nCHANGES EVERYTHING", "style": "serif", "size": 12, "y": 40, "color": "#e9deca",
+        "lineSizes": [0.4, 1.4, 0.4], "accent": ["the", "last", "row"], "accentColor": "#c92f31", "anim": "words", "stagger": 6, "fx": {"shadow": true}}
      ]},
     {"id": "evolve", "duration": 3.2, "transition": {"type": "zoom"},
      "background": {"kind": "paper", "color": "#d8c9a8"},
@@ -132,5 +132,6 @@ Rationed: v37 sets only **3 VO phrases** as type in 29 s. The rest is carried by
 
 ## 9. Engine notes and gaps
 - A true ink-dissolve *morph* between two figures (v32): only `image.swap` with a glow, or a scene-level `ink` cut. A masked organic morph needs a custom component.
-- Parallax between depth planes during camera moves: the camera moves the whole scene as one plane. Possible fix: a per-layer `depth` factor applied to `drift`/`pan`/`settle`.
-- Iris from an arbitrary point (a lamp, a keyhole): `circle` is fixed. Possible fix: `transition.origin: [x, y]`.
+- Parallax between planes is covered by per-layer `depth` (back wall 0.7–0.9, hero 1–1.1, foreground 1.5–1.8) plus `camera.parallax` 60–90. Rack between planes with `camera.focus`.
+- An iris from a point (lamp, keyhole) is covered by `circle`/`iris-close` with `at: [x, y]`.
+- Hanging-string props that swing *during* a camera move: use `loop: "sway"` after a `swing` entrance.

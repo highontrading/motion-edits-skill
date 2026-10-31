@@ -90,7 +90,7 @@ The wallpaper is a procedural `mesh`. To use a real photo, swap in `{"kind": "im
      "background": {"kind": "solid", "color": "#131015"},
      "camera": {"settle": 1.035, "settleR": 0.72, "pan": [{"at": 1.6, "x": 62, "y": 56, "frames": 30}]},
      "layers": [
-       {"type": "ui", "kind": "window", "title": "Timeline", "text": "14 pauses removed · captions added", "theme": "dark", "accent": "#1a6ff8", "y": 50, "w": 70, "anim": "fade"},
+       {"type": "ui", "kind": "window", "title": "Timeline", "text": "14 pauses removed · captions added", "theme": "dark", "accent": "#1a6ff8", "y": 50, "w": 70, "anim": "fade", "tilt": [6, -10], "tiltTo": [2, -3]},
        {"type": "shape", "kind": "check", "x": 80, "y": 34, "w": 4, "color": "#4ade80", "stroke": 6, "at": 1.0, "draw": 6},
        {"type": "shape", "kind": "check", "x": 80, "y": 44, "w": 4, "color": "#4ade80", "stroke": 6, "at": 1.5, "draw": 6}
      ]},
@@ -125,6 +125,6 @@ The wallpaper is a procedural `mesh`. To use a real photo, swap in `{"kind": "im
 
 ## 9. Engine notes and gaps
 - **Blurred photo wallpapers**: `background.image` with `blur` works but needs a user photo. `mesh` is the asset-free stand-in.
-- **Glass (backdrop-blur) UI cards and curved/bent panels** (v49 v35): `ui` has a flat theme only. Possible fix: `ui.glass: true` plus `tiltX/tiltY`.
+- **Glass (backdrop-blur) UI cards and curved/bent panels** (v49 v35): `tilt`/`tiltTo` give the perspective, but there is no glass material and no curve. Possible fix: `ui.glass: true` and `ui.curve`.
 - **Real product skins**: `ui` kinds are generic. For a recognisable app, supply screenshots via `ui.src` (window/phone) or `image` with `radius`.
 - **Streaming text inside a window body** (code logs scrolling): not built in. Use `typewriter` with `mono`, or a custom component.

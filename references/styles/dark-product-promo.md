@@ -54,6 +54,7 @@ Emphasis is size or grey value (`#909090` for secondary words), never bold fills
 6. **Reveal the tool**: zoom out of a finished visual into the software window that made it (v57). Use the `shrink` transition with an `embed`.
 7. **Brand drain**: the glowing logo loses glow and colour to become the flat mark (v33). Use `grade.drainAt` on the last scene.
 8. **Comment-keyword CTA as UI**: the comment typed, then an auto-reply `ui` `chat` (v57).
+9. **Tilted UI plane drifting flat**: `tilt: [10, -14]` → `tiltTo: [4, -6]` over the shot, so a flat card reads as a lit object (v57 v83).
 
 ## 6. Skeleton (30 s, 16:9, ≈14 shots)
 | t (s) | beat | shot | cut in |
@@ -98,7 +99,7 @@ Emphasis is size or grey value (`#909090` for secondary words), never bold fills
      "background": {"kind": "dots", "color": "#0a0a0a"},
      "camera": {"settle": 1.04, "settleR": 0.75, "punch": [{"at": 1.9, "scale": 1.12, "frames": 6}]},
      "layers": [
-       {"type": "ui", "kind": "prompt", "text": "Build the Q3 dashboard from last month's data", "theme": "dark", "accent": "#28f8e0", "y": 44, "w": 52, "cps": 30, "anim": "pop"},
+       {"type": "ui", "kind": "prompt", "text": "Build the Q3 dashboard from last month's data", "theme": "dark", "accent": "#28f8e0", "y": 44, "w": 52, "cps": 30, "anim": "pop", "tilt": [10, -14], "tiltTo": [4, -6]},
        {"type": "cursor", "path": [{"x": 70, "y": 70, "t": 0.4}, {"x": 73, "y": 47, "t": 1.7, "click": true}]},
        {"type": "text", "text": "Done.", "style": "clean", "size": 4, "y": 66, "caps": false, "at": 2.2, "color": "#28f8e0", "anim": "pop"}
      ]},
@@ -129,6 +130,6 @@ For 9:16, set `1080×1920`, multiply text sizes by ~1.8, and stack lines at 60�
 
 ## 9. Engine notes and gaps
 - **3D hero objects and one-world CG camera moves** (v01 v02 v38 v83, 4/8): not in the engine. Use a user-supplied render as an `image`/`video` layer, or write a three.js custom component (`src/custom/`).
-- **Glass card stacks with rim light and 3D tilt** (v57 v33): `ui` cards are flat. Possible fix: `tiltX/tiltY` on `Pos` plus a `rim` glow on `ui`.
-- **Weight-morph type** (heavy blob → Regular, v57): not available. Possible fix: a variable-font `anim: "weight"`.
+- **Glass card stacks with rim light** (v57 v33): `tilt`/`tiltTo` + `depth` give the 3D stack and parallax. There is no rim-light or glass (backdrop-blur) material on `ui`. Possible fix: `ui.glass` and `ui.rim` (glow colour on the edge only).
+- **Weight-morph type** (heavy blob → Regular, v57): `weight` sets a static weight but does not animate it. Possible fix: a variable-font `anim: "weight"`.
 - **Foreground occluder wipes** (the statue's shoulder crossing the lens, v01): `transition: object` with a user PNG covers the simple case.

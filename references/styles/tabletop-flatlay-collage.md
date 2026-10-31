@@ -89,16 +89,15 @@ Hue tracks mood (v19): cool blues and teals while the claim is optimistic, musta
      "camera": {"settle": 1.12, "settleR": 0.87, "drift": 0.02, "punch": [{"at": 2.0, "scale": 1.08}]},
      "layers": [
        {"type": "image", "src": "PLACEHOLDER_glue_tube_cutout.png", "cutout": true, "shadow": "soft", "x": 50, "y": 44, "w": 58, "rotate": -6, "anim": "drop"},
-       {"type": "image", "src": "PLACEHOLDER_pen_cutout.png", "x": 8, "y": 70, "w": 40, "rotate": 30, "blur": 18, "z": 5},
+       {"type": "image", "src": "PLACEHOLDER_pen_cutout.png", "x": 8, "y": 70, "w": 40, "rotate": 30, "blur": 18, "z": 5, "depth": 1.6},
        {"type": "text", "text": "A FAILED\nEXPERIMENT", "style": "grotesk", "size": 13, "y": 22, "at": 1.0, "color": "#f2c230",
         "anim": "words", "stagger": 3, "fx": {"extrude": 4, "extrudeColor": "#d8332a"}}
      ]},
     {"id": "name-card", "duration": 2.6, "transition": {"type": "cut"},
      "background": {"kind": "grid", "color": "#dcdcdc"},
      "camera": {"settle": 1.1, "settleR": 0.88},
-     "animFps": 0,
      "layers": [
-       {"type": "ui", "kind": "dialog", "title": "IMPORTANT MESSAGE", "text": "It became the sticky note.", "theme": "light", "y": 40, "w": 80, "cps": 14, "anim": "pop"},
+       {"type": "ui", "kind": "dialog", "title": "IMPORTANT MESSAGE", "text": "It became the sticky note.", "theme": "light", "y": 40, "w": 80, "cps": 14, "anim": "pop", "smooth": true},
        {"type": "shape", "kind": "ellipse", "x": 62, "y": 43, "w": 44, "h": 7, "color": "#c8323a", "stroke": 7, "at": 1.8, "draw": 6},
        {"type": "badge", "text": "1968", "variant": "tape", "color": "#f2d43a", "textColor": "#1a1a1a", "size": 5, "x": 24, "y": 24, "rotate": -8, "at": 0.4}
      ]},
@@ -134,6 +133,6 @@ The `captions` track needs `"words"`. Without a VO it shows nothing, so the spec
 - Use clean vector icons. Every object should look photographed, with a contact shadow and the halftone.
 
 ## 9. Engine notes and gaps
-- Type laid in the perspective of a notebook or pitch: not supported (no `skew`/3D tilt).
+- Type laid in the perspective of a notebook or pitch: approximate with `tilt` (e.g. `[45, -8]`) on the text layer. Exact corner-pinning to a photographed surface is not available.
 - Stop-motion hands placing objects (v30): approximate with image `jitter` plus `drop`. A true hand cycle needs a custom sprite component.
 - The subtitle pill picking up the scene tint: set `captions.bg` per video. There is no per-scene caption colour yet. Possible fix: `scene.captions` overrides.

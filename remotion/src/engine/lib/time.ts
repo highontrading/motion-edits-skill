@@ -64,7 +64,19 @@ export const layoutScenes = (spec: VideoSpec, words: Word[], fps: number, totalS
 		}
 		return best;
 	};
-	const starts: (number | undefined)[] = spec.scenes.map((s) => snapTo(resolveTime(s.start, words, 0, true), s.snap));
+	// word refs for scene starts resolve in order: each one searches only after the previous scene's start,
+	// so a word that also appears earlier in the script (e.g. "unfinished" in the hook) can't jump back
+	const starts: (number | undefined)[] = [];
+	let prev = -1;
+	for (const sc of spec.scenes) {
+		let t: number | undefined;
+		const r = sc.start;
+		if (r !== undefined && typeof r === 'object' && 'word' in r) t = resolveWord(words, {...r, after: r.after ?? prev + 0.05});
+		else t = resolveTime(r, words, 0, true);
+		t = snapTo(t, sc.snap);
+		starts.push(t);
+		if (t !== undefined) prev = t;
+	}
 	const out: TimedScene[] = [];
 	let cursor = 0;
 	spec.scenes.forEach((s, i) => {
