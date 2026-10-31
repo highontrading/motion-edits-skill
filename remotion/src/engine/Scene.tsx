@@ -27,10 +27,29 @@ export const CUT_FRAMES: Partial<Record<CutType, number>> = {
 	invert: 2,
 	black: 2,
 	flash: 6,
+	wash: 4,
+	burn: 8,
+	strobe: 6,
+	pixel: 10,
+	flip: 7,
+	shrink: 14,
 };
 
 /** Transitions whose incoming scene is revealed over the outgoing one (needs overlap). */
-export const OVERLAP_CUTS: CutType[] = ['ink', 'circle', 'slide'];
+export const OVERLAP_CUTS: CutType[] = ['ink', 'circle', 'slide', 'pixel'];
+
+/** SVG mask of randomly-appearing tiles (pixel dissolve). Small data URI, cheap to rasterise. */
+const pixelMask = (p: number, seed: number, aspect: number) => {
+	const cols = 9;
+	const rows = Math.max(4, Math.round(cols / aspect));
+	let rects = '';
+	for (let r = 0; r < rows; r++)
+		for (let c = 0; c < cols; c++) {
+			const t = rand(seed + r * 31 + c * 7) * 0.8;
+			if (p >= t) rects += `<rect x='${c}' y='${r}' width='1.02' height='1.02'/>`;
+		}
+	return `url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${cols} ${rows}' preserveAspectRatio='none'>${rects}</svg>`)}")`;
+};
 
 const whipVec = (t: CutType): [number, number] =>
 	t === 'whip-left' ? [-1, 0] : t === 'whip-right' ? [1, 0] : t === 'whip-up' ? [0, -1] : t === 'whip-down' ? [0, 1] : [0, 0];
@@ -54,20 +73,22 @@ export const SceneView: React.FC<{
 	inT?: Transition;
 	outT?: Transition;
 	animFps?: number;
-}> = ({scene, index, durationInFrames, inT, outT, animFps}) => {
+	prevLetterbox?: number;
+}> = ({scene, index, durationInFrames, inT, outT, animFps, prevLetterbox}) => {
 	return (
 		<Stepped animFps={scene.animFps ?? animFps}>
-			<SceneInner scene={scene} index={index} durationInFrames={durationInFrames} inT={inT} outT={outT} />
+			<SceneInner scene={scene} index={index} durationInFrames={durationInFrames} inT={inT} outT={outT} prevLetterbox={prevLetterbox} />
 		</Stepped>
 	);
 };
 
-const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: number; inT?: Transition; outT?: Transition}> = ({
+const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: number; inT?: Transition; outT?: Transition; prevLetterbox?: number}> = ({
 	scene,
 	index,
 	durationInFrames: D,
 	inT,
 	outT,
+	prevLetterbox = 0,
 }) => {
 	const frame = useCurrentFrame();
 	const {width, height, fps} = useVideoConfig();
@@ -93,10 +114,25 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 	let invert = 0;
 	let chroma = 0;
 	let clip: string | undefined;
+	let mask: string | undefined;
+	let rotY = 0;
+	let origin: [number, number] = cam.origin ?? [50, 50];
 
+	// ── nested reveal: start zoomed into the embed box that shows the previous scene, then pull back
+	const embedBox = inType === 'shrink' ? (scene.layers ?? []).find((l) => l.type === 'embed') : undefined;
+	let settleFrom = cam.settle ?? (inType === 'zoom' ? 1.18 : 1.1);
+	let settleR = cam.settleR ?? 0.82;
+	if (embedBox && embedBox.type === 'embed') {
+		const bx = embedBox.x ?? 50;
+		const by = embedBox.y ?? 40;
+		origin = [bx, by];
+		settleFrom = 100 / (embedBox.w ?? 60);
+		settleR = Math.pow(0.02, 1 / Math.max(4, inF));
+		const remain = 1 - decay(f, settleR);
+		tx += ((50 - bx) / 100) * width * remain;
+		ty += ((50 - by) / 100) * height * remain;
+	}
 	// ── scene-open settle (every reference does this: 1.08–1.15 → 1, expo-out, no overshoot)
-	const settleFrom = cam.settle ?? (inType === 'zoom' ? 1.18 : 1.1);
-	const settleR = cam.settleR ?? 0.82;
 	if (settleFrom !== 1) scale *= 1 + (settleFrom - 1) * (1 - decay(f, settleR));
 
 	// ── entry by transition type
@@ -126,6 +162,9 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 	if (inType === 'circle' && f < inF + 1) clip = `circle(${curves.settle(clamp01(f / inF)) * 75}% at 50% 50%)`;
 	if (inType === 'ink' && f < inF + 1) clip = inkPolygon(curves.settle(clamp01(f / inF)) * 95, index * 7, 0.35);
 	if (inType === 'slide' && f < inF + 1) tx += width * (1 - decay(f, 0.68));
+	if (inType === 'pixel' && f < inF + 1) mask = pixelMask(clamp01(f / inF) * 1.25, index * 13, width / height);
+	if (inType === 'strobe' && f < inF && f % 2 === 0) invert = 1;
+	if (inType === 'flip') rotY += -90 * (1 - decay(f, 0.7));
 
 	// ── exit into the next cut: motion ramps exponentially and the cut lands at peak speed
 	const exitStart = D - outF;
@@ -150,6 +189,7 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 			blur += sp * 6 * u;
 		}
 		if (outType === 'desat') sat *= 1 - p;
+		if (outType === 'flip') rotY += 90 * p;
 		if (outType === 'flash-ramp') bright *= 1 + 1.6 * p;
 	}
 	if (tail >= 0 && outType === 'slide') {
@@ -204,8 +244,24 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 	const Custom = scene.custom ? custom[scene.custom] : undefined;
 	const bgBleed = (1 + (2 * Math.abs(tx)) / width + (2 * Math.abs(ty)) / height + Math.abs(rot) / 40) / Math.min(1, scale);
 
+	// animated letterbox (bars close in over ~7 frames, expo-out)
+	const lbTarget = scene.letterbox ?? 0;
+	const lb = lbTarget === prevLetterbox ? lbTarget : prevLetterbox + (lbTarget - prevLetterbox) * decay(f + 1, 0.62);
+
 	return (
-		<AbsoluteFill style={{overflow: 'hidden', clipPath: clip, WebkitClipPath: clip}}>
+		<AbsoluteFill
+			style={{
+				overflow: 'hidden',
+				clipPath: clip,
+				WebkitClipPath: clip,
+				maskImage: mask,
+				WebkitMaskImage: mask,
+				maskSize: '100% 100%',
+				WebkitMaskSize: '100% 100%',
+				perspective: rotY ? '1800px' : undefined,
+				background: rotY ? '#000' : undefined,
+			}}
+		>
 			{useMb ? (
 				<svg width="0" height="0" style={{position: 'absolute'}}>
 					<filter id={mbId} x="-20%" y="-20%" width="140%" height="140%">
@@ -215,7 +271,8 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 			) : null}
 			<AbsoluteFill
 				style={{
-					transform: `translate(${tx}px, ${ty}px) scale(${scale}) rotate(${rot}deg)`,
+					transform: `translate(${tx}px, ${ty}px) scale(${scale}) rotate(${rot}deg)${rotY ? ` rotateY(${rotY}deg)` : ''}`,
+					transformOrigin: `${origin[0]}% ${origin[1]}%`,
 					filter: filterParts.join(' ') || undefined,
 				}}
 			>
@@ -229,6 +286,12 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 				))}
 			</AbsoluteFill>
 			{g.tint ? <AbsoluteFill style={{background: g.tint, mixBlendMode: 'color'}} /> : null}
+			{lb > 0.05 ? (
+				<>
+					<div style={{position: 'absolute', left: 0, right: 0, top: 0, height: `${lb}%`, background: '#000'}} />
+					<div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: `${lb}%`, background: '#000'}} />
+				</>
+			) : null}
 		</AbsoluteFill>
 	);
 };

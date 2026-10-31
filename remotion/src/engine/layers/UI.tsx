@@ -216,6 +216,15 @@ export const UIView: React.FC<{layer: UILayer; startFrame: number}> = ({layer, s
 				</div>
 			);
 		}
+		case 'bubble': {
+			// comic speech bubble that pops on a cut-out person (v22, v48)
+			return (
+				<div style={{position: 'relative', display: 'inline-block', background: dark ? '#111' : '#fff', color: ink, borderRadius: 48 * u, padding: `${26 * u}px ${38 * u}px`, fontFamily: fonts.inter, fontWeight: 800, fontSize: 46 * u, lineHeight: 1.15, border: `${5 * u}px solid ${dark ? '#fff' : '#111'}`, boxShadow: `${8 * u}px ${10 * u}px 0 rgba(0,0,0,0.35)`}}>
+					{typed.shown || layer.text}
+					<div style={{position: 'absolute', left: '18%', bottom: -34 * u, width: 0, height: 0, borderLeft: `${22 * u}px solid transparent`, borderRight: `${22 * u}px solid transparent`, borderTop: `${36 * u}px solid ${dark ? '#fff' : '#111'}`}} />
+				</div>
+			);
+		}
 		case 'phone':
 			return (
 				<div style={{borderRadius: 70 * u, padding: 16 * u, background: '#0b0b0c', boxShadow: `0 ${30 * u}px ${70 * u}px rgba(0,0,0,0.55), inset 0 0 0 ${3 * u}px #333`}}>

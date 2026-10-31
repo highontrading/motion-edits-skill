@@ -13,6 +13,7 @@ import {ShapeView} from './Shape';
 import {TextBlock} from './Text';
 import {UIView} from './UI';
 import {FitWidth} from './FitWidth';
+import {EmbedView} from './Embed';
 import {VideoView} from './Video';
 
 /** Average glyph width in em per type style — used to auto-wrap text that has no manual \n. */
@@ -74,6 +75,7 @@ export const LayerView: React.FC<{layer: Layer; index: number}> = ({layer, index
 	// entrance for media-type layers (text & badges animate internally)
 	let anim: string | undefined;
 	if (layer.type === 'image' || layer.type === 'ui' || layer.type === 'group') anim = layer.anim ?? defaultAnim(layer);
+	else if (layer.type === 'embed') anim = undefined;
 	else if (layer.type === 'counter' || layer.type === 'chart') anim = defaultAnim(layer);
 	else if (layer.type === 'video') anim = 'fade';
 	const ent = entranceStyle(anim as never, f, fps, u);
@@ -83,7 +85,7 @@ export const LayerView: React.FC<{layer: Layer; index: number}> = ({layer, index
 	const x = layer.x ?? 50;
 	const y = layer.y ?? (layer.type === 'video' && layer.w === undefined ? 50 : 40);
 	const full = layer.type === 'video' && layer.w === undefined;
-	const w = layer.w ?? (layer.type === 'text' ? 88 : layer.type === 'ui' ? 80 : layer.type === 'image' ? 60 : layer.type === 'shape' ? 40 : layer.type === 'chart' ? 80 : undefined);
+	const w = layer.w ?? (layer.type === 'text' ? 88 : layer.type === 'ui' ? 80 : layer.type === 'image' ? 60 : layer.type === 'shape' ? 40 : layer.type === 'chart' ? 80 : layer.type === 'embed' ? 60 : undefined);
 	const hPx = layer.h !== undefined ? (layer.h / 100) * height : layer.type === 'shape' ? ((w ?? 40) / 100) * width * 0.35 : undefined;
 
 	let inner: React.ReactNode = null;
@@ -121,6 +123,9 @@ export const LayerView: React.FC<{layer: Layer; index: number}> = ({layer, index
 		case 'chart':
 			inner = <ChartView layer={layer} startFrame={start} />;
 			break;
+		case 'embed':
+			inner = <EmbedView layer={layer} />;
+			break;
 		case 'group':
 			inner = (
 				<div style={{position: 'relative', width: '100%', height: '100%'}}>
@@ -133,7 +138,7 @@ export const LayerView: React.FC<{layer: Layer; index: number}> = ({layer, index
 	}
 
 	const transforms = [ent.transform, ex.transform, idle, layer.rotate ? `rotate(${layer.rotate}deg)` : ''].filter(Boolean).join(' ');
-	const filter = [ent.filter, ex.filter].filter(Boolean).join(' ');
+	const filter = [ent.filter, ex.filter, layer.blur ? `blur(${layer.blur * u}px)` : ''].filter(Boolean).join(' ');
 	const opacity = (layer.opacity ?? 1) * Number(ent.opacity ?? 1) * Number(ex.opacity ?? 1);
 
 	if (full) {
@@ -157,7 +162,19 @@ export const LayerView: React.FC<{layer: Layer; index: number}> = ({layer, index
 				alignItems: 'center',
 			}}
 		>
-			<div style={{width: '100%', height: hPx ? '100%' : undefined, opacity, filter: filter || undefined, transform: transforms || undefined, clipPath: ent.clipPath}}>{inner}</div>
+			<div
+				style={{
+					width: '100%',
+					height: hPx ? '100%' : undefined,
+					opacity,
+					filter: filter || undefined,
+					transform: transforms || undefined,
+					transformOrigin: ent.transformOrigin,
+					clipPath: ent.clipPath,
+				}}
+			>
+				{inner}
+			</div>
 		</div>
 	);
 };

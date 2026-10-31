@@ -24,6 +24,8 @@ export type Pos = {
 	z?: number;
 	/** 0–1 */
 	opacity?: number;
+	/** static gaussian blur in px (depth-of-field planes, foreground ghost type) */
+	blur?: number;
 };
 
 export type Timing = {
@@ -74,6 +76,8 @@ export type TextAnim =
 	| 'scramble' // glyph scramble then resolve
 	| 'mask' // wipe reveal left→right
 	| 'rise' // slide up from below a mask line
+	| 'karaoke' // whole text shown dim; each word lights up as it is spoken (needs sync or stagger)
+	| 'swap' // `text` holds alternatives separated by " | "; they replace each other in place every `stagger` frames (or on their spoken words with sync)
 	| 'none';
 
 export type TextLayer = Pos &
@@ -106,6 +110,8 @@ export type TextLayer = Pos &
 		leadColor?: string;
 		/** characters per second for typewriter */
 		cps?: number;
+		/** colour of not-yet-spoken words for anim 'karaoke' (default 35% ink) */
+		dimColor?: string;
 	};
 
 export type BadgeLayer = Pos &
@@ -133,6 +139,8 @@ export type ImageAnim =
 	| 'focus'
 	| 'spin-in'
 	| 'stamp'
+	| 'swing' // hung from the top edge, enters with an under-damped pendulum swing (v12, v50, v68)
+	| 'flip' // 3D card flip in around the Y axis
 	| 'none';
 
 export type ImageLayer = Pos &
@@ -156,6 +164,8 @@ export type ImageLayer = Pos &
 		halftone?: boolean;
 		/** swap to another image at a time (object-swap, v05 pizza→cardboard) */
 		swap?: {src: string; at: TimeRef; glow?: boolean};
+		/** flicker-montage: cycle through these sources every `every` frames (v03, v25, v65) */
+		cycle?: {srcs: string[]; every?: number; until?: TimeRef};
 	};
 
 export type VideoLayer = Pos &
@@ -212,7 +222,7 @@ export type CounterLayer = Pos &
 export type UILayer = Pos &
 	Timing & {
 		type: 'ui';
-		kind: 'search' | 'notification' | 'chat' | 'window' | 'phone' | 'dialog' | 'prompt' | 'tweet' | 'button' | 'progress';
+		kind: 'search' | 'notification' | 'chat' | 'window' | 'phone' | 'dialog' | 'prompt' | 'tweet' | 'button' | 'progress' | 'bubble';
 		/** primary text (typed into search/prompt/dialog) */
 		text?: string;
 		title?: string;
@@ -257,6 +267,23 @@ export type ChartLayer = Pos &
 		style?: TypeStyleName;
 	};
 
+/**
+ * Render another scene (by id) inside a box: the building block of nested reveals, where the previous
+ * scene becomes the content of a phone, TV, window or post in the next scene (v76, v77, v51).
+ * Combine with camera {settle, origin} so the next scene starts zoomed into the box and pulls back.
+ */
+export type EmbedLayer = Pos &
+	Timing & {
+		type: 'embed';
+		scene: string;
+		/** 'last' = freeze on the embedded scene's last frame (default), 'live' = keep playing it */
+		mode?: 'last' | 'live';
+		radius?: number;
+		/** aspect ratio of the box, default = video aspect */
+		aspect?: number;
+		shadow?: boolean;
+	};
+
 export type GroupLayer = Pos &
 	Timing & {
 		type: 'group';
@@ -274,6 +301,7 @@ export type Layer =
 	| UILayer
 	| CursorLayer
 	| ChartLayer
+	| EmbedLayer
 	| GroupLayer;
 
 export type BackgroundKind =
@@ -330,7 +358,13 @@ export type CutType =
 	| 'circle' // iris / lens wipe (v08)
 	| 'object' // a large blurred object crosses the frame and wipes (v05 hubcap)
 	| 'slide' // card push: incoming slides over outgoing
-	| 'glitch'; // RGB split + slice for 3–4 frames
+	| 'glitch' // RGB split + slice for 3–4 frames
+	| 'wash' // flat colour floods the frame for ~4 frames then releases into the new scene (v58, v59, v69)
+	| 'burn' // warm film-burn / light-leak bloom over the cut (v69, v81)
+	| 'strobe' // 4–6 frames alternating inverted/normal on the incoming shot (v65, v71)
+	| 'pixel' // incoming scene revealed through randomly appearing tiles (v35, v46, v58)
+	| 'flip' // card flip: outgoing turns edge-on, incoming turns in (v44, v64)
+	| 'shrink'; // nested reveal: outgoing scene shrinks into an `embed` box of the incoming scene (v76)
 
 export type Transition = {
 	type: CutType;
@@ -354,6 +388,8 @@ export type Camera = {
 	pan?: {at: TimeRef; x: number; y: number; frames?: number}[];
 	/** handheld shake amplitude (px) */
 	shake?: number;
+	/** transform origin in % for settle/punch (e.g. the centre of an embed box for nested reveals) */
+	origin?: [number, number];
 };
 
 export type Grade = {
@@ -380,6 +416,8 @@ export type Scene = {
 	grade?: Grade;
 	/** transition INTO this scene from the previous one */
 	transition?: Transition;
+	/** animated letterbox bars (% of height each side) — closes in over ~7 frames with expo-out (v04, v78, v79) */
+	letterbox?: number;
 	/** override global stepped animation fps for this scene (0 = smooth) */
 	animFps?: number;
 	/** scene-local SFX */
@@ -451,5 +489,7 @@ export type VideoSpec = {
 	words?: Word[] | string;
 	captions?: Captions;
 	finish?: Finish;
+	/** layers drawn above every scene without camera motion: film-frame borders, HUDs, vote bars, watermarks, logos */
+	overlay?: Layer[];
 	scenes: Scene[];
 };

@@ -26,6 +26,27 @@ export const CutOverlay: React.FC<{t: Transition; pre: number}> = ({t, pre}) => 
 			const o = f < 0 ? ramp(f + pre + 1, pre, 1.5) : Math.pow(0.62, f);
 			return <AbsoluteFill style={{background: color, opacity: clamp01(o)}} />;
 		}
+		case 'wash': {
+			// flat colour floods in over 2 frames, holds through the cut, releases over ~4
+			const o = f < 0 ? clamp01((f + pre + 1) / pre) : f < 1 ? 1 : Math.pow(0.5, f);
+			return <AbsoluteFill style={{background: t.color ?? '#2f6bff', opacity: o}} />;
+		}
+		case 'burn': {
+			// warm film-burn / light-leak bloom sweeping across the cut
+			const n = pre + 8;
+			const p = clamp01((f + pre) / n);
+			const o = Math.sin(Math.PI * p);
+			const x = -20 + 140 * p;
+			return (
+				<AbsoluteFill
+					style={{
+						opacity: o,
+						mixBlendMode: 'screen',
+						background: `radial-gradient(ellipse 70% 90% at ${x}% 45%, ${t.color ?? '#ffb347'} 0%, rgba(255,90,20,0.85) 35%, rgba(120,0,0,0) 75%)`,
+					}}
+				/>
+			);
+		}
 		case 'black':
 			return f >= 0 && f < (t.frames ?? 2) ? <AbsoluteFill style={{background: t.color ?? '#000'}} /> : null;
 		case 'object': {
@@ -65,6 +86,10 @@ export const overlayPre = (t: Transition): number => {
 	switch (t.type) {
 		case 'flash-ramp':
 			return t.frames ?? 5;
+		case 'wash':
+			return 2;
+		case 'burn':
+			return 3;
 		case 'object':
 			return Math.ceil((t.frames ?? 8) / 2);
 		default:
@@ -80,6 +105,10 @@ export const overlayPost = (t: Transition): number => {
 			return 10;
 		case 'black':
 			return t.frames ?? 2;
+		case 'wash':
+			return 6;
+		case 'burn':
+			return 8;
 		case 'object':
 			return Math.ceil((t.frames ?? 8) / 2) + 1;
 		default:

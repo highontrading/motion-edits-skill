@@ -17,7 +17,13 @@ export const ImageView: React.FC<{layer: ImageLayer; startFrame: number}> = ({la
 	const unit = width / 1080;
 	const swapF = layer.swap ? frameOf(layer.swap.at, 1e9) : 1e9;
 	const swapped = frame >= swapF;
-	const src = swapped && layer.swap ? layer.swap.src : layer.src;
+	let src = swapped && layer.swap ? layer.swap.src : layer.src;
+	if (layer.cycle && layer.cycle.srcs.length) {
+		const until = layer.cycle.until !== undefined ? frameOf(layer.cycle.until, 1e9) : 1e9;
+		const all = [layer.src, ...layer.cycle.srcs];
+		if (frame < until) src = all[Math.floor(Math.max(0, frame) / (layer.cycle.every ?? 3)) % all.length];
+		else src = all[all.length - 1];
+	}
 	const glow = layer.swap?.glow !== false && Math.abs(frame - swapF) <= 3 ? 1 - Math.abs(frame - swapF) / 4 : 0;
 
 	const filters: string[] = [];

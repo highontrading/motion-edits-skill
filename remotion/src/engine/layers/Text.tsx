@@ -60,7 +60,37 @@ export const syncTokens = (tokens: string[], words: Word[], fromSec: number, fal
 
 type Unit = {text: string; start: number; accent: boolean; line: number};
 
-export const TextBlock: React.FC<{layer: TextLayer; startFrame: number}> = ({layer, startFrame}) => {
+/**
+ * Word-swap: alternatives separated by " | " replace each other in place (poster-template swaps, slot words,
+ * list items — v52, v59, v77). Hard 1-frame swaps with a small pop, timed by `stagger` frames or, with
+ * `sync`, by the first spoken word of each alternative.
+ */
+const SwapText: React.FC<{layer: TextLayer; startFrame: number}> = ({layer, startFrame}) => {
+	const frame = useCurrentFrame();
+	const {fps} = useVideoConfig();
+	const {words, sceneStartSec} = useSpec();
+	const alts = layer.text.split(/\s*\|\s*/).filter(Boolean);
+	const layerStartSec = sceneStartSec + startFrame / fps;
+	const starts = useMemo(() => {
+		if (layer.sync && words.length) {
+			const secs = syncTokens(alts.map((x) => x.split(/\s+/)[0]), words, layerStartSec, (layer.stagger ?? 12) / fps);
+			return secs.map((x) => Math.max(0, Math.round((x - layerStartSec) * fps) - 1));
+		}
+		return alts.map((_, i) => i * (layer.stagger ?? 12));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [layer.text, layer.sync, layer.stagger, words, layerStartSec, fps]);
+	const f = frame - startFrame;
+	let idx = 0;
+	starts.forEach((st, i) => {
+		if (f >= st) idx = i;
+	});
+	return <TextBlockInner layer={{...layer, text: alts[idx], anim: 'pop', sync: false}} startFrame={startFrame + starts[idx]} />;
+};
+
+export const TextBlock: React.FC<{layer: TextLayer; startFrame: number}> = (props) =>
+	props.layer.anim === 'swap' ? <SwapText {...props} /> : <TextBlockInner {...props} />;
+
+const TextBlockInner: React.FC<{layer: TextLayer; startFrame: number}> = ({layer, startFrame}) => {
 	const frame = useCurrentFrame();
 	const {fps, width} = useVideoConfig();
 	const {words, palette, sceneStartSec} = useSpec();
@@ -121,7 +151,11 @@ export const TextBlock: React.FC<{layer: TextLayer; startFrame: number}> = ({lay
 		let style: React.CSSProperties = {display: 'inline-block', whiteSpace: 'pre', color: fxStyle.color ?? col};
 		let content: React.ReactNode = txt;
 
-		if (anim === 'words') {
+		if (anim === 'karaoke') {
+			const lit = uf >= 0;
+			style.color = lit ? col : layer.dimColor ?? 'rgba(128,128,128,0.55)';
+			if (lit && uf < 6) style.textShadow = `0 0 ${(6 - uf) * 3 * unit}px ${col}`;
+		} else if (anim === 'words') {
 			if (uf < 0) style.opacity = 0;
 			else {
 				const p = decay(uf + 1, 0.6);

@@ -22,6 +22,7 @@ npx remotion still  src/index.ts MotionVideo out/frame.jpg --frame=120 --props=.
 | `palette` | `{bg, ink, accent, accent2, paper}`, used as defaults by every layer. |
 | `words` | VO word timestamps: an array, or a path under `public/` to the JSON from `tools/transcribe.py`. Enables word refs and `sync`. |
 | `audio` | `{vo, music, musicVolume=0.35, duckTo, sfx:[{src, at, volume}]}`. `duckTo` (e.g. 0.12) ducks the music whenever someone is speaking. |
+| `overlay` | layers drawn above every scene without camera motion (film-frame border, HUD, vote bar, series badge, logo) |
 | `captions` | Persistent subtitle track from `words`: `{enabled, style: pill\|bar\|karaoke\|bold, y, maxWords, color, activeColor, bg, font, size}`. |
 | `finish` | `{grain=0.07, vignette=0.35, halftone, scanlines, paper, chroma, letterbox}`. Texture over everything. |
 | `scenes` | An ordered list of scenes. |
@@ -51,6 +52,8 @@ npx remotion still  src/index.ts MotionVideo out/frame.jpg --frame=120 --props=.
 ```
 - `start` / `duration`: if `start` is missing, the scene follows the previous one. If `duration` is missing, the scene runs until the next scene's start.
 - **Camera:** every scene gets an expo-out **settle** from `settle` to 1 (the most consistent pattern in the library; ~1.08–1.15). `drift` is a slow push across the scene. `punch` adds 4-frame punch-ins on words. `pan` takes `[{at, x, y, frames}]` and moves the virtual camera to centre on (x, y)%, for exploring a big collage canvas.
+- **`letterbox`**: % of the height per bar. Bars close in over ~7 frames when the value changes between scenes (UI scenes inside bars vs. full-bleed posters, v04 v78).
+- **Camera `origin`**: `[x, y]` % is the transform origin for settle and punch moves.
 - **Grade:** `drainAt` drains the colour to B/W over 6 frames on a story beat.
 
 ### Backgrounds (`background.kind`)
@@ -73,6 +76,12 @@ npx remotion still  src/index.ts MotionVideo out/frame.jpg --frame=120 --props=.
 | `circle` | iris opens on the incoming | v08 v25 v35 |
 | `ink` | organic blot reveal | v10 v42 |
 | `slide` | the incoming card slides over the dimming outgoing | v12 |
+| `wash` | a flat colour (`color`) floods the frame for ~4 frames around the cut | v58 v59 v69 |
+| `burn` | a warm film-burn / light-leak bloom sweeps across the cut | v69 v81 |
+| `strobe` | the incoming shot alternates inverted/normal for 6 frames | v65 v71 |
+| `pixel` | the incoming scene appears through random tiles | v35 v46 v58 |
+| `flip` | card flip: the outgoing turns edge-on, the incoming turns in | v44 v64 |
+| `shrink` | **nested reveal**: needs an `embed` layer in the incoming scene. It starts zoomed so the box fills the frame (showing the previous scene's last frame) and pulls back into its container | v76 v77 v51 |
 | `object` | a big blurred object (`src` PNG or a dark disc) crosses and wipes | v05 |
 `frames` overrides the default length. `color` applies to flash/black/object.
 
@@ -88,6 +97,8 @@ All visual layers share **position** (`x`, `y` = centre in %, `w` = width % of f
 - `style`: `impact` (Anton, the default keyword voice) · `grotesk` (Archivo Black) · `clean` (Inter) · `serif` (Playfair) · `serif-italic` (Instrument Serif) · `script` (Caveat) · `marker` · `mono` · `condensed` (Oswald) · `pixel` (VT323).
 - `size` is % of frame width; keywords in the references run 12–30. `\n` sets manual breaks; long text auto-wraps, and anything still too wide auto-shrinks to fit.
 - `anim`: `pop` · `slam` (lands from 1.45× + blur) · `words` (word-by-word) · `ghost` (grey small → solid) · `focus` (blur → sharp) · `letters` (per-letter tumble) · `typewriter` (`cps`, `leadColor`) · `scramble` · `mask` (L→R wipe) · `rise` (from behind a line) · `none`.
+- `karaoke`: the whole text shows in `dimColor` and each word lights up when spoken (needs `sync`) or every `stagger` frames.
+- `swap`: `text` holds alternatives separated by ` | `. They hard-swap in place every `stagger` frames, or on their spoken words with `sync` (slot/poster word swaps, list items).
 - `sync: true` reveals each word at its VO timestamp (≈2 frames early). Without it, `stagger` sets frames per word (default 3).
 - `fx`: `extrude` (3D depth px), `extrudeColor`, `doubled` (same-colour offset copy), `shadow`, `stroke` (outline type), `glow`, `blend` (`difference` for colour-flipping type).
 
@@ -95,7 +106,7 @@ All visual layers share **position** (`x`, `y` = centre in %, `w` = width % of f
 Label badge (`variant`: `stitched` dashed inner border · `solid` · `outline` · `pill` · `tape`), `color`, `textColor`, `size`, `anim`: `wipe|pop|words|typewriter`.
 
 ### `image`
-`src` (under `public/` or a URL), `cutout: true` (white paper edge + contact shadow, for PNG cut-outs from `tools/cutout.py`), `print: true` (bordered photo print), `shadow`: `soft|hard|long|none`, `anim`: `pop|drop|rise|slide-*|fade|focus|spin-in|stamp`, `float` (bob px), `jitter` (stop-motion px), `grayscale`, `halftone`, `swap: {src, at, glow}` (swap in place on a word with a glow flash).
+`src` (under `public/` or a URL), `cutout: true` (white paper edge + contact shadow, for PNG cut-outs from `tools/cutout.py`), `print: true` (bordered photo print), `shadow`: `soft|hard|long|none`, `anim`: `pop|drop|rise|slide-*|fade|focus|spin-in|stamp`, `float` (bob px), `jitter` (stop-motion px), `grayscale`, `halftone`, `swap: {src, at, glow}` (swap in place on a word with a glow flash), `cycle: {srcs, every=3, until}` (flicker-montage through several images). Extra `anim` values: `swing` (pendulum hang) and `flip` (3D card flip in).
 
 ### `video` (the user's footage)
 `src`, `trimStart`, `playbackRate`, `volume`/`muted`, `fit`, `punch: [{at, scale=1.12, frames=4, hold}]`, `grayscale`, `card: true` (rounded floating card when `w` is set). With no `w` it fills the frame.
@@ -107,7 +118,12 @@ Label badge (`variant`: `stitched` dashed inner border · `solid` · `outline` �
 `from`, `to`, `duration` (s), `decimals`, `prefix`, `suffix`, `separator`, `mode`: `roll` (expo-out) · `tick` (stepped) · `flip` (split-flap tiles), `style`, `size`, `color`, `fx`.
 
 ### `ui`
-`kind`: `search` (types `text`) · `notification` (`label`, `title`, `text`) · `chat` (`messages: [{from: me|them, text, at}]`) · `window` / `dialog` (`title`, `text` typed or `src` image/video) · `prompt` (AI prompt box, typed and sent with a bloom) · `tweet` (`title`, `label`, `text`) · `button` · `progress` (`value`) · `phone` (`src` or typed `text`). `theme`: `light|dark`, `accent`, `cps`.
+`kind`: `bubble` (comic speech bubble with `text`) · `search` (types `text`) · `notification` (`label`, `title`, `text`) · `chat` (`messages: [{from: me|them, text, at}]`) · `window` / `dialog` (`title`, `text` typed or `src` image/video) · `prompt` (AI prompt box, typed and sent with a bloom) · `tweet` (`title`, `label`, `text`) · `button` · `progress` (`value`) · `phone` (`src` or typed `text`). `theme`: `light|dark`, `accent`, `cps`.
+
+### `embed`
+`scene` (another scene's `id`), `mode`: `last` (frozen on that scene's final frame, the default) or `live`, `radius`, `aspect`, `shadow`. It renders that scene inside the box: the scene becomes a phone screen, TV, post or window. Pair it with `transition: {type: "shrink"}` for nested reveals.
+
+Every positioned layer also takes `blur` (px). Use it for depth-of-field planes, e.g. a huge blurred copy of a word in the foreground.
 
 ### `cursor`
 `path: [{x, y, t, click}]` (t = seconds in the scene). A click dips the cursor and pulses a ring.

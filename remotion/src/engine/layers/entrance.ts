@@ -38,6 +38,16 @@ export const entranceStyle = (anim: ImageAnim | undefined, f: number, fps: numbe
 			return {opacity: d};
 		case 'focus':
 			return {filter: `blur(${blurPx}px)`, opacity: clamp01(d * 1.4), transform: `scale(${1.06 - 0.06 * d})`};
+		case 'swing': {
+			// pendulum: damped oscillation around the top edge, ~1.1 s period, settles in ~2 s
+			const t = f / fps;
+			const angle = 28 * Math.exp(-2.1 * t) * Math.cos(2 * Math.PI * t / 1.1);
+			return {transform: `rotate(${angle}deg)`, transformOrigin: '50% -8%'};
+		}
+		case 'flip': {
+			const s = springAt(f, fps, 'firm');
+			return {transform: `perspective(1400px) rotateY(${(1 - s) * 95}deg)`, opacity: s > 0.05 ? 1 : 0};
+		}
 		case 'spin-in': {
 			const s = springAt(f, fps, 'device');
 			return {transform: `scale(${s}) rotate(${(1 - s) * -90}deg)`};

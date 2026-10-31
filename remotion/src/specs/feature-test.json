@@ -1,0 +1,28 @@
+{"spec": {
+  "width": 1080, "height": 1920, "fps": 30, "animFps": 0,
+  "palette": {"bg": "#0e0e0e", "ink": "#ffffff", "accent": "#ff4d2e", "accent2": "#2bd96b", "paper": "#ece6d8"},
+  "finish": {"grain": 0.06, "vignette": 0.3},
+  "overlay": [{"type": "badge", "text": "PART 1", "variant": "pill", "x": 82, "y": 5, "size": 3, "color": "#ff4d2e", "anim": "pop"}],
+  "scenes": [
+    {"id": "a", "duration": 2.0, "background": {"kind": "paper"},
+     "layers": [
+       {"type": "text", "text": "SIMPLE | SMART | SCALABLE", "anim": "swap", "stagger": 18, "style": "impact", "size": 22, "y": 30, "color": "#111111"},
+       {"type": "text", "text": "the whole sentence lights up as it is spoken", "anim": "karaoke", "stagger": 5, "style": "grotesk", "size": 6.5, "y": 62, "color": "#111111", "dimColor": "#11111133"}
+     ]},
+    {"id": "b", "duration": 2.0, "transition": {"type": "shrink"}, "background": {"kind": "solid", "color": "#2f6bff"},
+     "layers": [
+       {"type": "embed", "scene": "a", "x": 50, "y": 42, "w": 56, "radius": 28},
+       {"type": "ui", "kind": "bubble", "text": "Wait, what?", "x": 70, "y": 80, "w": 44, "at": 0.6, "anim": "pop"}
+     ]},
+    {"id": "c", "duration": 1.6, "transition": {"type": "pixel"}, "letterbox": 14, "background": {"kind": "studio", "color": "#3a2a1a"},
+     "layers": [{"type": "text", "text": "PIXEL", "style": "impact", "size": 30, "y": 45, "anim": "slam"}]},
+    {"id": "d", "duration": 1.6, "transition": {"type": "flip"}, "background": {"kind": "grid"},
+     "layers": [{"type": "text", "text": "FLIP", "style": "impact", "size": 30, "y": 45, "color": "#111111"}]},
+    {"id": "e", "duration": 1.6, "transition": {"type": "wash", "color": "#ff4d2e"}, "background": {"kind": "void"},
+     "layers": [{"type": "text", "text": "WASH", "style": "impact", "size": 30, "y": 45}]},
+    {"id": "f", "duration": 1.6, "transition": {"type": "burn"}, "background": {"kind": "wood"},
+     "layers": [{"type": "text", "text": "BURN", "style": "impact", "size": 30, "y": 45, "fx": {"extrude": 10}}]},
+    {"id": "g", "duration": 1.6, "transition": {"type": "strobe"}, "background": {"kind": "mesh", "color": "#6a2bd9", "color2": "#ff4d2e"},
+     "layers": [{"type": "text", "text": "STROBE", "style": "impact", "size": 26, "y": 45}]}
+  ]
+}}

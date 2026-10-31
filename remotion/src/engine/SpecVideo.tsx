@@ -8,6 +8,9 @@ import {layoutScenes, resolveTime, videoDuration} from './lib/time';
 import {CUT_FRAMES, OVERLAP_CUTS, SceneView} from './Scene';
 import {CutOverlay, overlayPost, overlayPre} from './transitions/CutOverlay';
 import type {VideoSpec, Word} from './types';
+import {ScenesContext} from './layers/Embed';
+import {LayerView} from './layers/LayerView';
+import type {TimedScene} from './lib/time';
 
 /** postFinish: grain/halftone are applied afterwards by tools/render.py (ffmpeg) — much faster renders. */
 export type SpecVideoProps = {spec: VideoSpec; postFinish?: boolean};
@@ -36,7 +39,11 @@ export const SpecVideo: React.FC<SpecVideoProps> = ({spec, postFinish}) => {
 		return speaking ? duck : musicVol;
 	};
 
+	// lets `embed` layers render any scene (frozen on its last frame) inside a box
+	const renderScene = (t: TimedScene) => <SceneView scene={t} index={t.index + 1000} durationInFrames={t.durationInFrames} animFps={spec.animFps} />;
+
 	return (
+		<ScenesContext.Provider value={{scenes, animFps: spec.animFps, render: renderScene}}>
 		<AbsoluteFill style={{background: palette.bg}}>
 			{scenes.map((s, i) => {
 				const next = scenes[i + 1];
@@ -46,7 +53,15 @@ export const SpecVideo: React.FC<SpecVideoProps> = ({spec, postFinish}) => {
 					<Sequence key={i} from={s.from} durationInFrames={s.durationInFrames + overlap} premountFor={Math.round(fps)} name={s.id ?? `scene ${i + 1}`}>
 						<SpecContext.Provider value={{words, palette, sceneStartSec: s.from / fps, sceneDurationInFrames: s.durationInFrames}}>
 							<AbsoluteFill style={{zIndex: i}}>
-								<SceneView scene={s} index={i} durationInFrames={s.durationInFrames} inT={s.transition} outT={outT} animFps={spec.animFps} />
+								<SceneView
+									scene={s}
+									index={i}
+									durationInFrames={s.durationInFrames}
+									inT={s.transition}
+									outT={outT}
+									animFps={spec.animFps}
+									prevLetterbox={scenes[i - 1]?.letterbox ?? 0}
+								/>
 							</AbsoluteFill>
 						</SpecContext.Provider>
 						{(s.sfx ?? []).map((x, k) => {
@@ -76,6 +91,16 @@ export const SpecVideo: React.FC<SpecVideoProps> = ({spec, postFinish}) => {
 				);
 			})}
 
+			{spec.overlay?.length ? (
+				<SpecContext.Provider value={{words, palette, sceneStartSec: 0, sceneDurationInFrames: durationInFrames}}>
+					<AbsoluteFill style={{zIndex: 850, pointerEvents: 'none'}}>
+						{spec.overlay.map((l, k) => (
+							<LayerView key={k} layer={l} index={k + 1} />
+						))}
+					</AbsoluteFill>
+				</SpecContext.Provider>
+			) : null}
+
 			{spec.captions?.enabled && words.length ? <CaptionTrack words={words} spec={spec.captions} /> : null}
 
 			<AbsoluteFill style={{zIndex: 950, pointerEvents: 'none'}}>
@@ -93,5 +118,6 @@ export const SpecVideo: React.FC<SpecVideoProps> = ({spec, postFinish}) => {
 				);
 			})}
 		</AbsoluteFill>
+		</ScenesContext.Provider>
 	);
 };
