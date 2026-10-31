@@ -202,6 +202,7 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 	if (useMb) filterParts.push(`url(#${mbId})`);
 
 	const Custom = scene.custom ? custom[scene.custom] : undefined;
+	const bgBleed = (1 + (2 * Math.abs(tx)) / width + (2 * Math.abs(ty)) / height + Math.abs(rot) / 40) / Math.min(1, scale);
 
 	return (
 		<AbsoluteFill style={{overflow: 'hidden', clipPath: clip, WebkitClipPath: clip}}>
@@ -218,7 +219,10 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 					filter: filterParts.join(' ') || undefined,
 				}}
 			>
-				<SceneBackground bg={scene.background} sceneIndex={index} />
+				{/* bleed: grow the background while the camera translates/rotates so frame edges never show */}
+				<AbsoluteFill style={{transform: bgBleed > 1.001 ? `scale(${bgBleed})` : undefined}}>
+					<SceneBackground bg={scene.background} sceneIndex={index} />
+				</AbsoluteFill>
 				{Custom ? <Custom {...(scene.customProps ?? {})} /> : null}
 				{(scene.layers ?? []).map((l, i) => (
 					<LayerView key={i} layer={l} index={i + 1} />

@@ -77,12 +77,13 @@ def main() -> None:
             tile = os.path.join(td, "halftone.png")
             halftone_tile(tile, w, h, max(4, round(w / 210)))
             inputs += ["-loop", "1", "-i", tile]
-            chains.append(f"{last}[1:v]blend=all_mode=multiply:all_opacity={min(0.6, halftone * 1.6):.3f}:shortest=1[ht]")
+            # blend in RGB: multiplying YUV chroma planes would tint the whole picture green
+            chains.append(f"{last}format=gbrp[base];[1:v]format=gbrp[dots];[base][dots]blend=all_mode=multiply:all_opacity={min(0.6, halftone * 1.6):.3f}:shortest=1,format=yuv420p[ht]")
             last = "[ht]"
         os.makedirs(os.path.dirname(os.path.abspath(a.out)) or ".", exist_ok=True)
         if chains:
             filt = ";".join(chains)
-            cmd = ["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", filt, "-map", last, "-map", "0:a?", "-c:v", "libx264", "-crf", str(a.crf), "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", a.out]
+            cmd = ["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", filt, "-map", last, "-map", "0:a?", "-c:v", "libx264", "-crf", str(a.crf), "-maxrate", "18M", "-bufsize", "36M", "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", a.out]
             subprocess.run(cmd, check=True)
         else:
             shutil.copy(raw, a.out)
