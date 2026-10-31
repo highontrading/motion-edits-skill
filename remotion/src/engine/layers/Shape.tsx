@@ -48,7 +48,8 @@ export const DrawPath: React.FC<{kind: string; progress: number; color: string; 
 				<svg viewBox={`0 0 ${box[0]} ${box[1]}`} style={{width: '100%', height: '100%', overflow: 'visible'}}>
 					<path
 						d={scalePath(PATHS[kind] ?? PATHS.line, box[0], box[1])}
-						fill={fill && progress >= 1 ? fill : 'none'}
+						fill={fill && progress > 0.95 ? fill : 'none'}
+						fillOpacity={fill ? Math.min(1, Math.max(0, (progress - 0.95) * 20)) : undefined}
 						stroke={color}
 						strokeWidth={stroke}
 						strokeLinecap="round"

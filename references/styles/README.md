@@ -124,12 +124,12 @@ Avoid: mixing two loud families evenly (halftone + lyric at 50/50 reads as a tem
 ## 5. Engine gaps found while writing these playbooks
 | technique | where (refs) | status / how to build |
 |---|---|---|
-| Shape layers (ellipse, rect, line, burst…) render blank | every family | **Bug:** in test stills and a 15-frame mp4 (engine at 06:44), no shape drew. The likely cause is that `DrawPath` (layers/Shape.tsx) never gets a measured box from `useLayoutEffect` + `offsetWidth`. Fix: compute the box from the layer's `w`/`h` instead. |
-| Beat-anchored scenes make a 1-second video | music-led (L), beat-locked CTAs | **Bug:** `specDurationInFrames` runs before `setBeats`. Workaround: set top-level `duration`. |
+| Shape layers (ellipse, rect, line, burst…) render blank | every family | **Fixed:** `ShapeView` now sizes the path from the layer's `w`/`h`. Remaining quirk: a shape's `fill` only appears once the draw-on has fully settled (~66 frames at the default `draw: 7`, ~10 at `draw: 1`), so filled rects/circles look outline-only for their first ~2 s. |
+| Videos with no VO come out 1 second long | music-led (L), beat-locked CTAs | The `setBeats` ordering bug is fixed (beat refs resolve in `calculateMetadata`). But with no `words`, the length is the last scene's `start + duration`; if the last scene has no `duration`, the video is 1 s. Always give the last scene a `duration`, or set top-level `duration`. |
 | Tracked / corner-pinned graphics on photos and footage | v56 v45 v11 v16 v73 | `tilt` gives static perspective only. Needs a `quad` corner-pin + keyframed position. |
-| Selective colour / text-behind-subject inside one image or clip | v24 v26 v31 v73 v74 v77 | Needs a matte. Supply a cut-out (`tools/cutout.py`) or add `image.mask`. |
+| Selective colour / text-behind-subject inside one image or clip | v24 v26 v31 v73 v74 v77 | Stills: a cut-out from `tools/cutout.py` above the text. Footage: `tools/matte.py` → `video` with `transparent: true` above the text (see `footage-editing.md` §1). Open: `image.mask`. |
 | 3D hero objects, one-world CG camera | v01 v02 v38 v83 | A custom three.js component or a user render. |
-| Pixel-materialise text, weight-morph, colour-sweep fill, marquee | v68 v70 v57 v71 v78 | New text anims: `pixel`, `weight`, `sweep`, `marquee`. |
+| Pixel-materialise text, weight-morph, colour-sweep fill, marquee | v68 v70 v57 v71 v78 | Static `weight` and `fill` exist; the animated versions are open. New text anims: `pixel`, `weight`, `sweep`, `marquee`. |
 | Liquid/shape morph objects between scenes, ink morph of a figure | v55 v71 v32 | A custom SVG-morph component. |
 | NLE timeline strip with a playhead | v48 v39 v73 v18 | `ui.kind: "timeline"`. |
 | Glass (backdrop-blur), rim-lit, curved UI | v33 v35 v49 v57 | `ui.glass`, `ui.rim`, `ui.curve`. |

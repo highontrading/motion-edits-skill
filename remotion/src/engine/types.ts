@@ -461,7 +461,7 @@ export type Camera = {
 	shake?: number;
 	/** transform origin in % for settle/punch (e.g. the centre of an embed box for nested reveals) */
 	origin?: [number, number];
-	/** rack focus: which `depth` plane is sharp, changing over time (layers off the plane blur ~6px per depth unit) */
+	/** rack focus: which `depth` plane is sharp, changing over time (layers off the plane blur ~16px per depth unit) */
 	focus?: {at: TimeRef; depth: number; frames?: number}[];
 	/** parallax amount for `depth` layers during drift/pan (px of extra travel per depth unit). Default 60 */
 	parallax?: number;

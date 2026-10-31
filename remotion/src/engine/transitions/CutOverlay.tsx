@@ -28,12 +28,13 @@ export const CutOverlay: React.FC<{t: Transition; pre: number}> = ({t, pre}) => 
 		}
 		case 'wash': {
 			// flat colour floods in over 2 frames, holds through the cut, releases over ~4
-			const o = f < 0 ? clamp01((f + pre + 1) / pre) : f < 1 ? 1 : Math.pow(0.5, f);
+			const rel = Math.pow(0.02, 1 / Math.max(2, (t.frames ?? 4) + 2));
+			const o = f < 0 ? clamp01((f + pre + 1) / pre) : f < 1 ? 1 : Math.pow(rel, f);
 			return <AbsoluteFill style={{background: t.color ?? '#2f6bff', opacity: o}} />;
 		}
 		case 'burn': {
 			// warm film-burn / light-leak bloom sweeping across the cut
-			const n = pre + 8;
+			const n = pre + (t.frames ?? 8);
 			const p = clamp01((f + pre) / n);
 			const o = Math.sin(Math.PI * p);
 			const x = -20 + 140 * p;

@@ -106,7 +106,7 @@ Rule: greys + one accent. Real colour appears only as (a) the selective-colour s
      "layers": [
        {"type": "text", "text": "persistence\nis the product", "style": "serif-italic", "size": 8, "y": 42, "caps": false, "anim": "words", "stagger": 6,
         "accent": ["product"], "accentColor": "#d2b30d"},
-       {"type": "shape", "kind": "circle", "x": 50, "y": 62, "w": 18, "color": "#d2b30d", "stroke": 5, "at": 1.8, "draw": 8}
+       {"type": "shape", "kind": "ellipse", "x": 57.5, "y": 44.4, "w": 27, "h": 6.5, "color": "#d2b30d", "stroke": 5, "at": 1.8, "draw": 8}
      ]}
   ]
 }
@@ -124,7 +124,7 @@ Rule: greys + one accent. Real colour appears only as (a) the selective-colour s
 - Let colour leak in before the payoff: no coloured UI or logos until the grade turns.
 
 ## 9. Engine notes and gaps
-- Selective colour on a *single* photo or footage clip (keep one object in colour inside one image): not possible without a matte. Possible fix: `image.colorMask` taking a mask PNG, or supply the subject as a separate cut-out.
+- Selective colour on a *single* photo or footage clip (keep one object in colour inside one image) needs a matte. Stills: the B/W plate (`grayscale: true`) with a colour cut-out from `tools/cutout.py` on top. Footage: the clip as a `video` layer with `grayscale: true`, then its `tools/matte.py` matte (`transparent: true`, same `trimStart`) on top. Possible fix for one-step use: `image.colorMask` taking a mask PNG.
 - Text tucked behind a subject in AI stills (v73): needs a roto'd cut-out layer above the text. `tools/cutout.py` can make it.
 - Grade "colour returns" (B/W → colour) inside one scene: `drainAt` only goes *to* grey. Split into two scenes with a `desat` cut (the incoming colour returns), or add a `grade.fillAt`.
 - Rack focus inside a still is possible: put the background image and the cut-out on separate `depth` planes and animate `camera.focus`.

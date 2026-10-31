@@ -82,7 +82,7 @@ Reframes inside a shot (pans to the named item, tilts, trucks, device zoom-outs,
 | Peak speed | 20–56 px/f @720 (3–8 %W/f) | v54 20–36, v58 38, v66 40, v62 56 |
 | Rhythm | move → hold 0.4–0.5 s → move | v09 ring travel, v26, v54 |
 
-**Engine mapping.** `curves.glide` = `bezier(0.65,0,0.35,1)` (11 mentions; v35 v46 v51 v62 v76) for symmetric moves. For out-biased moves the corpus uses `bezier(0.6,0,0.2,1)` (8 mentions; v33 v58 v63 v66), `(0.45,0,0.15,1)` or `(0.5,0,0.15,1)`; that curve is missing from `curves` (see Gaps). `camera.pan[{at, x, y, frames}]` with frames 18–45.
+**Engine mapping.** `curves.glide` = `bezier(0.65,0,0.35,1)` (11 mentions; v35 v46 v51 v62 v76) for symmetric moves. For out-biased moves the corpus uses `bezier(0.6,0,0.2,1)` (8 mentions; v33 v58 v63 v66), `(0.45,0,0.15,1)` or `(0.5,0,0.15,1)`; that is `curves.reframe`. `camera.pan[{at, x, y, frames, curve}]` with frames 18–45 and `curve: "glide"` (default), `"reframe"` or `"settle"`; `blur` (default on) adds a directional blur that peaks mid-move.
 
 ### 1.4 Springs and overshoot: when yes, when no
 
@@ -116,7 +116,7 @@ Seen in ~20 videos: handset, bundle, chalkboard, tablet, lamp, lantern, stars on
 | Idle sway (keeps a hold alive) | 1.0–1.6 s | ±3–5° | barely decays | v19 `4°·e^(−t/0.6s)·sin(2πt/1.6s)`; v39 ~1 s, ±5° |
 | Swing-in settle (prop arrives) | 0.6–1.3 s | 15–35° → 0 | 2–3 half-cycles, done in 12–18 f (quick) or ~2.2 s (slow) | v12 0.6 s period, ~3 swings ≈ one per beat; v50 1.3 s, 35° → 8° after one half-swing, settled 2.2 s; v68 3 half-cycles in 18 f; v70 2–3 oscillations in 12 f |
 
-Pivot at the string or nail top (`transform-origin` above the object). **Engine:** `springs.swing {4,60,0.8}` (ζ ≈ 0.29, period ≈ 0.76 s) suits the quick swing-in. Image layers take `anim: "swing"` (an under-damped swing-in from the top edge). A continuous idle sway after the entrance has no prop yet (see Gaps).
+Pivot at the string or nail top (`transform-origin` above the object). **Engine:** `springs.swing {4,60,0.8}` (ζ ≈ 0.29, period ≈ 0.76 s) suits the quick swing-in. Image layers take `anim: "swing"` (an under-damped swing-in from the top edge). For the continuous idle sway after the entrance, add `"loop": "sway"` (±2.5°, ~2.6 s period; any positioned layer).
 
 ---
 
@@ -159,7 +159,7 @@ Rule: **step when the surface is physical** (paper, cut-outs, props, puppets, pi
 4. **Sub-rates for loops:** hands, glove and walk cycles on 2s of 15 = 7.5 fps (v22; v08 ≈ 8 poses/s); a stop-motion hook at ~3 fps (8–10 frame holds, v30); pixel sprites at 7.5 fps (v70).
 5. **Stepped accents in a smooth video:** single-frame zoom jolts every 2–3 f on a UI timeline (v18); doodles and grain "boil" on 2s/3s (v15 v60 v74).
 
-**Engine mapping.** `animFps` sets the whole video and a scene can override it, which covers sections. Rates: 15 for collage, 12 for print, 0 for UI. `Stepped` freezes the whole scene (camera, footage and UI included), so footage, typing and cursors cannot stay smooth inside a stepped scene (see Gaps). When stepping, keep the same curves but expect each step to carry 2–2.5× the per-frame displacement. Bake motion blur into fast steps (v11).
+**Engine mapping.** `animFps` sets the whole video and a scene can override it, which covers sections. Rates: 15 for collage, 12 for print, 0 for UI. `Stepped` freezes the whole scene (camera, footage and UI included); mark the layers that must stay fluid (footage, typing, UI) with `"smooth": true`. Cursors and particles are not positioned layers and always step with the scene. When stepping, keep the same curves but expect each step to carry 2–2.5× the per-frame displacement. Bake motion blur into fast steps (v11).
 
 ---
 
@@ -242,12 +242,12 @@ Frequency = number of videos whose motion section names the move (keyword count,
 | Whip pan / tilt | 48 | 2–8 f per side, 10–20 f total across the cut (v18 10, v55 16, v50 18–20); peak 30–60 px/f @720 = 4–8 %W/f; heavy directional blur | `transition: "whip-left/right/up/down"` |
 | Zoom-through | 22 | ease-in 6–16 f (zoom rate ×8–10), cut, 6–9 f out (v62 v73 v78) | `transition: "zoom"` |
 | **Pans across a big canvas** (multiplane / one-world) | ~19 | travel 55–63 %W per move (v12 ~400 px, v20 440 px, v68 455 px @720) up to ~1.5 W per shot (v63); 0.6–1.5 s per reframe; move-hold-move with ≤0.5 s holds (v26 v54); reframes **lead** the named item by 0.3–0.6 s (v69) | `pan: [{at, x, y, frames: 18–45}]` |
-| Rolls / rotation accents | 45 mention rotation | micro-roll ±1–6° (v24); roll on a push +32° over 3 s (v76); tabletop camera net rot −46…+39 per shot (v63); 180° roll in 0.9 s (v23, music) | ⚠ no camera roll; `transition: "spin"` only |
+| Rolls / rotation accents | 45 mention rotation | micro-roll ±1–6° (v24); roll on a push +32° over 3 s (v76); tabletop camera net rot −46…+39 per shot (v63); 180° roll in 0.9 s (v23, music) | `camera.rotate: [{at, deg, frames=18}]` (expo-out roll); `camera.exit.rotate` for a roll into a cut; `transition: "spin"` |
 | Rack focus as a beat marker | 21 | subject blur vs caption sharp (v24 v26); defocus pulses | `camera.focus[{at, depth, frames}]` with layer `depth`; `transition: "focus"` |
 | **Shakes** | **4/82** (19 state "no shake") | v18 0.3 s; v28 6-frame damped wiggle (rot ±5°, pan ±7 px) on landings; v67 once, to mark doubt; v54 jitter on FEAR | `shake: 0` default; ≤0.3 s, only on an impact or a doubt beat |
-| 3D orbits | 5 (v01 v57 v76 v78 v83) | v78 orbits swing and settle like a damped spring (rot +4.2 → −4.1 → +2.0) | ⚠ custom |
+| 3D orbits | 5 (v01 v57 v76 v78 v83) | v78 orbits swing and settle like a damped spring (rot +4.2 → −4.1 → +2.0) | layer `tilt` → `tiltTo` for a linear 3D drift; a damped orbit is ⚠ custom |
 | Perspective-tilted UI planes | ~10 | 5–15° (v82), 15–30° (v81), 3D tilt −25°/15° (v04) with edge DOF | layer `tilt: [x, y]`, `tiltTo` for a slow 3D drift |
-| **Letterbox moves** | 3 (+2 windowed) | close-in: bars 0 → 20% of height each, expo-out over 6–8 f, 47/65/78/86/93/97% of the travel on frames 1–6 (v78; v79 55/73/84/90/96/100%); open: band → full frame ~10 f (v77) | `scene.letterbox: 20` closes in over ~7 f with expo-out; the open (band → full) move is not covered ⚠ |
+| **Letterbox moves** | 3 (+2 windowed) | close-in: bars 0 → 20% of height each, expo-out over 6–8 f, 47/65/78/86/93/97% of the travel on frames 1–6 (v78; v79 55/73/84/90/96/100%); open: band → full frame ~10 f (v77) | `scene.letterbox: 20` closes in over ~6 f with expo-out (decay r = 0.5: 50/75/88/94/97%); a following scene with `letterbox: 0` opens it the same way (faster than v77's ~10 f) |
 | Locked-off | 12 | only for UI legibility (v69: zero drift between moves), wrappers (v40 v43), white type "breath" cards (v76), the last 1.1 s (v38) | `drift: 0, settle: 1` |
 
 ---
@@ -258,14 +258,15 @@ Rule: **every hold carries at least one live element** (v27 v31 v39: "a static f
 
 | Element | Numbers | Freq | Engine |
 |---|---|---|---|
-| Idle float / bob | wrapper ±3 px V, ±1.5 px H, 0.1° roll, ~8 s sine (v41 v42); cards ±4 px (v35); drift amplitude 6–14 px, period 40–70 f (v33); card Y-wobble ±3–5° (v57) | ~40 real (keyword hits 64) | image `float` (px) |
+| Idle float / bob | wrapper ±3 px V, ±1.5 px H, 0.1° roll, ~8 s sine (v41 v42); cards ±4 px (v35); drift amplitude 6–14 px, period 40–70 f (v33); card Y-wobble ±3–5° (v57) | ~40 real (keyword hits 64) | image `float` (px); `"loop": "bob"` (±6 px, ~2.9 s) on any positioned layer |
 | Constant micro-drift on holds | ~0.5 px/f (v17); min flow ≈0.4 even on holds (v23); holds drift 0.3–0.5 zoom units/f (v50) | ~25 | `drift` |
 | Stop-motion jitter / line boil | redraw every 2–3 f; paper luma ±10 (v21); grain on twos (v15); outlines re-drawn every ~3 f (v60) | ~14 | image `jitter` (px), `wiggle(f, seed, 2, 3)` |
-| Blinks | caret period 15–16 f (v04 v75); googly-eye swaps every ~0.5 s (v05); sparkle twinkles 4–6 f (v26); pixel mascot frames every 0.27 s (v70) | ~20 blink, 28 caret | text caret via `typewriter`; ⚠ blink loops custom |
+| Blinks | caret period 15–16 f (v04 v75); googly-eye swaps every ~0.5 s (v05); sparkle twinkles 4–6 f (v26); pixel mascot frames every 0.27 s (v70) | ~20 blink, 28 caret | text caret via `typewriter`; `"loop": "blink"` (0.5 s on / 0.5 s at 15% opacity) on any positioned layer |
 | Cursors | travel 15–25 f per move on curved ease-in-out paths (v55 v59); dwell 4–6 f before a click (v57 v58); 4 f ease-out into the click (v52); click = scale 0.95 for 2–3 f + ring pulse (v59 v75); drag ≈0.6 s, drop with a 4 f blur → sharp settle (v35); fast badge drags 5–6 f over ~250–300 px (v36); idle multiplayer cursors ±10 px sine, 2 s (v59) | 27 | `cursor: {path:[{x,y,t,click}]}` |
-| Pendulum sway (idle, after the entrance) | see 1.5 | ~20 | `anim: "swing"` covers the entrance only ⚠ |
+| Pendulum sway (idle, after the entrance) | see 1.5 | ~20 | `anim: "swing"` for the entrance + `"loop": "sway"` for the idle |
 | Live screens | video or scrolling UI inside phones and laptops on most CTAs (v02 v03 v06 v15 v19 …) | very common | `ui: phone` with `src`, `video` card |
-| Glow breathing | +5–7 luma over ~1.4 s (v07); glow decays 33–40 f (v33) | ~10 | ⚠ custom |
+| Glow breathing | +5–7 luma over ~1.4 s (v07); glow decays 33–40 f (v33) | ~10 | `"loop": "breathe"` (opacity 0.56–1, ~2.4 s); a glow-radius breathe is ⚠ custom |
+| Ambient particles (dust, sparkles, embers, bokeh, confetti, snow) | low counts, slow drift (≤4% of frame height per second at 12 fps) | 41 | `{"type": "particles", "kind": "dust", "count": 24, "opacity": 0.5}`; `area: [x, y, w, h]` to keep them near the hero |
 
 ---
 
@@ -359,17 +360,17 @@ When each applies:
 
 ## 9. Engine gaps found
 
-Checked against `remotion/src/engine/types.ts` (the source of truth, which is ahead of `engine-spec.md`: beat TimeRefs, image `swing`/`flip`, layer `tilt`, animated `scene.letterbox`, `camera.focus` and the `wash/burn/strobe/pixel/flip/shrink` transitions already exist).
+Checked against `remotion/src/engine/types.ts` (the source of truth). Status: **DONE** = use the named field; **PARTIAL** = the common case works; **OPEN** = no field yet.
 
-| Technique | Frequency | How it could be built |
-|---|---|---|
-| **Per-layer frame rate** (footage, UI typing and cursors smooth inside a stepped scene; 7.5 fps sprite/hand loops; stepped AI b-roll inside a smooth scene) | layer mixing in v10 v13 v14 v31 v32 v45 v47 v81; sub-rates in v08 v22 v30 v70 | `Stepped` wraps the whole scene in `<Freeze>`. Add a layer-level `animFps` (0 = escape the freeze by rendering it outside the frozen tree, or with a context frame) and `video.stepEvery` |
-| **Camera roll / rotation** (micro-roll, roll-on-push, roll into a cut outside the `spin` transition) | ~45 | `camera.roll` (deg over the scene, like `drift`) and `camera.rotate[{at, deg, frames}]` on `curves.glide`; `Scene.tsx` already composes a `rot` term |
-| **Snap-to-beat** for VO-led cuts (move a word-anchored `start` onto the nearest beat when it is within ±3 f) | 13 partial + 29 dual-locked | `start: {word, snap: "beat", window: 0.1}` resolved against `spec.beats`; beat refs exist today, but only by index |
-| **Out-biased reframe curve** `bezier(0.6,0,0.2,1)`, and `curve` choice on `pan` | 8 recipe mentions, ~10 measured | add `curves.reframe` to `motion.ts`; `pan[{…, curve}]` |
-| Spring preset `springs.pop` overshoots ~15% vs the measured 4–10% | 49 videos use damping 9–16 pops | retune to `{damping 14, stiffness 220, mass 0.6}` (~9% by ζ = d / 2√(k·m)); verify with a still |
-| Explicit **exit ramp** without a transition effect (accelerate into a settled incoming frame, as in v45 and v54's hero-word punch exit) | ~5 (the matched versions are covered by `zoom`/`whip-*`) | `camera.exit: {type: zoom/pan/roll, frames: 8, growth: 1.33}` using `ramp()` + `rampSpeed()` blur |
-| Idle pendulum sway after the entrance, blink loops, glow breathing | ~20 + ~20 + ~10 | a generic `loop: {prop: rotate/opacity/glow, period, amp, damping}` on any layer |
-| Camera 3D orbit around floating UI | 5 | a custom component with CSS `perspective` and a damped-spring `rotateY` (v78) |
-| Letterbox **open** (band → full frame, ~10 f) | 1 (v77) | allow `letterbox: {from, to, at, frames}` |
-| Text tracking-collapse and squash-stretch entrances | 4 + 3 | text `anim: "track"` (tracking 0.6 em → 0 over 6–25 f on `curves.settle`), `"squash"` (scaleY 3 → 1 in 3 f) |
+| Technique | Frequency | Status | Field / how it could be built |
+|---|---|---|---|
+| **Per-layer frame rate** (footage, UI typing and cursors smooth inside a stepped scene; 7.5 fps sprite/hand loops; stepped AI b-roll inside a smooth scene) | layer mixing in v10 v13 v14 v31 v32 v45 v47 v81; sub-rates in v08 v22 v30 v70 | **PARTIAL** | `"smooth": true` keeps a positioned layer at full fps inside a stepped scene. Open: a per-layer `animFps` for sub-rates (7.5 fps loops), stepping a layer inside a smooth scene, `smooth` on cursors |
+| **Camera roll / rotation** (micro-roll, roll-on-push, roll into a cut outside the `spin` transition) | ~45 | **DONE** | `camera.rotate: [{at, deg, frames=18}]` (expo-out), `camera.exit.rotate` for a roll into the cut. Open: a continuous `roll` that drifts like `drift` |
+| **Snap-to-beat** for VO-led cuts (move a word-anchored `start` onto the nearest beat when it is within ±3 f) | 13 partial + 29 dual-locked | **DONE** | `"snap": "beat"` or `"downbeat"` on the scene (±0.12 s window, needs `spec.beats`); beat TimeRefs `{beat: n}`, `{downbeat: n}`, `{onset: n}` |
+| **Out-biased reframe curve** `bezier(0.6,0,0.2,1)`, and `curve` choice on `pan` | 8 recipe mentions, ~10 measured | **DONE** | `curves.reframe`; `pan[{…, curve: "glide"\|"reframe"\|"settle"}]` |
+| Spring preset `springs.pop` overshoot (was ~15% vs the measured 4–10%) | 49 videos use damping 9–16 pops | **DONE** | retuned to `{damping 14, stiffness 220, mass 0.6}` |
+| Explicit **exit ramp** without a transition effect (accelerate into a settled incoming frame, as in v45 and v54's hero-word punch exit) | ~5 (the matched versions are covered by `zoom`/`whip-*`) | **DONE** | `camera.exit: {zoom, x, y, rotate, frames=8}` (×1.4/frame ramp with speed blur) |
+| Idle pendulum sway after the entrance, blink loops, glow breathing | ~20 + ~20 + ~10 | **PARTIAL** | `loop: "sway" \| "blink" \| "breathe" \| "bob" \| "pulse"` with fixed amplitudes. Open: `{prop, period, amp, damping}` parameters, a glow-radius breathe |
+| Camera 3D orbit around floating UI | 5 | **PARTIAL** | layer `tilt` + `tiltTo` (linear drift). Open: a damped-spring orbit (v78), camera-plane tilt |
+| Letterbox **open** (band → full frame, ~10 f) | 1 (v77) | **DONE** | the next scene sets `letterbox: 0`; the bars open with the same ~6 f expo-out. Open: a custom duration, a mid-scene change |
+| Text tracking-collapse and squash-stretch entrances | 4 + 3 | **OPEN** | text `anim: "track"` (tracking 0.6 em → 0 over 6–25 f on `curves.settle`), `"squash"` (scaleY 3 → 1 in 3 f) |

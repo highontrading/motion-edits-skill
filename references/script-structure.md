@@ -440,8 +440,8 @@ All brand names below are invented placeholders. Each script was timed against t
 
 | Technique | Frequency | Status / how to build |
 |---|---|---|
-| Object-as-letter (an icon replaces a glyph) | 3 videos (v10 v59 v81) | No glyph-replacement option. Place an `image` in a gap of the `text` manually, or add a `text.glyphs: [{index, src}]` option that measures the letter box and swaps it. |
-| Two-tier text with the hero keyword trailing the pill by ~0.3 s | 6 videos (v08 v13 v14 v16 v25 v45) | Possible with `captions` + `text` `at: {word, offset: 0.3}`, but there is no paraphrase-aware sync. Write the hero text with the spoken keyword inside it. |
-| Ghost pre-show of the next line (~30% opacity, then solid on its word) | v42 v02 | `anim: ghost` covers single lines; a `preview` opacity before `at` would generalise it. |
-| Same set regraded for a reversal | v26 v17 | `grade.drainAt` covers drain to B/W. There is no timed tint change mid-scene (`grade.tintAt`). |
-| Sung-syllable stretch (repeated letters that scroll) | v28 | Needs a custom component, or `text` + `camera.pan` across a long repeated word. |
+| Object-as-letter (an icon replaces a glyph) | 3 videos (v10 v59 v81) | **OPEN.** No glyph-replacement option. Place an `image` in a gap of the `text` manually, or add a `text.glyphs: [{index, src}]` option that measures the letter box and swaps it. |
+| Two-tier text with the hero keyword trailing the pill by ~0.3 s | 6 videos (v08 v13 v14 v16 v25 v45) | **PARTIAL.** Possible with `captions` + `text` `at: {word, offset: 0.3}`, but there is no paraphrase-aware sync. Write the hero text with the spoken keyword inside it. |
+| Ghost pre-show of the next line (~30% opacity, then solid on its word) | v42 v02 | **PARTIAL.** `anim: ghost` covers single lines; a `preview` opacity before `at` would generalise it. |
+| Same set regraded for a reversal | v26 v17 | **PARTIAL.** `grade.drainAt` covers drain to B/W; a new scene with a different `grade.tint` and `transition: dissolve` gives a soft regrade. There is no timed tint change mid-scene (`grade.tintAt`). |
+| Sung-syllable stretch (repeated letters that scroll) | v28 | **OPEN.** Needs a custom component, or `text` + `camera.pan` across a long repeated word. |

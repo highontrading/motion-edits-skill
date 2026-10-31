@@ -1,6 +1,6 @@
 # Transitions catalogue
 
-Every distinct transition found in the 82 reference breakdowns (v01–v83; there is no v72), with duplicates merged. Each entry gives the frame-by-frame mechanics, the measured length, the story beat it suits and how to build it with the engine (`scene.transition.type`, layers and camera). Anything the engine can't do yet is marked **ENGINE GAP**, followed by an implementation sketch.
+Every distinct transition found in the 82 reference breakdowns (v01–v83; there is no v72), with duplicates merged. Each entry gives the frame-by-frame mechanics, the measured length, the story beat it suits and how to build it with the engine (`scene.transition.type`, layers and camera). Anything the engine still can't do is marked **ENGINE GAP**, followed by an implementation sketch. Many earlier gaps are now fields (`wash`, `burn`, `strobe`, `pixel`, `flip`, `dissolve`, `wipe`, `iris-close`, `shrink` + `embed`, `circle` `at`, `zoom` `target`/`peak`, `camera.exit`, `pan[].blur`, `scene.letterbox`, `spec.overlay`); `remotion/src/engine/types.ts` is the source of truth.
 
 **Units.** Frame counts are at **30 fps** unless noted. Ten of the references animate on twos (12–16 fps with `animFps`), so one "step" there is 2–2.5 real frames. Pixel figures from the 720-px-wide analysis renders are also given as **% of frame width (W)**: 24 px = 3.3% W, 40–55 px = 5.5–7.6% W. Blur radii are given the same way: 12 px ≈ 1.7% W, 20–30 px ≈ 2.8–4.2% W.
 
@@ -16,10 +16,10 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 | 1.2 | Hard cut + settle | settle in 66/82 | 0 + 20 settle (6–45) | `cut` + `camera.settle` |
 | 1.3 | Zoom-punch (velocity-matched zoom) | 22 | 8 out + 12 in (2–26 / 4–30) | `zoom` |
 | 1.4 | Whip pan / momentum slide | 23 | 6 out + 10 in (3–14 / 5–40) | `whip-*` |
-| 1.5 | Ramp-into-cut (one-sided) | 27 | 8 (2–35) | partial (GAP: static landing) |
+| 1.5 | Ramp-into-cut (one-sided) | 27 | 8 (2–35) | `camera.exit` on A + `cut` |
 | 1.6 | Spin / roll whip, roll-match | 19 | 8 out + 8 in (3–20 / 4–20) | `spin` |
 | 1.7 | Punch-in / punch-out jump reframe | 26 | 1 + 4 settle (2–10) | new scene + `cut` |
-| 1.8 | In-canvas camera move (no cut) | 23 | 18 (3–90) | `camera.pan` (GAP: velocity blur) |
+| 1.8 | In-canvas camera move (no cut) | 23 | 18 (3–90) | `camera.pan` (`curve`, `blur`) |
 | 1.9 | Slide push / carousel | 14 | 10 (2–21) | `whip-*` approx (GAP: true push) |
 | 1.10 | Entrance-carried cut | 15 | 10 (5–16) | `cut` + layer `anim` |
 | 1.11 | Action cut (click-cut) | 2 | 0 | `cut` + `cursor` |
@@ -28,36 +28,36 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 | 2.3 | Invert flash | 17 | 2 (1–3) | `invert` |
 | 2.4 | Exposure bloom / burn-to-white | 16 | 9 (3–20) | `flash-ramp` |
 | 2.5 | White flash frame | 15 | 1 + 0–6 decay | `flash` |
-| 2.6 | Strobe | 12 | 4 (2–45) | chained 1-frame scenes |
-| 2.7 | Light-leak burn | 11 | 7 (2–21) | **GAP** (`flash` + colour approx) |
+| 2.6 | Strobe | 12 | 4 (2–45) | `strobe` (invert); chained 1-frame scenes for colour strobes |
+| 2.7 | Light-leak burn | 11 | 7 (2–21) | `burn` |
 | 2.8 | Cut to void / statement card | 10 | 0 | `cut` + `void` background |
-| 2.9 | Colour-wash flash | 9 | 4 flood + 20 relax (1–29) | `flash` + `color` (GAP: relax) |
+| 2.9 | Colour-wash flash | 9 | 4 flood + 20 relax (1–29) | `wash` + `color` (GAP: tinted relax) |
 | 2.10 | Overexposed landing / glare | 6 | 10 (5–18) | `flash` (GAP: glare blur) |
 | 2.11 | Fade to black (ending) | 6 | 8–10 (3–60) | layer `exit: fade` on void |
 | 2.12 | Glow-silhouette reveal | 1 | 3–5 | **GAP** |
-| 3.1 | Colour-field flood wipe | 10 | 4 (2–16) | **GAP** |
-| 3.2 | Circle iris open / portal | 8 | 6 (2–12) | `circle` |
-| 3.3 | Letterbox open / close / slit | 7 | 6–7 (3–16) | **GAP** |
-| 3.4 | Spotlight iris close | 6 | 8 (2–28) | **GAP** |
+| 3.1 | Colour-field flood wipe | 10 | 4 (2–16) | `wash` / `wipe` approx (GAP: shaped flood) |
+| 3.2 | Circle iris open / portal | 8 | 6 (2–12) | `circle` (+ `at`) |
+| 3.3 | Letterbox open / close / slit | 7 | 6–7 (3–16) | `scene.letterbox` |
+| 3.4 | Spotlight iris close | 6 | 8 (2–28) | `iris-close` (+ `at`) |
 | 3.5 | Ink / organic blot matte | 5 | 15 (6–30) | `ink` |
-| 3.6 | Line / bar wipe | 5 | 5 (2–16) | **GAP** (`object` approx) |
+| 3.6 | Line / bar wipe | 5 | 5 (2–16) | `wipe` (GAP: seam bar) |
 | 3.7 | Lens / loupe / keyhole reframe | 4 | 7 (2–12) | **GAP** |
 | 3.8 | Shape / logo iris | 3 | 6 (3–8) | **GAP** |
 | 4.1 | Paper / panel slide-over | 17 | 8–10 (4–22) | `slide` |
 | 4.2 | Foreground occluder / object wipe | 17 | 6 (3–20) | `object` |
-| 4.3 | Card / disc flip | 8 | 10 (2–30) | **GAP** |
+| 4.3 | Card / disc flip | 8 | 10 (2–30) | `flip` (GAP: back face) |
 | 4.4 | Cloud / smoke / fog pass | 7 | 16 (9–36) | `object` approx |
 | 4.5 | Shatter / burst / crumple | 5 | 15 (2–30) | **GAP** |
 | 4.6 | Paper tear-open | 3 | 7 (4–8) | `ink` approx |
 | 4.7 | Sticker / card burst cover | 3 | 4 cover (4–40) | composable layers |
-| 4.8 | Slab / shutter / fold wipe | 3 | 15 (3–30) | `object` approx |
+| 4.8 | Slab / shutter / fold wipe | 3 | 15 (3–30) | `object` / `wipe` approx |
 | 4.9 | Hand / cursor drag wipe | 2 | 15 (10–20) | **GAP** |
 | 5.1 | In-place swap / state cut | 12 | 1–3 | image `swap` |
-| 5.2 | Cross-dissolve | 10 | 8 (3–19) | **GAP** |
+| 5.2 | Cross-dissolve | 10 | 8 (3–19) | `dissolve` (+ `through`) |
 | 5.3 | Shape / object morph | 9 | 9 (3–22) | **GAP** |
 | 5.4 | Match cut | 8 | 0 (+1 flash) | `cut` / `flash` |
 | 5.5 | Motion bridge / pre-lap | 8 | 1–4 before + 3–10 after | composable |
-| 5.6 | Persistent element across cut | 7 | 0–13 | composable (GAP: overlay track) |
+| 5.6 | Persistent element across cut | 7 | 0–13 | `spec.overlay` |
 | 5.7 | Polarity / inverse match | 6 | 0–6 | `cut` + palette swap |
 | 5.8 | Caption morph exit | 6 | 6 (4–15) | text `exit` approx |
 | 6.1 | Focus-pull / defocus cut | 24 | 12 (3–24) | `focus` |
@@ -66,19 +66,19 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 | 6.4 | Background re-light | 5 | 8 (3–60) | **GAP** |
 | 6.5 | Saturation return | 4 | 20 (6–45) | **GAP** |
 | 7.1 | RGB split / slice glitch | 16 | 3 (1–12) | `glitch` |
-| 7.2 | Pixel / block / tile dissolve | 10 | 5 (2–30) | **GAP** |
+| 7.2 | Pixel / block / tile dissolve | 10 | 5 (2–30) | `pixel` (GAP: cell size, colours) |
 | 7.3 | Dot-matrix / halftone dissolve | 5 | 8 (4–48) | **GAP** |
 | 7.4 | Flicker montage | 5 | 2–6 per shot | chained short scenes |
 | 7.5 | Click-ripple / ring burst | 5 | 6–18 | `cursor` + `flash` |
 | 7.6 | Warp / twirl / hyperspace | 5 | 4 (1–36) | **GAP** |
 | 7.7 | CRT power-off / collapse-to-line | 4 | 4–5 (2–17) | **GAP** |
-| 7.8 | Film-gate roll / burn frames | 3 | 4 (2–16) | **GAP** |
+| 7.8 | Film-gate roll / burn frames | 3 | 4 (2–16) | `burn` for burn frames (GAP: roll) |
 | 7.9 | Redaction / block-censor / backspace | 3 | 3–5 | **GAP** |
-| 8.1 | Nested zoom-out (frame-in-frame) | 19 | 8 (2–39) | **GAP** (two-pass workaround) |
-| 8.2 | Zoom-through into a frame / screen | 15 | 16 (8–50) | `zoom` + framed image |
+| 8.1 | Nested zoom-out (frame-in-frame) | 19 | 8 (2–39) | `shrink` + `embed` |
+| 8.2 | Zoom-through into a frame / screen | 15 | 16 (8–50) | `zoom` + `target`/`peak` + framed image |
 | 8.3 | Zoom-out context reveal | 5 | 14 (9–23) | `camera.settle` large |
 | 8.4 | In-container content cut | 5 | 0–2 | `ui` `src` + image `swap` |
-| 8.5 | App-switcher shrink and swipe | 2 | 12–20 | **GAP** |
+| 8.5 | App-switcher shrink and swipe | 2 | 12–20 | `shrink` + `whip-*` approx |
 | 8.6 | Nested-shape zoom | 1 | 19 + 4 iris | **GAP** |
 
 ---
@@ -149,7 +149,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - v16 adds a −3.6° rotation kick on B. v30 is a one-update lunge: +4–5% scale on the last frame only.
 - **Frames:** out 8 (2–26) + in 12 (4–30); median total ~20.
 - **When to use:** sentence-to-sentence momentum in energetic explainers. Zoom-in suits "go deeper / the next thing"; zoom-out suits "step back / return to the hero layout" (v26 25.3) or contrast (v25).
-- **Build:** `"transition": {"type": "zoom", "frames": 8}` on B. The engine ramps A ×1.45/frame with blur and starts B at 1.18×. Use `frames: 4–6` for a snappy 12 fps look (v11) and 10–14 for a glide (v37). For the zoom-out variant: **ENGINE GAP** (no direction parameter). Proposed `"direction": "out"`: A scale `1 → 0.82` with `Easing.in(Easing.cubic)` over 8 f. B still starts **over-scaled** and shrinks (`1.18 → 1`, `Easing.out(Easing.cubic)`), because in the references the eye reads it as the pull-back continuing (v25). Add a 4–8 px radial blur on the 2 frames around the cut.
+- **Build:** `"transition": {"type": "zoom", "frames": 8}` on B. The engine ramps A ×1.45/frame with blur and starts B at 1.18×. Use `frames: 4–6` for a snappy 12 fps look (v11) and 10–14 for a glide (v37). To zoom *into* a point (a door, a screen, a word) add `"target": [x, y]` and raise `"peak"` (scale at the cut, default 1.55; 1.9–2.2 standard, 3–6 for a true zoom-through). For the zoom-out variant, there is no `direction` on `zoom`; build it from the parts: A `"camera": {"exit": {"zoom": 0.82, "frames": 8}}` (the exit ramp shrinks A with a growing blur) and B `"camera": {"settle": 1.18}` with a plain `cut`. B starts **over-scaled** and shrinks, because in the references the eye reads it as the pull-back continuing (v25).
 
 ### 1.4 Whip pan / momentum slide
 - **Aliases:** momentum cut, whip-pan, velocity-matched slide, blur-masked composite whip, slide-through, scroll-whip, whip-tilt.
@@ -171,10 +171,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - Smear variants: the last 1–2 frames get a 60 px horizontal smear (v10, v68, v71), or 7 frames of ±zoom/rotation jitter (v18 shake-out, v21 shake-whip).
 - **Frames:** ramp 8 (2–35); landing 0.
 - **When to use:** a "full stop" before a time jump, a title line, the turn of a story or a statement card (v16 13.72, 26.83), and "being yanked to the next screen" in promos (v01).
-- **Build:** **ENGINE GAP.** `zoom` and `whip-*` always add incoming motion. Workarounds:
-  1. Use `zoom`/`whip-*` on B and set B's `camera.settle: 1` to kill most of the landing.
-  2. When B is black, put a 1–3-frame scene with `background.kind: "void"` between them.
-  - Proposed: `"transition": {"type": "zoom|whip-*", "land": "static"}`, or a scene-level `camera.exitRamp: {scale: 1.25 | x: -30, frames: 8, blur: true}` that applies `Easing.in(Easing.exp)` to A's last N frames. Shake-out already exists: `camera.shake` on the last 7 frames.
+- **Build:** give A `"camera": {"exit": {"zoom": 1.25, "frames": 8}}` (or `"x": -30` / `"y"` for a smear-out in % of frame, `"rotate": 12` for a roll-out), and B a plain `"transition": {"type": "cut"}` with `"camera": {"settle": 1, "drift": 0}` so it lands dead. The exit ramps exponentially (×1.4/frame) with blur that grows with speed, and lands at peak speed on the cut. When B is black, use a 1–3-frame `void` scene or `"transition": {"type": "black"}`. Shake-out: `camera.shake` on a short tail scene.
 
 ### 1.6 Spin / roll whip and roll-match
 - **Aliases:** rotational defocus whip, spin-out/spin-in, roll-whip, spin-zoom whip, whip-rotate, rotation match, camera roll through, invert-spin.
@@ -184,7 +181,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - v17 adds a hot-colour flare on the last frame. v34 combines it with an invert flash (−9°, scale 1.08).
 - **Frames:** out 8 (3–20) + in 8 (4–20).
 - **When to use:** disorientation, "the world turned", a twist, or the jump to a new POV (v34). It is also the logo exit (v82 tilt/zoom whip to the logo).
-- **Build:** `"transition": {"type": "spin", "frames": 10}`. To get v03's soft version, give B `focus` instead and put A's layers on `exit: "blur"`. Only one transition fits per cut, so the combined spin + focus is an **ENGINE GAP** (proposed `"blur": true` on `spin`).
+- **Build:** `"transition": {"type": "spin", "frames": 10}`. To get v03's soft version, give B `focus` instead and put A's layers on `exit: "blur"`. For a combined spin + focus, give A `"camera": {"exit": {"rotate": 20, "frames": 8}}` (a roll-out ramp with blur) and B `"transition": {"type": "focus"}`. The roll-match (B starts tilted and straightens) is still an **ENGINE GAP**: `camera.rotate` only rolls away from 0, so roll A out with `camera.exit.rotate` instead.
 
 ### 1.7 Punch-in / punch-out jump reframe
 - **Aliases:** punch-in cut, snap zoom, step zoom, jump punch with defocus, blurred jump-cut, hero-to-line snap.
@@ -192,7 +189,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 - **Frame by frame:** one frame later the same composition is at 1.1–2.3× (v79 1.1–1.2, v27 1.3, v66 1.3–1.5, v06 1.6, v51 1.6–2.2, v18/v46/v61 2×, v58/v75 2.2×, v03/v35 2.3×, v33 3.5×, v71 4–5×; v52 also jumps *out* to 0.35×), re-centred on the element the VO names. Then a 2–10-frame settle of 3–5%. Optional extras: 3 frames of 8–10 px blur on the new framing (v06, v29), or a continued pan (v13: offset right, easing out over 0.8 s).
 - **Frames:** 1 + 4 settle (2–10).
 - **When to use:** emphasis on a stressed word ("zero", "drowning", "in history"), pointing at a UI element (the send button), and "not X, but Y" contrasts (punch-in, then punch-out; v25).
-- **Build:** make a new scene that repeats the layers of the previous one with every `w`/`size` multiplied by the punch factor and `x`/`y` re-centred on the target: `x' = 50 + (x − tx)·k`. Use `"transition": {"type": "cut"}` and `"camera": {"settle": 1.04}`. For a punch inside a scene that returns, use `camera.punch: [{at: {"word": "zero"}, scale: 1.12}]`; on footage, use the `video` layer's `punch: [{at, scale: 1.4, frames: 1, hold: true}]`. The blur-on-arrival variant: `"transition": {"type": "focus", "frames": 3}`.
+- **Build:** make a new scene that repeats the layers of the previous one with every `w`/`size` multiplied by the punch factor and `x`/`y` re-centred on the target: `x' = 50 + (x − tx)·k`. Use `"transition": {"type": "cut"}` and `"camera": {"settle": 1.04}`. For a punch inside a scene that returns, use `camera.punch: [{at: {"word": "zero"}, scale: 1.12}]`; on footage, use the `video` layer's `punch: [{at, scale: 1.4, frames: 1}]` (it stays punched in; add `hold: 0.8` to release after 0.8 s). The blur-on-arrival variant: `"transition": {"type": "focus", "frames": 3}`.
 
 ### 1.8 In-canvas camera move (a transition with no cut)
 - **Aliases:** canvas reframe snap, continuous tilt, whip within one set, world-locked pan, camera truck, crash-zoom + whip-tilt, lens-blur whip, stroke-follow.
@@ -204,7 +201,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - v44: a 46 f vertical scroll with ~5 f of empty sky at peak.
 - **Frames:** 18 (3–90).
 - **When to use:** beats that belong in one place: a list across a desk, "three angles" of one set, cause → effect along a drawn line (v60), "rises into" (v20). It avoids a cut inside one sentence pair (v70).
-- **Build:** put the layers at canvas coordinates beyond the frame (e.g. `x: 150`, `x: 250`) and drive `"camera": {"pan": [{"at": {"word": "second"}, "x": 150, "y": 40, "frames": 18}]}`. **ENGINE GAP:** `pan` has no velocity-scaled motion blur. Proposed: `pan[].blur: true`, giving `blur = 0.4 × |v| px` along the direction of travel and capped at 24 px at 1080 W. Keep labels inside the panned canvas, not in screen space (v66).
+- **Build:** put the layers at canvas coordinates beyond the frame (e.g. `x: 150`, `x: 250`) and drive `"camera": {"pan": [{"at": {"word": "second"}, "x": 150, "y": 40, "frames": 18}]}`. Each pan key takes `"curve": "glide"` (symmetric, default), `"reframe"` (quick start, long settle; v35 v69) or `"settle"` (expo-out), and `"blur"` (default `true`: a directional blur that peaks mid-move at ~18 px at 1080 W; set `false` for slow drifts). Keep labels inside the panned canvas, not in screen space (v66).
 
 ### 1.9 Slide push / carousel (both shots visible together)
 - **Aliases:** push-up/push-down scene replace, card push, carousel slide, vertical slide push, slide-push, split-screen layout slide, scroll push, snap-up swap.
@@ -229,7 +226,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - enters from the edge with a 9 f ease-out (v83).
 - **Frames:** 10 (5–16).
 - **When to use:** introducing the subject of the next sentence ("Jensen", "the phone", the product), or a re-entry after the text clears (v38).
-- **Build:** `cut` + image `anim: "rise" | "drop" | "slide-*" | "spin-in" | "stamp"`, with the layer `at: 0.03–0.13`. For the 300% lens drop use `anim: "focus"` + `w` large and **ENGINE GAP**: proposed `anim: "lens-drop"` with scale 3 → 1 and blur 24 → 0 px over 16 f, expo-out. For a pendulum, put `float` on a top pivot: **ENGINE GAP**, proposed `anim: "swing"` with `rotate 35° → 0` on a damped spring (`damping 12`) and `transformOrigin` at the top.
+- **Build:** `cut` + image `anim: "rise" | "drop" | "slide-*" | "spin-in" | "stamp"`, with the layer `at: 0.03–0.13`. For the 300% lens drop use `anim: "focus"` + `w` large and **ENGINE GAP**: proposed `anim: "lens-drop"` with scale 3 → 1 and blur 24 → 0 px over 16 f, expo-out. For a pendulum, use image `anim: "swing"` (hung from the top edge, under-damped swing-in) and add `"loop": "sway"` for the idle sway after it lands. For a card turning in from edge-on (v06), use image `anim: "flip"`.
 
 ### 1.11 Action cut (click-cut)
 - **Seen:** v33 (the cut lands on the frame where the button squash bottoms out). v53 is similar: a counter value swap with a 1-frame zoom jolt of −10.6 reads as a cut.
@@ -302,7 +299,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - Flicker-on type: opacity `[0,0,1,1,0,1,1]` over 7 f with a cyan bloom (v41).
 - **Frames:** 4 (2–45).
 - **When to use:** a cold open on the first downbeat, an impact word, a brand or logo moment, or "power on".
-- **Build:** chain 1–2-frame scenes, each with `duration: 0.034` (1 f at 30 fps), `background: {kind: "solid", color}` and `transition: cut`. Set `animFps: 0` on them. For an invert strobe, alternate 2-frame scenes that repeat the same layers with `transition: invert`. Proposed: `"type": "strobe", "pattern": ["#fff","#000"], "frames": 4`.
+- **Build:** for an invert strobe on the incoming shot, `"transition": {"type": "strobe", "frames": 6}` (inverted on every other frame for `frames`). For a colour strobe (white/black or brand colours), chain 1–2-frame scenes, each with `duration: 0.034` (1 f at 30 fps), `background: {kind: "solid", color}` and `transition: cut`, with `animFps: 0` on them. **ENGINE GAP:** a `pattern` (colour list / custom on-off sequence) on `strobe`.
 
 ### 2.7 Light-leak burn
 - **Aliases:** light-leak burn to white, film burn, logo film burn, warm light wash, light-leak carry, orange light burn, light-leak bloom flash.
@@ -313,7 +310,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - v69: the burn is shaped like a logo, with ragged edges and grain.
 - **Frames:** 7 (2–21).
 - **When to use:** warm and nostalgic, "film" tone, story → reflection, the transition into footage, a brand moment.
-- **Build:** **ENGINE GAP.** The approximation is `"type": "flash", "color": "#ffb347", "frames": 6`, but it is flat, not radial. Proposed `"type": "leak"` with `color`, `from: "tl|tr|bl|br|top|bottom"`, and `frames`. Implementation: a radial-gradient layer (colour → `#fff` → transparent), radius 150% of the diagonal, centred off-frame at `from`, `mix-blend-mode: screen`. Opacity keyframes [0, 1, 1, 0] at [0, 3, 5, 8] with a hard switch A → B at f4, plus `brightness(1.4 → 1)` on B over 5 f.
+- **Build:** `"transition": {"type": "burn", "color": "#ffb347"}`: a warm screen-blended radial bloom sweeps left → right across the cut (3 f before, 8 f after). **ENGINE GAP** for the origin (`from: "tl|tr|bl|br|top|bottom"`), a second colour, a hold at white and an in-shot leak that is not a cut. Proposed: a radial-gradient layer (colour → `#fff` → transparent), radius 150% of the diagonal, centred off-frame at `from`, opacity keyframes [0, 1, 1, 0] at [0, 3, 5, 8], plus `brightness(1.4 → 1)` on B over 5 f.
 
 ### 2.8 Cut to void / statement card
 - **Aliases:** cut to black void, black statement card, type-only void, text card, paper breath card.
@@ -332,7 +329,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - Opening: v58 a `#2b91f5` layer at 0.9 → 0 opacity with a backdrop blur of 20 → 0 px over 7 f.
 - **Frames:** flood 4 (1–7) + relax 20 (0–25).
 - **When to use:** "AI magic / generation" (v59, v18), an impact frame to kick off a montage (v78), a brand-colour punctuation.
-- **Build:** `"transition": {"type": "flash", "color": "#ff3fa4", "frames": 4}`. **ENGINE GAP** for the tinted relax on B. Proposed `grade.from: {saturation: 3, hueRotate: -20, frames: 24}`, i.e. `filter: saturate(3) hue-rotate(-20deg)` → `saturate(1)` with ease-out. `grade.tint` is static, so it can't relax over time.
+- **Build:** `"transition": {"type": "wash", "color": "#ff3fa4"}`: the colour floods in over 2 frames, holds on the cut and releases over ~4 (use `flash` with `color` for a single-frame hit). **ENGINE GAP** for the tinted relax on B. Proposed `grade.from: {saturation: 3, hueRotate: -20, frames: 24}`, i.e. `filter: saturate(3) hue-rotate(-20deg)` → `saturate(1)` with ease-out. `grade.tint` is static, so it can't relax over time.
 
 ### 2.10 Overexposed landing / glare reveal
 - **Aliases:** luminance-flash hard cut, glare cut, glare reveal, exposure flash on a mugshot, white-haze dissolve.
@@ -372,7 +369,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - v54: a sinuous red ribbon carries the new content inside it with parallax.
 - **Frames:** 4 (2–16).
 - **When to use:** a section heading or keyword taking over the screen ("CONTRAST" becomes the background), a brand-colour beat, lyric line changes.
-- **Build:** **ENGINE GAP.** The approximation is `"type": "object"` with a solid-colour PNG `src` (it crosses rather than grows). Proposed `"type": "wipe"` with `shape: "band|wave|diagonal|panel|triangle"`, `color`, `from: "bottom|left|centre|bl"` and `frames`. Implement as an SVG `clipPath` on B, plus a solid layer of `color` that leads it by 1–2 frames: `wave` = path with sine edges (amplitude 2–4% H); `diagonal` = `linear-gradient(135deg, #000 40%, transparent 65%)` mask translating −100% → 0; `panel` = `inset(0 x% 0 x% round 40px)` with x going 47% → −5%.
+- **Build:** for a flat flood, `"transition": {"type": "wash", "color": "#f5d000"}`. For a hard-edged field that crosses the frame, make B a short solid-colour scene entered with `"transition": {"type": "wipe", "shape": "line|diagonal|split", "direction": "up"}`, then cut to the content (see the `wipe` caveat in 3.6). **ENGINE GAP** for shaped floods: proposed `shape: "band|wave|panel|triangle"`, `color` and `from: "bottom|left|centre|bl"` on `wipe`. Implement as an SVG `clipPath` on B, plus a solid layer of `color` that leads it by 1–2 frames: `wave` = path with sine edges (amplitude 2–4% H); `diagonal` = `linear-gradient(135deg, #000 40%, transparent 65%)` mask translating −100% → 0; `panel` = `inset(0 x% 0 x% round 40px)` with x going 47% → −5%.
 
 ### 3.2 Circle iris open / portal
 - **Aliases:** circular lens iris, iris-expand from a dot, portal / black-hole, circle wipe from type, burn iris, earth iris, radial halftone portal, glowing-point iris, spinning circle iris, glowing portal window grow.
@@ -388,7 +385,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - v63 also rotates the whole frame −5°/f during the open.
 - **Frames:** 6 (2–12).
 - **When to use:** "a window into the next idea": data → story (the end of the stat becomes the window; v63 25.03), a portal or "go inside", look-closer beats, the CTA open (v53).
-- **Build:** `"transition": {"type": "circle", "frames": 6}`. **ENGINE GAP** for origin and edge. Proposed `"origin": {"x": 62, "y": 18}`, `"edge": "hard|rim|bloom|rough|halftone"`, `"shape": "circle|rect"`. Implementation: `clipPath: circle(r at x% y%)` with r interpolated 0 → 150% using `Easing.in(Easing.quad)`. `bloom` = a radial-gradient white ring layer at the same r (blur 30–40 px) plus A `brightness → 1.6`. `rough` = `feTurbulence` + `feDisplacementMap` (scale 20) on the mask.
+- **Build:** `"transition": {"type": "circle", "frames": 6}`. Add `"at": [62, 18]` to grow the iris from a meaningful point (a lamp, a dot, an eye); with `at` the radius runs to 140% so it still covers the corners. **ENGINE GAP** for the edge and shape. Proposed `"edge": "hard|rim|bloom|rough|halftone"`, `"shape": "circle|rect"`. `bloom` = a radial-gradient white ring layer at the same r (blur 30–40 px) plus A `brightness → 1.6`. `rough` = `feTurbulence` + `feDisplacementMap` (scale 20) on the mask.
 
 ### 3.3 Letterbox open / close / slit
 - **Aliases:** letterbox close-in, letterbox open, letterbox collapse, letterbox window, mask-collapse reframe to 9:16, "darkness" slit-wipe.
@@ -400,7 +397,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - Slit (v37): a dark band at y ≈ 48% thickens over 3 f, then B expands from it to full by f5 (the top edge moves faster than the bottom).
 - **Frames:** 6–7 (3–16).
 - **When to use:** a "cinema" or "story" register, quotes and footage, a chapter-like change of format, darkness swallowing a subject (v37).
-- **Build:** **ENGINE GAP.** `finish.letterbox` is global and static. Workaround: two full-width black `image` layers (`w: 100, h: 20`) at `y: 10` / `y: 90` with `anim: "slide-down"` / `"slide-up"`. Proposed `"type": "letterbox"` with `to: 0.2` (bar height as a fraction of H), `frames: 7` and expo-out; `to: 0` opens it. Implement with `clipPath: inset(${p}% 0 ${p}% 0)` on the scene.
+- **Build:** set `"letterbox": 20` (% of the height per bar) on the scene. The bars animate whenever the value changes from the previous scene: they close in over ~6 frames with an expo-out (50 / 75 / 88 / 94% of the travel on frames 1–4) and open the same way when the next scene has `"letterbox": 0`. `finish.letterbox` stays a static, global bar. **ENGINE GAP** for a mid-scene change, a slit (bars nearly closed) and a custom duration.
 
 ### 3.4 Spotlight iris close / vignette close
 - **Aliases:** spotlight iris, lens vignette close, organic iris-close, iris close + flash cut, defocus + vignette out, dim-out.
@@ -408,7 +405,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 - **Frame by frame:** a soft-edged circular vignette closes from the frame edge to 22–70% of the width and either stays as a pool of light (v32: radius 120% → 22% over 28 f, outside at 25% opacity, 40 px feather; v47: the stop moves 80% → 35% in 6 f) or closes fully, followed by a hard cut (v34: 4 f, then a hard cut to bright sky with luma ×3.8; v54: 8 f with a noise-displaced edge, then 4 frames of grunge texture).
 - **Frames:** 8 (2–28).
 - **When to use:** "focus on this proof object", the turn text inside the pool (v32), "look closer" (v63 microscope), a dark close before a bright reveal.
-- **Build:** **ENGINE GAP.** Proposed `"type": "iris-close"` with `to: 0.22` (radius as a fraction of W), `feather: 40`, `outside: 0.25` and `frames`. It is a scene-level overlay: `radial-gradient(circle at x y, transparent r, rgba(0,0,0,.85) r+feather)`. For a non-cut spotlight, add proposed `grade.spotlight: {at, r, frames}`.
+- **Build:** `"transition": {"type": "iris-close", "at": [50, 45], "frames": 10}` on B: A closes to a hard-edged circle around `at` (an ease-in, to black), then B opens from the centre. **ENGINE GAP** for a soft, partial spotlight that holds on a radius (`to`, `feather`, `outside` dimming) and for a non-cut spotlight (proposed `grade.spotlight: {at, r, frames}`).
 
 ### 3.5 Ink / organic blot matte
 - **Aliases:** ink-blot luma matte, ink/liquid wipe, ink-blot shape wipe, smoke/burn wipe, ink-disintegration morph.
@@ -432,7 +429,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - Sweep: a soft vertical white bar crosses in 2 f (v34).
 - **Frames:** 5 (2–16).
 - **When to use:** before/after comparisons, "scanning", clean UI section changes.
-- **Build:** **ENGINE GAP.** The approximation is `"type": "object"` with a white-bar PNG `src` (`color: "#e6e6e6"`). Proposed `"type": "wipe", "shape": "line|bar", "direction": "right", "seam": "#fff", "width": 0.25`. Tie B's `clipPath: inset(0 ${100−x}% 0 0)` to the bar's x.
+- **Build:** `"transition": {"type": "wipe", "shape": "line", "direction": "right", "frames": 6}` (`shape: "diagonal"` for a slanted edge, `"split"` to open from the centre line). `shape: "slab"` gives a thick slanted band; `direction` is respected by all shapes. **ENGINE GAP** for the white seam bar (proposed `"seam": "#fff", "width": 0.25`); the `object` cut with a white-bar PNG `src` approximates it.
 
 ### 3.7 Lens / loupe / keyhole reframe
 - **Aliases:** lens/iris re-frame, magnifier loupe wipe, keyhole push-through, keyhole pull-back.
@@ -486,7 +483,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - v37 portal: at edge-on the back face is a window already holding B; the camera zooms through it (12/frame decaying over 8 f) until the border leaves the frame.
 - **Frames:** 10 (2–30).
 - **When to use:** "not X, but Y", a reveal of the other side, before/after, tarot-like reveals (v44), the start of a CTA (v30 book opens).
-- **Build:** **ENGINE GAP.** Write a custom component `FlipCard {front, back, at, frames: 10, axis: "y"}`: `rotateY` 0 → 180 with `Easing.inOut(Easing.cubic)`, swap at 90°, `backfaceVisibility: hidden`. Proposed `"type": "flip"`, which renders A on the front and B on the back of a full-frame card. The portal = `flip` + `zoom`.
+- **Build:** `"transition": {"type": "flip", "frames": 7}`: A turns edge-on (rotateY 0 → 90°) into the cut and B turns in from −90°. For a single card or disc flipping in place, use image `anim: "flip"`. **ENGINE GAP** for a true two-sided card (front and back on one plane, 0 → 180°): a custom component `FlipCard {front, back, at, frames: 10, axis: "y"}` with `backfaceVisibility: hidden`. The portal = `flip`, then `zoom` with `target`.
 
 ### 4.4 Cloud / smoke / fog pass
 - **Aliases:** cloud push-through, cloud wipe, cloud tilt-through, fog wipe, push-through clouds, smoke reveal, white haze.
@@ -536,7 +533,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - v71: a black slab covers the lower half while the text smears, then goes to full black (3 f).
 - **Frames:** 15 (3–30).
 - **When to use:** antithesis ("selling… → storytelling"), page and section changes.
-- **Build:** approximately `"type": "object", "color": "#000", "frames": 8`. **ENGINE GAP:** proposed `"type": "wipe", "shape": "slab", "then": "lift"`.
+- **Build:** approximately `"type": "object", "color": "#000", "frames": 8`. `wipe` accepts `"shape": "slab"`, but it currently renders as a plain line wipe. **ENGINE GAP:** a real slab that covers, then lifts (proposed `"shape": "slab", "then": "lift"`).
 
 ### 4.9 Hand / cursor drag wipe
 - **Aliases:** hand-pull wipe, hand-of-god insert, cursor-dragged page wipe.
@@ -564,7 +561,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 - **Frame by frame:** linear or ease-in-out opacity over 3–19 frames, almost always *combined* with motion: a zoom-in midpoint (v30, ~15 f, peak ~40 px/update), scale-down (v79, 6 f), a decelerating pan (v83, 12 f), rotation (v39, 4 f), or the next line already typing (v82, 19 f). v60 dissolves through a checkerboard at 75% white to say "these are PNG layers".
 - **Frames:** 8 (3–19).
 - **When to use:** soft emotional moments, ground → space (v44), a match dissolve on a shared element (v30's date "1893"), the dark CTA entry (v79). Never use it as the default.
-- **Build:** **ENGINE GAP** (no dissolve type). Through-colour versions exist: `flash-ramp` (through white) and `black` (through black). Proposed `"type": "dissolve", "frames": 8, "through": null|"white"|"black"` rendering both scenes for N frames, with B opacity = `Easing.inOut(Easing.cubic)(t)` and both cameras running.
+- **Build:** `"transition": {"type": "dissolve", "frames": 8}`: both scenes render for `frames` and B fades in over A, with both cameras running. Add `"through": "#000"` (or any colour) for a dip; note that the engine cuts to the colour on the first frame and fades B up from it. `flash-ramp` (through white) and `black` (through black) are the punchier through-colour cuts. Keep dissolves rare (0 in 72/82) and always combined with motion.
 
 ### 5.3 Shape / object morph
 - **Aliases:** morph crossfade, bar-to-monolith, card strip → clock hand, pill morph, shape-becomes-UI, footage → caret squeeze, footage → clip, shrink-to-dot → grow-to-disc, collapse to strip.
@@ -607,7 +604,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 - **Frame by frame:** a caption, speech bubble, dot or terminal window holds its exact screen position through the cut (it may keep typing or scrambling) while only the plate, background or container changes, by hard cut (v59, v41) or by a 10–13 f dissolve underneath (v80, v83, v82).
 - **Frames:** 0–13.
 - **When to use:** continuity of thought across a change of world: "the same sentence, now inside the product" (v59), "same fact, new chapter" (v47).
-- **Build:** **ENGINE GAP** (layers are scene-scoped). Workaround: duplicate the layer in A and B with identical `x, y, w, size, style`; set `anim: "none"` in B and `camera: {settle: 1, drift: 0}` on both scenes near the cut, and `transition: cut`. Proposed top-level `overlays: [{layer, from: TimeRef, until: TimeRef}]` rendered above all scenes and outside the camera.
+- **Build:** put the element in the top-level `"overlay": [ ... ]` list: those layers draw above every scene, outside the camera, so they don't move with settles, punches or transitions. Their `at`/`until` are absolute (seconds or word refs from the video start), e.g. `{"type": "badge", "text": "PART 2", "x": 50, "y": 8, "at": 3.2, "until": {"word": "subscribe"}}`. For an element that should stay *inside* the camera, duplicate it in A and B with identical `x, y, w, size, style`, set `anim: "none"` in B and `camera: {settle: 1, drift: 0}` on both scenes near the cut.
 
 ### 5.7 Polarity / inverse match
 - **Aliases:** reprise inversion, colour-inverted twin cards, hard invert (same layout), inverse match cut, white flash-up polarity flip, glitch-streak invert.
@@ -664,7 +661,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 - **Frame by frame:** A darkens to 40–50% luma over 5 f (v31 luma 89 → 66 → 35, with `saturate(0.4)`), or greys to `#797979` with blur on everything except the type (v49), or blurs ~12 px to push back (v69). A new element (newspaper, "Done!!", a question) pops in on top. It is a "scene within a scene" without a cut, like a modal state.
 - **Frames:** 5 (4–15).
 - **When to use:** questions, quotes, pop-ups, "focus on this" over context.
-- **Build:** inside A, add a full-frame black `image` (a solid PNG, `w: 100, h: 100, opacity: 0.6`, `anim: "fade"`, `at` on the word) below the new element, then the element with `anim: "pop"` / `"spin-in"`. **ENGINE GAP** for blurring only the background (proposed scene `background.blurAt: {at, px: 12}`).
+- **Build:** inside A, add a full-frame dim plate `{"type": "shape", "kind": "rect", "w": 110, "h": 110, "y": 50, "color": "#000", "fill": "#000", "draw": 1, "opacity": 0.6, "at": {"word": "…", "offset": -0.35}}` below the new element (a shape's `fill` only appears once its draw-on has fully settled, ~10 frames with `draw: 1`, hence the early `at`), then the element with `anim: "pop"` / `"spin-in"`. **ENGINE GAP** for blurring only the background (proposed scene `background.blurAt: {at, px: 12}`).
 
 ### 6.4 Background re-light / colour step
 - **Aliases:** background luma/colour step without a cut, black → white flash (tonal flip), colour fade background, card-fill dissolve, linear luma fades, brighten-and-reframe.
@@ -672,7 +669,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 - **Frame by frame:** the set changes colour under persistent type or props: over 3–7 f with `Easing.out(Easing.cubic)` (v17 grey → black → lime → grey), over ~10 f with an ease-in (v13 black → white while the white text fades and the black text builds), or over 12 f via `interpolateColors #100d11 → #4a474b → #e4e0e4` while children crossfade (v61).
 - **Frames:** 8 (3–60).
 - **When to use:** a mid-sentence tonal flip ("didn't just X — it Y"; v13), re-lighting a scene instead of cutting, beat accents.
-- **Build:** **ENGINE GAP.** Workaround: a full-frame solid `image` layer of the new colour with `anim: "fade"` at the word, placed below the content layers (low `z`). Proposed `background.to: {color, at, frames}`.
+- **Build:** **ENGINE GAP.** Workaround: a full-frame `shape` `rect` (`w: 110, h: 110, y: 50, fill` and `color` = the new colour, `draw: 1`, `at` ~0.35 s before the word, because the fill lands ~10 frames after `at`), placed below the content layers (low `z`); or cut to a new scene with the new `background` and `transition: dissolve`. Proposed `background.to: {color, at, frames}`.
 
 ### 6.5 Saturation return / colour bloom
 - **Aliases:** saturation fade-in with zoom kick, saturation bloom, B/W → colour on zoom-through, generate-in resolve (de-solarise).
@@ -705,7 +702,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - Strobe rects: 1–2 random rectangles covering 20–45% of the image flash for 1–2 f before each photo change, as crops of the next image, inverted crops, white blocks or black bars (v49).
 - **Frames:** 5 (2–30).
 - **When to use:** "processing / sending / generating" in AI and UI promos, digital or pixel-art worlds, a fast photo montage.
-- **Build:** **ENGINE GAP.** Proposed `"type": "pixels"` with `cell: 0.035` (fraction of W), `frames: 6`, `order: "random|left|from:{x,y}"`, `colors: ["#f5d000"]` and `hold: 3`. Implement as an SVG mask of `N×M` rects; each cell's reveal frame = `delay(x, y) + seededRandom·4`; B is shown through revealed cells, with a coloured tile for `hold` frames before each cell turns clear.
+- **Build:** `"transition": {"type": "pixel", "frames": 6}`: B appears through randomly timed tiles (a 9-column grid). Use `frames: 3–4` for the fast version and 10–20 for a slow build. **ENGINE GAP** for tile size, order, colour flashes and element-level tiles. Proposed `cell: 0.035` (fraction of W), `order: "random|left|from:{x,y}"`, `colors: ["#f5d000"]` and `hold: 3` on `pixel`. Implement as an SVG mask of `N×M` rects; each cell's reveal frame = `delay(x, y) + seededRandom·4`; B is shown through revealed cells, with a coloured tile for `hold` frames before each cell turns clear.
 
 ### 7.3 Dot-matrix / halftone dissolve
 - **Aliases:** dot-assemble reveal, dot-matrix flash, yellow dot-matrix flash, dot-grid dissolve, dot-mosaic → photo resolve, radial halftone portal.
@@ -758,7 +755,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 - **Frame by frame:** the outgoing image tiles vertically with 8% black gaps and scrolls up one frame height in 4 f, then B lands (v81). Four 4-frame full-colour cards (red → charcoal → black → white) act as a "film leader" (v08). Cream `#fcfcee` frames with dirt, scratches and an edge burn, 2–3 f each (v75).
 - **Frames:** 4 (2–16).
 - **When to use:** analogue, archive and retro tone; a duration beat ("three years"; v08).
-- **Build:** the leader is composable as chained 4-frame `solid` scenes (see 2.6). Frame roll: **ENGINE GAP** (proposed `"type": "roll"`: A rendered twice stacked with an 8% black gap, translateY −100% over 4 f).
+- **Build:** the leader is composable as chained 4-frame `solid` scenes (see 2.6). Burn frames: `"transition": {"type": "burn", "color": "#fcfcee"}` plus `finish.grain`. Frame roll: **ENGINE GAP** (proposed `"type": "roll"`: A rendered twice stacked with an 8% black gap, translateY −100% over 4 f).
 
 ### 7.9 Redaction / block-censor / backspace
 - **Aliases:** block-censor wipe, redaction smear, backspace erase.
@@ -786,12 +783,16 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - v27 shrinks footage to a 76% W rounded card over 10 f.
 - **Frames:** 8 (2–39).
 - **When to use:** "it was all on a phone / in a post / in a timeline", meta reveals ("it's just After Effects"), social proof (the idea becomes a post), a museum or memory frame (v29), the move into the CTA card (v80, v81).
-- **Build:** **ENGINE GAP.** Two-pass workaround:
-  1. Render A alone to `public/nest/A.mp4`.
-  2. In B, place `{"type": "video", "src": "nest/A.mp4", "card": true, "w": 42, "x": 50, "y": 45}` inside the device or frame layers.
-  3. Set B `"camera": {"settle": 2.38, "settleR": 0.7}` (settle = 100 / w), so frame 0 shows the card full-bleed and the camera expo-settles out to reveal the container, with `transition: cut`.
-  - Caveat: the settle scales about the centre, so centre the card or accept the drift.
-  - Proposed native `"type": "nest", "into": "<layerId>"`: render A as a `<Sequence>` inside B's target rect, with the rect interpolated from the full frame to the target over 6–9 f and `borderRadius 0 → 48`.
+- **Build:** give A an `id` (here `"story"`), then in B add an `embed` layer that shows it inside the frame, post or device, and enter B with `shrink`:
+  ```json
+  {"id": "post", "transition": {"type": "shrink", "frames": 9}, "background": {"kind": "paper"},
+   "layers": [
+     {"type": "embed", "scene": "story", "x": 50, "y": 42, "w": 56, "radius": 24},
+     {"type": "text", "text": "posted 2h ago · 1.2M views", "style": "clean", "size": 3.6, "y": 78, "caps": false, "color": "#111111", "at": 0.3}
+   ]}
+  ```
+  The embed box keeps the video's aspect by default, so it matches A exactly. A `ui` `phone` screen (9:19.5) is taller than a 9:16 video; for a phone, draw the device around a 9:16 box rather than inside `ui phone`.
+  B starts zoomed so the embed box fills the frame (showing A's last frame, `mode: "last"`) and pulls back into its container, about the box centre. `mode: "live"` keeps A playing inside the box. Default `frames` is 14; v76 uses ~9 and v77 ~6. Keep the embed on screen ≲1.5 s (it renders a second copy of A). **ENGINE GAP** for the border-radius tween and a white flash at the joint (add `flash` on the next cut instead).
 
 ### 8.2 Zoom-through into a frame or screen
 - **Aliases:** screen dive, whip-zoom into the screen, fly-through picture frame, zoom-through window, zoom-through into a (framed) card, frame-in-frame zoom-through, door-reveal, zoom-into-light portal, push-in into a card with hidden background swap, zoom-through on a selected card, zoom-through push in Z.
@@ -803,7 +804,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
   - v57 scales the clicked card 1 → 6 in 2 f, and B is already composed around a small copy of that card (landing 1.15 → 1 over 6 f).
 - **Frames:** 16 (8–50).
 - **When to use:** "go inside" (the product, the story, the past), a scene-per-picture history explainer, "click → you're in".
-- **Build:** in A, place B's first frame (from `remotion still … --frame=0`) as a centred `image` with `print: true` (or inside a `ui` `phone`/`window` with `src`), and add `camera.drift` to push. Then give B `"transition": {"type": "zoom", "frames": 10}`: the engine's ×1.45/frame ramp carries the frame edge off-canvas and lands B at 1.18 → 1. For the colour bloom, combine it with 6.5. **ENGINE GAP** for an exact pixel match (proposed `nest` in reverse: `"type": "nest", "from": "<layerId in A>"`).
+- **Build:** in A, place B's first frame (from `remotion still … --frame=0`) as a centred `image` with `print: true` (or inside a `ui` `phone`/`window` with `src`), and add `camera.drift` to push. Then give B `"transition": {"type": "zoom", "frames": 10, "target": [x, y], "peak": 4}` with `target` = the frame's centre and `peak` ≈ 100 / (frame width %), so A zooms *into* the frame until its edge leaves the canvas, then B lands at 1.18 → 1. For the colour bloom, combine it with 6.5. **ENGINE GAP** for an exact pixel match (proposed `nest` in reverse: `"type": "nest", "from": "<layerId in A>"`).
 
 ### 8.3 Zoom-out context reveal
 - **Aliases:** zoom-out reveal to grid, zoom-out reveal (new environment around the subject), macro pull-back reveal, type-to-picture zoom-out, in-shot pull-back recompose.
@@ -827,7 +828,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 - **Frame by frame:** the full-screen scene scales to a multitasking card (radius 40 px) over 8 f with an ease-out, swipes sideways over 4 f, and the next card zooms to full screen (v81); ~12 f in total for v77.
 - **Frames:** 12–20.
 - **When to use:** switching between apps or platforms, "and then on Instagram…".
-- **Build:** **ENGINE GAP.** Use the `nest` workaround (8.1) for the shrink, then `whip-left` into a scene that starts at `camera.settle: 1.6`. Proposed `"type": "switcher"`.
+- **Build:** `shrink` into an `embed` card (8.1, `radius: 40`), then `whip-left` into a scene that starts at `camera.settle: 1.6`. **ENGINE GAP** for a single native move (proposed `"type": "switcher"`).
 
 ### 8.6 Nested-shape zoom
 - **Seen:** v25 (4.07–5.33, 19 f).
@@ -840,28 +841,46 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 
 ## Engine gaps (summary, by priority)
 
+**Done since this catalogue was first written** (use these fields; don't build workarounds):
+
+| Was a gap | Videos | Field now |
+|---|---|---|
+| Nested zoom-out / frame-in-frame (8.1) | 19 | `embed` layer + `transition: {type: "shrink"}` |
+| One-sided ramp-into-cut with static landing (1.5) | 27 | `camera.exit: {zoom, x, y, rotate, frames}` on A + `cut` |
+| Zoom into a point / zoom-through (1.3, 8.2) | 15+ | `zoom` + `target: [x, y]`, `peak` |
+| Light-leak burn (2.7) | 11 | `burn` (`color`) |
+| Colour-wash flood (2.9, 3.1) | 9 | `wash` (`color`) |
+| Cross-dissolve (5.2) | 10 | `dissolve` (`frames`, `through`) |
+| Line / diagonal / split wipes (3.6) | 5 | `wipe` (`shape`, `direction`) |
+| Pixel dissolve (7.2) | 10 | `pixel` |
+| Persistent overlay across cuts (5.6) | 7 | top-level `overlay: [layers]` |
+| Iris origin; iris close (3.2, 3.4) | 14 | `circle` + `at`; `iris-close` + `at` |
+| Letterbox animate (3.3) | 7 | `scene.letterbox` |
+| Card flip (4.3) | 8 | `flip` cut, image `anim: "flip"` (no back face) |
+| Pan motion blur and curves (1.8) | 23 | `camera.pan[].blur` (default on), `pan[].curve` |
+| Invert strobe (2.6) | 12 | `strobe` |
+| Pendulum entrance (1.10) | — | image `anim: "swing"` + `loop: "sway"` |
+
+**Still open:**
+
 | Gap | Videos affected | Proposed spec addition |
 |---|---|---|
-| Nested zoom-out / frame-in-frame (8.1, 8.5) | 21 | `transition: {type: "nest", into: layerId, frames: 8}`; today: two-pass render + `video card` + large `camera.settle` |
-| One-sided ramp-into-cut with static landing (1.5) | 27 | `transition.land: "static"` or `camera.exitRamp: {scale|x|y|rotate, frames, blur}` |
-| Light-leak burn (2.7) | 11 | `type: "leak", color, from, frames` (screen-blended radial gradient, [0,1,1,0] at [0,3,5,8]) |
-| Cross-dissolve (5.2) | 10 | `type: "dissolve", frames, through` |
-| Colour-field / line / slab wipes (3.1, 3.6, 4.8) | 18 | `type: "wipe", shape: band|wave|diagonal|panel|line|bar|slab, color, from, frames` |
-| Pixel / dot dissolves (7.2, 7.3) | 15 | `type: "pixels"` / `"dots"`, with `cell`, `order`, `colors`, `hold` |
-| Persistent overlay across cuts (5.6, 3.5 v42) | 8 | top-level `overlays: [{layer, from, until}]` outside the camera |
+| Shaped colour floods, seam bars, slab-and-lift (3.1, 3.6, 4.8) | 18 | `wipe.shape: band\|wave\|panel\|slab`, `color`, `seam`, `then: "lift"`; fix the reversed `wipe` progress first |
+| Pixel / dot dissolve options (7.2, 7.3) | 15 | `pixel` with `cell`, `order`, `colors`, `hold`; new `"dots"` |
 | Morph between layouts (5.3) | 9 | `type: "morph", from: layerId, to: layerId` (FLIP tween) |
-| Iris origin, edge, shape; iris close (3.2, 3.4, 3.8) | 15 | `circle` + `origin`, `edge`, `shape: path`; new `iris-close` |
-| Letterbox animate (3.3) | 7 | `type: "letterbox", to: 0.2` |
-| Card flip / portal (4.3) | 8 | `type: "flip"` |
-| Pan motion blur (1.8) | 23 | `camera.pan[].blur: true` |
-| True push / carousel (1.9) | 14 | `type: "push-left|right|up|down"` |
+| Iris edge and shape; soft spotlight hold (3.2, 3.4, 3.8) | 15 | `circle` `edge`, `shape: path`; `iris-close` `to`, `feather` |
+| Two-sided card flip / portal (4.3) | 8 | `flip: {back}` |
+| True push / carousel (1.9) | 14 | `type: "push-left\|right\|up\|down"` |
 | Grade relax, saturation return, background re-light (2.9, 6.4, 6.5) | 14 | `grade.from: {saturation, hueRotate, frames}`, `background.to: {color, at, frames}` |
 | Outgoing defocus + bloom (6.1, 2.10) | 24 | `focus: {out, in, bloom}` applied to the whole scene |
-| Glitch styles (7.1) | 16 | `glitch.style: rgb|slices|sort|echo` |
-| Object path / lens fly-through (4.2, 4.4) | 24 | `object.path: lr|rl|bt|tb|lens`, `hold` |
+| Glitch styles (7.1) | 16 | `glitch.style: rgb\|slices\|sort\|echo` |
+| Object path / lens fly-through (4.2, 4.4) | 24 | `object.path: lr\|rl\|bt\|tb\|lens`, `hold` |
 | Invert both sides + kick (2.3) | 17 | `invert.side: "both"`, `kick: {rotate, scale}` |
-| Strobe (2.6) | 12 | `type: "strobe", pattern, frames` (today: chained 1-frame scenes) |
-| CRT, warp/twirl, frame roll, shatter, tear, hand-pull (7.7, 7.6, 7.8, 4.5, 4.6, 4.9) | 22 combined | custom components first; promote the ones used in ≥3 videos |
+| Colour strobe pattern (2.6) | 12 | `strobe.pattern` (today: chained 1-frame scenes) |
+| Burn origin / in-shot leak (2.7) | 11 | `burn.from`, `color2`, `hold`; a `leak` layer |
+| Zoom-out direction on `zoom` (1.3) | 4 | `zoom.direction: "out"` (today: `camera.exit.zoom < 1` + B `settle`) |
+| Nested reveal extras: dive, radius tween, joint flash (8.1, 8.2, 8.5) | 21 | `type: "dive"`; `embed` radius tween; `switcher` |
+| CRT, warp/twirl, frame roll, shatter, tear, hand-pull, redaction (7.7, 7.6, 7.8, 4.5, 4.6, 4.9, 7.9) | 25 combined | custom components first; promote the ones used in ≥3 videos |
 
 ---
 

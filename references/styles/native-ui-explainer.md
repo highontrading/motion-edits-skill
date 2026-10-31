@@ -139,4 +139,4 @@ References (10): v04 v74 v75 v76 v77 v78 v79 v80 v81 v82. Cousins: keynote-clean
 - **3D tilt + DOF of UI planes** (v80 v75 v82 v04): covered by `tilt`/`tiltTo` (UI at 6–18°, up to 40° for hero shots), `depth` per plane and `camera.focus` racks. Native app chrome is still generic.
 - **Text-selection highlight menus, app-icon labels, Notion/Spotify skins** (v77 v81): approximate with `text.highlight` and generic `ui` kinds.
 - **Marquee-scrolling poster type** (v78): not built in. Use a wide `text` with `camera.pan`, or add `anim: "marquee"`.
-- **Ghost captions composited into footage depth** (roto, v77 v79): needs a matte. Without one, place the type in the footage's negative space.
+- **Ghost captions composited into footage depth** (roto, v77 v79): use a `tools/matte.py` matte as a `video` layer with `transparent: true` above the caption (see `footage-editing.md` §1). Without one, place the type in the footage's negative space.

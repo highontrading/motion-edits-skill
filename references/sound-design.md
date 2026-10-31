@@ -103,8 +103,8 @@ A median scene of ~2–2.8 s is roughly one bar at 100–120 BPM. That is why th
 
 - `musicVolume` is the bed's gain when nobody speaks (default 0.35). Use 0.35–0.5 for music-only edits and VO-less CTA tails, depending on how loud the file is mastered.
 - `duckTo` is the bed's gain while speaking. Target the bed at **−12 to −18 dB under the VO**: **0.18–0.25** for a quiet, sparse bed and **0.12–0.15** for a loud, dense or vocal-ish bed. Check by ear on a phone speaker. If you can follow the melody while the VO talks, it is too loud.
-- How the engine ducks (from `SpecVideo.tsx`): music volume is `duckTo` whenever a word is active, from 0.15 s before each word's start to 0.25 s after its end, and `musicVolume` otherwise. It is a **hard switch with no ramp**, so any VO pause longer than ~0.4 s makes the bed jump up and back down. The references have about 10 such pauses per video (measured median; ~2.9 per 10 s), so with a large gap between `musicVolume` and `duckTo` this pumps audibly. Until the engine has attack/release (see §8), **keep `musicVolume` and `duckTo` within ~2× of each other** (e.g. 0.3 / 0.18), or pre-mix the bed low and leave `duckTo` unset, which is what the references sound like.
-- The bed is played with `loop`. Pick or trim a track at least as long as the video, or the loop seam will land mid-scene. Start the music on frame 0.
+- How the engine ducks (from `SpecVideo.tsx`): words closer than 0.6 s are merged into one speech region, so the bed **holds down through short pauses**. Around each region the volume ramps linearly from `musicVolume` to `duckTo` over 0.13 s before the first word (~4 f attack) and back over 0.33 s after the last word (~10 f release). Only pauses ≥0.6 s let the bed swell; the references have about 10 pauses ≥0.3 s per video, and roughly a third of those are long enough to swell. That swell is the right direction (§4), but keep it gentle: **`musicVolume` at most ~2–2.5× `duckTo`** (e.g. 0.35 / 0.16), or pre-mix the bed low and leave `duckTo` unset, which is what the references sound like.
+- Music fields: `musicStart` (seconds into the file, to start on a strong bar or skip an intro), `musicFadeOut` (fade over the last N seconds, default 0.6; set 0 when the track resolves on the end card by itself), and `musicLoop` (default `true`; set `false` when the track is long enough, so a seam can never land mid-scene). Start the bed on frame 0.
 
 ### 2.3 Mix order (loudest to quietest)
 
@@ -147,11 +147,11 @@ Counts = breakdowns that describe the SFX type (from onset clusters on matching 
 
 Two places hold SFX:
 - **Global `audio.sfx`**: `{src, at, volume}` with `at` as an absolute `TimeRef` (seconds or a word ref). It plays to the end of the file regardless of scenes.
-- **Scene `sfx`** (in `types.ts`; not yet listed in engine-spec.md): `[{src, at, volume}]` with `at` relative to the scene start (default: the scene's first frame); a word ref resolves to the first match at or after the scene start. The sound lives inside the scene's `<Sequence>`, so **it cannot start before the scene's first frame and is cut off at the scene's last frame** (plus any transition overlap).
+- **Scene `sfx`**: `[{src, at, volume}]` with `at` relative to the scene start (default: the scene's first frame); a word ref resolves to the first match at or after the scene start. Scene SFX are mounted at the top level of the video, so a **negative `at` leads into the cut** (e.g. `"at": -0.2` for a whoosh that peaks on the scene's first frame) and **tails ring past the scene's end** into the next one.
 
 So:
-- use **scene `sfx`** for hits that sit inside the scene (impacts on slams, clicks, pops, typing), so retiming the scene moves them;
-- use **global `audio.sfx`** for anything that crosses a cut: whoosh and riser lead-ins (which start before the cut) and long impact tails or sub-drops that ring into the next scene.
+- use **scene `sfx`** for anything tied to a scene, including whoosh and riser lead-ins (negative `at`) and impact tails, so retiming the scene moves them;
+- use **global `audio.sfx`** for sounds tied to the VO or the music rather than to a scene (a sub-drop on a word, a sting on a beat).
 
 ```json
 "audio": {"sfx": [
@@ -189,7 +189,7 @@ Rules:
 2. **Silence is never total.** The bed keeps playing under every breath (no breakdown reports dead air). A true dead-air gap reads as a mistake on a phone.
 3. **One designed breath per 30 s**, placed right before the turn or the moral. More than two and the pacing sags.
 4. **A "drop" is an absence of hits, not of music**: strip the SFX and hold one still card for 0.5–1 s, then land the next line with the biggest impact in the video.
-5. In the engine, a breath is simply a gap in the VO file. The ducker will raise the bed during it (§2.2), which is the right direction. Keep the jump small so it sounds like a swell rather than a pump.
+5. In the engine, a breath is simply a gap in the VO file. A gap of ≥0.6 s lets the ducker swell the bed (§2.2), which is the right direction; shorter gaps hold the bed down. Keep `musicVolume` close enough to `duckTo` that it sounds like a swell rather than a pump.
 
 ---
 
@@ -225,9 +225,9 @@ Rules:
 python3 tools/beats.py remotion/public/bed.mp3 work/beats.json
 # → {"tempo": 123.0, "beats": [...], "downbeats": [...], "onsets": [...], "duration": ...}
 ```
-- No VO: use `downbeats` (bars) as scene `start` values in seconds and `onsets` for `transition: flash/strobe/invert`, `camera.punch` and `text anim: slam` times.
-- With VO: build scene starts from word refs first, then compare each start to `beats` and move it onto the beat when the difference is ≤0.1 s.
-- There is no `{beat: n}` time reference yet, so paste the numbers in (§8).
+Copy the JSON under `remotion/public/` (or paste it inline) and set `"beats": "beats.json"` on the spec. Then:
+- No VO: use `{"downbeat": n}` (bars) as scene `start` values and `{"onset": n}` / `{"beat": n}` (0-based, with optional `offset`) for `transition: flash/strobe/invert`, `camera.punch`, SFX and `text anim: slam` times.
+- With VO: build scene starts from word refs, then add `"snap": "beat"` (or `"downbeat"`) to the scenes that should lock to the music: a start within ±0.12 s of a beat moves onto it.
 
 ---
 
@@ -254,18 +254,18 @@ Spec skeleton for a music-only edit:
  "scenes": [
    {"id": "s1", "start": 0.00, "transition": {"type": "strobe"}},
    {"id": "s2", "start": 1.95, "transition": {"type": "whip-left"}},
-   {"id": "s3", "start": 3.90, "transition": {"type": "flash"},
+   {"id": "s3", "start": 3.90, "duration": 1.95, "transition": {"type": "flash"},
     "sfx": [{"src": "sfx/impact.wav", "at": 0, "volume": 0.6}]}
  ]}
 ```
-(starts = consecutive downbeats from `beats.py`; here 123 BPM, one bar = 1.95 s. The whoosh leads the whip by 0.2 s and the riser ends on the flash, so both are global; the impact sits inside s3.)
+(starts = consecutive downbeats from `beats.py`; here 123 BPM, one bar = 1.95 s. With `"beats": "beats.json"` on the spec, write them as `{"downbeat": 0}`, `{"downbeat": 1}`, … instead. The whoosh leads the whip by 0.2 s and the riser ends on the flash; they can be global as here, or scene `sfx` with a negative `at`. The impact sits inside s3. **Give the last scene a `duration`** (or set top-level `duration`): with no VO, the video length is the last scene's start + duration, and without it the render is 1 s long.)
 
 ---
 
 ## 7. Cue-sheet checklist (per video)
 
 1. Bed chosen by register (§1.1), 100–140 BPM, at least as long as the video, starting on frame 0.
-2. `duckTo` set so the bed is ~12–18 dB under the VO, with `musicVolume` within ~2× of it (§2.2).
+2. `duckTo` set so the bed is ~12–18 dB under the VO, with `musicVolume` at most ~2–2.5× of it (§2.2); `musicStart` / `musicFadeOut` / `musicLoop` set so the track starts on a bar and ends cleanly.
 3. One whoosh per motion cut (lead 0.1–0.25 s), one impact per keyword slam and per principle or number card.
 4. Clicks on every cursor click, typing under every typewriter, pops on every badge or bubble.
 5. At least one topic-specific foley sound.
@@ -278,13 +278,13 @@ Spec skeleton for a music-only edit:
 
 ## 8. Engine gaps
 
-| Technique | Frequency in the references | Current engine | How it could be built |
+| Technique | Frequency in the references | Status | Engine today / how it could be built |
 |---|---|---|---|
-| Smooth ducking (attack/release, hold across short pauses) | the "no pumping" bed is near-universal; the VO has ~10 pauses ≥0.3 s per video | `duckTo` is a hard switch, active from word start − 0.15 s to word end + 0.25 s | `audio.duck: {to, attackFrames: 4, releaseFrames: 12, holdGap: 0.8}`: stay ducked across gaps <`holdGap` and interpolate volume with `ramp()` from `engine/lib/motion.ts` |
-| Music start offset, trim and end fade | v33 v18 (track resolves on the end card), v71 (2 s fade) | the bed always starts at 0 and loops | `audio.musicStart` (trim into the file), `audio.musicFadeOut` (s), `audio.loop: false` |
-| Bed thinning / per-section music level | v02 v75 v77 (thin), v16 v34 (build) | one global level | scene-level `musicVolume` override, interpolated over ~8 frames at the scene boundary |
-| Beat-referenced timing | 14/76 VO edits beat-locked; all 6 music-only edits | numbers pasted from `beats.py` | a `TimeRef` `{beat: n}` / `{downbeat: n}` / `{onset: n}`, with `spec.beats` pointing at the `beats.py` JSON (like `words`), plus an optional `snap: 0.1` on scene starts |
-| Automatic SFX per transition | whooshes on 79/82, impacts on 72/82 | SFX must be listed by hand | `transition.sfx` (`{src, lead, volume}`) attached per transition type, or a spec-level map `sfxKit: {zoom: "...", whip: "...", flash: "..."}` applied automatically |
-| Typing sounds tied to typewriter text | 43/82 | manual `sfx` entries | `text.typeSfx: {src, every: 1 char, volume}` (and the same for `ui search`/`prompt`), retriggering a short tick per revealed character |
-| Scene SFX that start before the cut or ring past it | every whoosh lead-in and riser (34/82) | scene `sfx` is clipped to the scene's span | mount scene SFX in a top-level `<Sequence>` at `scene.from + at` (like global SFX), so negative `at` and long tails work |
-| Pitch / variation on repeated pops and ticks | implied wherever 3+ pops run in a cluster (v11 v53) | no playback-rate option on SFX | `sfx[].rate` (pitch via `playbackRate`) and `sfx[].jitter` for random ±5% per hit |
+| Smooth ducking (attack/release, hold across short pauses) | the "no pumping" bed is near-universal; the VO has ~10 pauses ≥0.3 s per video | **DONE** | `audio.duckTo`: ~4 f attack, ~10 f release, holds through pauses < 0.6 s. Open: configurable attack/release/hold |
+| Music start offset, trim and end fade | v33 v18 (track resolves on the end card), v71 (2 s fade) | **DONE** | `audio.musicStart`, `audio.musicFadeOut` (default 0.6 s), `audio.musicLoop` (default `true`) |
+| Bed thinning / per-section music level | v02 v75 v77 (thin), v16 v34 (build) | **OPEN** | one global level today. Proposed: a scene-level `musicVolume` override, interpolated over ~8 frames at the scene boundary |
+| Beat-referenced timing | 14/76 VO edits beat-locked; all 6 music-only edits | **DONE** | `spec.beats` (the `beats.py` JSON or a path under `public/`), TimeRefs `{beat: n}` / `{downbeat: n}` / `{onset: n}`, and `scene.snap: "beat" \| "downbeat"` (±0.12 s) |
+| Automatic SFX per transition | whooshes on 79/82, impacts on 72/82 | **OPEN** | SFX are listed by hand. Proposed: `transition.sfx` (`{src, lead, volume}`), or a spec-level map `sfxKit: {zoom: "...", whip: "...", flash: "..."}` applied automatically |
+| Typing sounds tied to typewriter text | 43/82 | **OPEN** | manual `sfx` entries. Proposed: `text.typeSfx: {src, every: 1 char, volume}` (and the same for `ui search`/`prompt`), retriggering a short tick per revealed character |
+| Scene SFX that start before the cut or ring past it | every whoosh lead-in and riser (34/82) | **DONE** | scene `sfx` are mounted at the top level: negative `at` leads in, tails ring past the scene |
+| Pitch / variation on repeated pops and ticks | implied wherever 3+ pops run in a cluster (v11 v53) | **OPEN** | no playback-rate option on SFX. Proposed: `sfx[].rate` (pitch via `playbackRate`) and `sfx[].jitter` for random ±5% per hit |

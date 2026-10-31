@@ -108,5 +108,15 @@ export const videoDuration = (spec: VideoSpec, words: Word[]): number => {
 		return st !== undefined && s.duration ? Math.max(acc, st + s.duration) : acc;
 	}, 0);
 	const summed = spec.scenes.every((s) => s.start === undefined && s.duration) ? spec.scenes.reduce((a, s) => a + (s.duration ?? 0), 0) : 0;
-	return Math.max(lastWord + 0.6, sceneEnd, summed, 1);
+	// scenes placed by start time but without durations: last start + its duration (or 2.5 s)
+	let lastStart = 0;
+	let cursor = 0;
+	for (const s of spec.scenes) {
+		const st = resolveTime(s.start, words, 0, true) ?? cursor;
+		lastStart = st;
+		cursor = st + (s.duration ?? 0);
+	}
+	const last = spec.scenes[spec.scenes.length - 1];
+	const byStarts = lastStart + (last?.duration ?? 2.5);
+	return Math.max(lastWord + 0.6, sceneEnd, summed, byStarts, 1);
 };

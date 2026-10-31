@@ -106,7 +106,7 @@ Hue tracks mood (v19): cool blues and teals while the claim is optimistic, musta
      "camera": {"settle": 1.12, "settleR": 0.86},
      "layers": [
        {"type": "counter", "from": 0, "to": 12, "duration": 1.0, "mode": "flip", "style": "impact", "size": 30, "y": 40, "color": "#f2c230"},
-       {"type": "text", "text": "years to reach a shelf", "style": "marker", "size": 8, "y": 58, "caps": false, "at": 1.1, "anim": "letters", "stagger": 2}
+       {"type": "text", "text": "years to reach a shelf", "style": "marker", "size": 8, "y": 58, "caps": false, "color": "#f3ead8", "at": 1.1, "anim": "letters", "stagger": 2}
      ]},
     {"id": "moral", "duration": 2.6, "transition": {"type": "black", "frames": 1},
      "background": {"kind": "solid", "color": "#0e493c"},

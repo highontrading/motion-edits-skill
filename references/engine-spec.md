@@ -137,10 +137,10 @@ Label badge (`anim: "swap"` with `"A | B | C"` swaps words and the badge resizes
 ### `embed`
 `scene` (another scene's `id`), `mode`: `last` (frozen on that scene's final frame, the default) or `live`, `radius`, `aspect`, `shadow`. It renders that scene inside the box: the scene becomes a phone screen, TV, post or window. Pair it with `transition: {type: "shrink"}` for nested reveals.
 
-Every positioned layer also takes `loop` (idle motion after the entrance: `bob`, `sway`, `pulse`, `breathe` or `blink`), `smooth` (stays at full fps in a stepped scene), `blur` (px), `tilt: [rotX, rotY]` and `tiltTo` (3D planes; UI at 6–18°), and `depth` (parallax and rack-focus plane: <1 far, >1 near).
+Every positioned layer also takes `loop` (idle motion after the entrance: `bob`, `sway`, `pulse`, `breathe` or `blink`), `smooth` (stays at full fps in a stepped scene), `blur` (px), `tilt: [rotX, rotY]` and `tiltTo` (3D planes; UI at 6–18°), and `depth` (parallax and rack-focus plane: <1 far, >1 near). `blur` is the depth-of-field tool: a huge blurred copy of a word in the foreground.
 
 ### `particles`
-`kind`: `dust` · `sparkle` · `embers` · `bokeh` · `confetti` · `snow`, plus `count`, `color`, `size`, `speed`, `seed`, `opacity`, `area: [x, y, w, h]` %. Seen in 41/82 references; use for atmosphere at low counts. Use it for depth-of-field planes, e.g. a huge blurred copy of a word in the foreground.
+`kind`: `dust` · `sparkle` · `embers` · `bokeh` · `confetti` · `snow`, plus `count`, `color`, `size`, `speed`, `seed`, `opacity`, `area: [x, y, w, h]` %. Seen in 41/82 references; use for atmosphere at low counts. (For depth-of-field planes, e.g. a huge blurred copy of a word in the foreground, use a layer's `blur` + `depth` instead.)
 
 ### `cursor`
 `path: [{x, y, t, click}]` (t = seconds in the scene). A click dips the cursor and pulses a ring.

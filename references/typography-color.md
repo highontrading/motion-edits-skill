@@ -29,24 +29,24 @@ What the 82 reference videos do with type and colour, turned into rules that map
 
 | Class | Typical fonts in refs | Any | Primary voice | Register / job | Engine `style` | Free Google alternative if missing |
 |---|---|---|---|---|---|---|
-| **Heavy condensed grotesk**, caps | Anton, Bebas Neue, Oswald Bold, League Gothic, Druk Condensed, Impact | 32 | ≈14 | Poster keyword, slogans, section titles, burned-in captions | `impact` (Anton) · `condensed` (Oswald 500/700) | Bebas Neue, League Gothic, Big Shoulders Display Black, Antonio |
+| **Heavy condensed grotesk**, caps | Anton, Bebas Neue, Oswald Bold, League Gothic, Druk Condensed, Impact | 32 | ≈14 | Poster keyword, slogans, section titles, burned-in captions | `impact` (Anton) · `condensed` (Oswald 500/700) · `bebas` (Bebas Neue) | Bebas Neue, League Gothic, Big Shoulders Display Black, Antonio |
 | **Wide / extended ultra-heavy grotesk**, caps | Archivo Black, Helvetica Neue Black Extended, Druk Wide, Monument Extended | 28 | ≈12 | Collage hero stacks, alarm words, statement cards | `grotesk` (Archivo Black, moderately wide) | For truly extended type: Archivo (variable, wdth 125, wght 900), Unbounded Black, Rubik Mono One, Krona One |
-| **Heavy geometric sans**, caps | Montserrat Black/ExtraBold, Gilroy Black, Poppins Black, Futura Heavy | 27 | ≈8 | Hero caps with a softer, rounder voice; badge text | none (Poppins 800/900 is loaded but has no style name) → **gap** | Montserrat 900, Poppins 900, Outfit 900 |
-| **Rounded heavy display** | Bowlby One, Rubik Black, Lilita One, Fredoka, Dela Gothic One, Cooper Black, SF Pro Rounded | 34 | ≈7 | CTA stickers, playful titles, numbers, "toy" worlds | none → **gap** | Bowlby One, Rubik 900, Lilita One, Fredoka 700, Dela Gothic One, Titan One, Nunito 900 (for SF Rounded) |
+| **Heavy geometric sans**, caps | Montserrat Black/ExtraBold, Gilroy Black, Poppins Black, Futura Heavy | 27 | ≈8 | Hero caps with a softer, rounder voice; badge text | `geometric` (Poppins 900; `weight: 800` for ExtraBold) | Montserrat 900, Poppins 900, Outfit 900 |
+| **Rounded heavy display** | Bowlby One, Rubik Black, Lilita One, Fredoka, Dela Gothic One, Cooper Black, SF Pro Rounded | 34 | ≈7 | CTA stickers, playful titles, numbers, "toy" worlds | `rounded` (Nunito 900, SF Pro Rounded class) | Bowlby One, Rubik 900, Lilita One, Fredoka 700, Dela Gothic One, Titan One, Nunito 900 (for SF Rounded) |
 | **Clean neo-grotesk**, sentence case | Inter, SF Pro, Helvetica Neue, Neue Haas, Geist | ≈60 (incl. UI copy) | ≈22 | Keynote/SaaS promos, UI text, small "confident" captions | `clean` (Inter 600) | Inter (400–900), Inter Tight, Geist, Archivo |
-| **Geometric/humanist product sans** | Poppins, Google/Product Sans, Sora, Plus Jakarta, Figtree | 22 | ≈6 | Quiet captions, whisper lines, soft-UI products | none (closest is `clean`) | Poppins 400–600, Figtree, Plus Jakarta Sans, Sora, Outfit, DM Sans |
+| **Geometric/humanist product sans** | Poppins, Google/Product Sans, Sora, Plus Jakarta, Figtree | 22 | ≈6 | Quiet captions, whisper lines, soft-UI products | `geometric` with `caps: false, weight: 600` (Poppins 600), or `clean` | Poppins 400–600, Figtree, Plus Jakarta Sans, Sora, Outfit, DM Sans |
 | **Italic serif** (condensed, high contrast) | Instrument Serif Italic, Editorial New Italic, Playfair Italic | 21 | ≈10 | History, biography, "voice/attitude", documentary narration | `serif-italic` (Instrument Serif) | Instrument Serif; for heavy italic payoffs use Playfair Display Black Italic or DM Serif Display Italic |
-| **Roman display serif / Didone** | Playfair, Bodoni, Didot, DM Serif Display, Gloock | ≈19 | ≈3 | Emotional keyword, mastheads, "luxury" lockups | `serif` (Playfair 700/900) | Playfair Display, Bodoni Moda, DM Serif Display, Gloock, Fraunces Black |
+| **Roman display serif / Didone** | Playfair, Bodoni, Didot, DM Serif Display, Gloock | ≈19 | ≈3 | Emotional keyword, mastheads, "luxury" lockups | `serif` (Playfair 700/900) · `didone` (DM Serif Display) | Playfair Display, Bodoni Moda, DM Serif Display, Gloock, Fraunces Black |
 | **Text / transitional serif** | Lora, Libre Baskerville, Newsreader, Source Serif, Times | ≈10 | ≈2 | Subtitle pill (v25), book-ish openers (v27), motivational (v42) | `serif` (approx.) | Newsreader, Source Serif 4, Libre Caslon, Lora, Tinos |
-| **Slab / wood-type / Clarendon** | Rockwell, Clarendon, Rye, Cooper | 16 | 0 | Americana, history plaques, "old poster" asides | none → **gap** | Rye, Alfa Slab One, Zilla Slab 700, Roboto Slab 900 |
+| **Slab / wood-type / Clarendon** | Rockwell, Clarendon, Rye, Cooper | 16 | 0 | Americana, history plaques, "old poster" asides | `slab` (Roboto Slab 800) | Rye, Alfa Slab One, Zilla Slab 700, Roboto Slab 900 |
 | **Inscriptional caps** | Cinzel, Trajan | 2 | 1 (v32) | Ancient/museum headings | none | Cinzel, Cinzel Decorative |
-| **Typewriter slab** | Special Elite, Courier Prime, American Typewriter | 16 | 2 (v30 v63 stats) | "Plain truth", dates, stats, vote bars, desk notes | `mono` (JetBrains, not typewriter) | Special Elite, Courier Prime |
+| **Typewriter slab** | Special Elite, Courier Prime, American Typewriter | 16 | 2 (v30 v63 stats) | "Plain truth", dates, stats, vote bars, desk notes | `typewriter` (Special Elite) | Special Elite, Courier Prime |
 | **Code monospace** | JetBrains Mono, IBM Plex Mono, Roboto Mono | 11 | 1 (v18) | HUD labels, terminals, code jokes, label-maker strips | `mono` (JetBrains 500/700) | (covered) |
 | **Casual handwriting / marker** | Caveat, Gochi Hand, Patrick Hand, Permanent Marker | ≈28 | 2 (v27 v25 notes) | Sticky notes, annotations, asides, "human" voice | `script` (Caveat 700) · `marker` (Permanent Marker) | Gochi Hand, Patrick Hand, Kalam, Caveat Brush |
-| **Thin monoline signature script** | Allura, Great Vibes, Amsterdam | 9 | 0 | Names, poetic parallels, a small colour echo under a headline | none → **gap** | Allura, Great Vibes, Mrs Saint Delafield, Monsieur La Doulaise |
+| **Thin monoline signature script** | Allura, Great Vibes, Amsterdam | 9 | 0 | Names, poetic parallels, a small colour echo under a headline | `signature` (Mrs Saint Delafield) | Allura, Great Vibes, Mrs Saint Delafield, Monsieur La Doulaise |
 | **Tall condensed marker** | Shadows Into Light, Reenie Beanie | 2 (v82 v83) | 2 | Single punch noun next to a tight grotesk | none | Shadows Into Light, Reenie Beanie |
 | **Pixel / bitmap** | Silkscreen, Pixelify Sans, VT323, Press Start | 11 | 1 (v70) | Game/retro worlds, time jumps, LCD props, CTA URLs | `pixel` (VT323, thin) | Pixelify Sans 700, Silkscreen, Jersey 10, Press Start 2P (chunkier than VT323) |
-| **Techno / squared** | Eurostile Ext, Orbitron, Audiowide, Bungee, Russo One | 6 | 0 | URL/brand labels in CTAs | none | Orbitron, Audiowide, Bungee, Russo One |
+| **Techno / squared** | Eurostile Ext, Orbitron, Audiowide, Bungee, Russo One | 6 | 0 | URL/brand labels in CTAs | `tech` (Space Grotesk 700) is the nearest; squared display faces are a gap | Orbitron, Audiowide, Bungee, Russo One |
 | **Comic** | Bangers, Komika | 7 | 0 | Speech bubbles | none (`ui.bubble` uses Inter 800) | Bangers |
 | **Blackletter** | Old English, UnifrakturCook | 3 | 0 | Newspaper mastheads only | none | UnifrakturCook |
 
@@ -83,7 +83,7 @@ The keyword is heavy and large; connectors ("the", "is", "how you") are light or
 Rules:
 - **Pick one band per video and stay in it.** Collage explainers live in the poster band; Apple/SaaS promos in the extreme band (everything small except 1–3 hero words); documentaries in the calm band.
 - Whisper words are 8–15% fw (v54), 10–15% fw (v62) or 20–30% fw (v34). Hero words are 55–95% fw.
-- **Weight contrast inside one family** gives editorial polish with zero new fonts: Black + Light Italic (v01), Light + Heavy Italic at 1.8× (v74), Regular + SemiBold (v38, v76). *Engine:* two `text` layers (`clean` cannot change weight yet; see gap G1).
+- **Weight contrast inside one family** gives editorial polish with zero new fonts: Black + Light Italic (v01), Light + Heavy Italic at 1.8× (v74), Regular + SemiBold (v38, v76). *Engine:* two `text` layers with different `weight` (e.g. `clean` at `weight: 800` over `clean` at `weight: 400`). Only loaded weights render true: Inter 400/600/800, Poppins 600/800/900, Nunito 300/800/900, Playfair 700/900, Roboto Slab 400/800, Space Grotesk 400/700; other values are synthesised or snap to the nearest. There is no Inter Light or Light Italic (gap G1).
 - The **size see-saw** is small – BIG – small ("IT / REVEALS / you.", v42; "Forty five / **billion** / dollars", v24; "SUDDENLY / **LONG SHIPS** / APPEAR…", v32).
 - **Mixed-scale satellite lockup**: the hero word at 55–70% fw with tiny satellite words at ~12% of its size orbiting it (v80, v54, v50).
 
@@ -111,7 +111,7 @@ Split a 2-line stack into **setup line in neutral, payoff line in accent**, same
 | Split around subject | the word divided either side of a body or trophy ("DO \| WN", "MORE \| WEIGHT" at 38% each) | v16 v23 v77 |
 | Two-column flank | caption words in two columns either side of a phone, 25% in from each edge | v46 v51 |
 
-*Engine:* stacks = `\n` breaks in one `text` layer (all lines share one size). Stacks with different line sizes need one layer per line (gap G3).
+*Engine:* stacks = `\n` breaks in one `text` layer. Per-line sizes use `lineSizes`, e.g. `"text": "IT\nREVEALS\nyou.", "lineSizes": [0.45, 1.6, 0.45]` for the small – BIG – small see-saw. Different fonts or colours per line still need one layer per line.
 
 ### 2.4 Cross-family pairings that recur
 
@@ -170,7 +170,7 @@ Chunking: 2–5 words per chunk (pill) or 1–4 (bar). Switch on the first word'
 | **Letterboxed window inside 9:16** | type inside the band (e.g. 720×770 band at y 255–1025 px of 1280), active line at y 45–60% | — | the bars themselves | v04 v76 v77 v78 v79 |
 | **Print-frame wrapper** (3:4 page around a 9:16 window) | headline in the top 20%, 36–38 px@720 margins | vote/CTA bar in the bottom 7% | — | v40 v41 v43 |
 
-*Engine:* `y` is the layer centre in %; the default 40 is already the upper-middle band. Letterbox with `finish.letterbox` (% of height per bar; bars animate in ~7 frames when the value changes between scenes).
+*Engine:* `y` is the layer centre in %; the default 40 is already the upper-middle band. Letterbox with `scene.letterbox` (% of height per bar; the bars animate in ~6 frames when the value changes between scenes). `finish.letterbox` is a static bar over the whole video.
 
 ---
 
@@ -184,19 +184,19 @@ Frequencies count videos whose typography notes describe the treatment.
 | **Doubled / misregistration offset** | 7 | same-colour copy at ~40% opacity (v05); hard red copy +4 px@720 under yellow (v19); RGB-offset outline ±4 px on cut-outs (v28) | print/retro look on a hero claim | `fx.doubled` (same colour only; red-under-yellow needs a 2nd layer) |
 | **Outline / stroke** | ≈25 (type only) | 2–4 px contrasting outline + dark extrude (v60 section titles); 3 px black stroke on yellow (v04 v16); outline-only neon 2 px + 8–12 px glow (v34); hollow 1–1.5 px at 40% opacity behind content (v42); white 6–8 px "sticker outline" (v76 v80) | titles, sticker words, ghost layers | `fx: {stroke, strokeColor}` (stroke alone = hollow; with extrude = filled) |
 | **Glow / bloom on type** | 39 | white 8–12 px @40% on photos (v24 v26 v41 v54); keyword colour, radius ≈0.8× cap height @60% (v71); yellow 20 px (v64); lime 20 px @60% + olive drop shadow 3 px (v69) | dark scenes, backlit/neon looks, the emotional word | `fx.glow: "#hex"` (two-ring halo) |
-| **Hard drop shadow** | ≈8 | 4 px offset, 0 blur, black (v14); 6 px hard (v70 pixel); emboss shadow 6 px / blur 8 / 60% (v47) | sticker and pixel looks | `fx.shadow` is soft only → partial gap |
+| **Hard drop shadow** | ≈8 | 4 px offset, 0 blur, black (v14); 6 px hard (v70 pixel); emboss shadow 6 px / blur 8 / 60% (v47) | sticker and pixel looks | `fx.doubled` (hard same-colour offset copy at 7 px/1080); `fx.shadow` is soft; a black hard shadow is a gap (G11) |
 | **Highlight bar / marker sweep** | 19 | box wipes L→R behind the word in ~4 frames (v74); yellow highlighter on a headline (v31 v67); lime highlighter pill at ~45% of line size (v80); red box caret-wipe (v03) | the moral's pivot word, names, UI labels | `highlight: "#hex"` (skewed bar, scaleX wipe) |
 | **Drawn marks** (ellipse, underline, scribble, strike, X) | 35 | marker ellipse ~10 px stroke@720 in red `#c92f31` (v37) or yellow/lime (v22 v24 v73); a 2 px underline that grows with the typing (v63 v67); strike-through L→R (v07) | the one key number/word per scene | `shape` `ellipse`/`underline`/`scribble`/`cross` + `draw` frames; `text.underline` |
 | **Label badges, tags, pills, tape** | 65 (all containers) | solid rect r 6 px with white heavy caps; torn-paper strips; tape at −2°; tilted luggage tags −30° (v14); name tags on solid red/blue rotated −3…−8° (v56 v67) | names, verbs that change, list items | `badge` `variant: solid\|pill\|tape\|outline` |
 | **Stitched badge** | 7 | dashed inner border 1–2 px, inset ~6 px; maroon, black, green, yellow `#f2c40f`, gold `#e0b40a` | warm "patch" labels in collage explainers | `badge variant: "stitched"` |
-| **Behind-subject placement** | 31 (type notes), ≈40 incl. layout notes | keyword 74–100% fw behind a cut-out that hides 1–3 letters (v06 v37 v38 v45 v68); covered letters redrawn as a 1 px outline over the body (v37); type sandwiched between a fg prop and the bg (v23 v53) | almost every collage poster | `z` order: text layer below an `image` `cutout` layer. Footage needs a roto matte (gap G5) |
-| **In-scene / prop-surface text** | ≈30 | perspective-matched paint on a pitch, road or facade (v16 v34 v56); multiplied onto a notebook at −12° (v11); burned into logs (v32); 3D metal words standing on a TV (v43); glowing signage on a building (v73) | making words "found in the world" | 2D `rotate` + `fx.blend: "multiply"`; true perspective/skew is missing (gap G7) |
+| **Behind-subject placement** | 31 (type notes), ≈40 incl. layout notes | keyword 74–100% fw behind a cut-out that hides 1–3 letters (v06 v37 v38 v45 v68); covered letters redrawn as a 1 px outline over the body (v37); type sandwiched between a fg prop and the bg (v23 v53) | almost every collage poster | `z` order: text layer below an `image` `cutout` layer. Footage: `video` background → `text` → `video` `transparent: true` matte from `tools/matte.py` (see `footage-editing.md` §3) |
+| **In-scene / prop-surface text** | ≈30 | perspective-matched paint on a pitch, road or facade (v16 v34 v56); multiplied onto a notebook at −12° (v11); burned into logs (v32); 3D metal words standing on a TV (v43); glowing signage on a building (v73) | making words "found in the world" | `tilt: [rotX, rotY]` for perspective (55–70° rotateX for floor type), `rotate`, `fx.blend: "multiply"`; skew and perspective-matched tracking are gaps (G7) |
 | **Karaoke / grey→ink reveal** | 17 | unspoken words grey `#7a7a7a`–`#9a9a9a` (or 30–40% grey) → ink over 6–10 frames as they are spoken (v19 v29 v61 v75 v76 v82); spoken word green, others grey (v77) | calm SaaS, docs, quote cards | `anim: "karaoke"`, `dimColor`, `sync: true`; `anim: "ghost"` for small-grey→solid |
 | **Colour leading edge on typing** | 5 | new chars cyan `#28f8e0` → white over 6–8 f (v07); last 6–10 chars cyan or rainbow (v46 v51); new letters lavender at 20% → ink over 8 f (v55); typed chars orange → white (v58) | anything typed; "AI generating" | `anim: "typewriter"`, `leadColor`, `cps` |
 | **Word blur-in** | ≈12 | Gaussian 8 px → 0, opacity 0→1, tracking +0.2 em → 0, 4–8 f (v51 v61 v74) | premium calm captions | `anim: "focus"` |
 | **Giant blurred echo / DOF type** | ≈8 | same word ×2.5–3.5, pale grey `#e3e3e3` or 35% opacity, cropped, behind (v69 v71 v76 v77); phrase huge and blurred 6–10 px in fg + bg, sharp in the middle (v81); offset ghost copy 35–40% opacity, 12–25 px blur, +0.6 em down (v82 v83) | depth without imagery | duplicate `text` layers with `blur`, `opacity`, `z` |
-| **Gradient fill** | 13 | white → light grey vertical (`#fff → #c8c8c8`, v20 v66); cream → taupe L→R, "lit from left" (v38); purple gradient on the active list item (v55) | silver/metal headlines | gap G4 |
-| **Halftone / texture inside letters** | ≈8 | halftone fade-out to the bottom (v28); dot fill (v15 v80); grunge/distressed fill (v08 v41 v62); grain inside letters (v76) | print looks | `finish.halftone` covers the whole frame only (gap G4) |
+| **Gradient fill** | 13 | white → light grey vertical (`#fff → #c8c8c8`, v20 v66); cream → taupe L→R, "lit from left" (v38); purple gradient on the active list item (v55) | silver/metal headlines | `fill: "linear-gradient(180deg, #fff, #c8c8c8)"` (any CSS gradient) |
+| **Halftone / texture inside letters** | ≈8 | halftone fade-out to the bottom (v28); dot fill (v15 v80); grunge/distressed fill (v08 v41 v62); grain inside letters (v76) | print looks | `fill: "textures/halftone.png"` (an image `src` under `public/` fills the letters); a procedural halftone fill is a gap (G4) |
 | **Difference / multiply blend** | 9 | white type flips to blue over a yellow disc (v17); letters overlapping a red "?" flip to white (v21); multiply type onto a coloured card (v14 v19) | type crossing shapes | `fx.blend: "difference"\|"multiply"` |
 | **One word at a time** | 9 | one italic serif word per spoken word, centred (v29 v47 v56 v64 v67) | ceremonial moral, reflective lines | `anim: "words"` + `sync`, or `anim: "swap"` |
 | **Container leads, words trail** | ≈4 | an empty pill pops ~0.1 s before the phrase, then fills word by word (v44) | quotes, badges | `badge` + `anim: "words"` |
@@ -282,7 +282,7 @@ Rule: alternate between luma < 60 and luma > 140 on consecutive scenes, and hold
 | **Colour returns at the payoff** | sat 4 → 36 on "Today…" (v31); 0 → 78 over 9 f (v23) | v23 v31 | per-scene `grade.saturation` |
 | **Past = B/W, present = colour** | — | v31 v34 v48 | `grade.saturation: 0` for past scenes |
 | **Same set, regraded** for a reversal | sepia triumph → cold blue-grey backlash on the same stage | v26 | `grade.tint` |
-| **Tint the losers** | non-chosen elements wash to `#c0303a` at ~70% over 0.4 s | v20 | gap (per-layer tint) |
+| **Tint the losers** | non-chosen elements wash to `#c0303a` at ~70% over 0.4 s | v20 | gap (per-layer tint, G8); approximate with `opacity` + `grayscale` on image losers |
 | **Colour only as light** (dark UI) | surfaces black and dark glass; accent spent only on rims, glows, carets and pressed states | v33 v51 v59 | `fx.glow`, `ui.accent` |
 
 ### 5.6 Grading and finish amounts
@@ -392,20 +392,22 @@ Counts are videos whose background notes mention the surface at least once. Most
 
 ## 8. Engine gaps (technique → frequency → how to build)
 
-| ID | Gap | Frequency | Build |
-|---|---|---|---|
-| G1 | **Per-layer font weight** (Black + Light Italic in one family; Regular → SemiBold) | weight contrast ≈15; weight-morph entrance 1 (v57) | add `weight` to `TextLayer`; load Inter 300–900 and Poppins 300–900 in `lib/fonts.ts`. Morph = animate `font-variation-settings` on Inter's variable axis |
-| G2 | **Missing families**: rounded heavy, heavy geometric, typewriter, signature script, tall marker, slab/wood-type, techno, comic, blackletter, Cinzel | rounded 34, heavy geometric 27, slab 16, typewriter 16, signature 9, comic 7, techno 6 | add styles `rounded` (Bowlby One / Rubik 900), `geometric` (Poppins 900, already loaded), `typewriter` (Special Elite), `signature` (Allura), `slab` (Alfa Slab One / Rye), `techno` (Orbitron), `comic` (Bangers), `hand` (Gochi Hand / Shadows Into Light) |
-| G3 | **Per-line / per-word sizes in one stack** (lead-in + payoff, see-saw) | 41 | `lineSizes: [0.4, 1, 0.5]` multipliers, or `sizes: {word: mult}`; meanwhile stack separate layers |
-| G4 | **Gradient and texture fills** (silver gradient, lit-from-left, halftone/grunge inside letters) | gradient 13, texture ≈8 | `fill: {gradient: [c1, c2], angle}` via `background-clip: text`; `fill: {pattern: "halftone"}` as an SVG mask |
-| G5 | **Text behind a subject in footage** (roto) | ≈6 footage cases (v41 v45 v56 v73 v77) | `video` layer with `matte` (alpha video or per-frame PNG sequence) drawn above the text; for stills use an `image` cut-out with higher `z` (works now) |
-| G6 | **Covered-letter outline read-through** | 1 (v37) | duplicate the text layer with `fx.stroke` above the cut-out (works now, manual) |
-| G7 | **Perspective / skew text on surfaces** (pitch, road, facade, notebook) | ≈10 | add `perspective`, `rotateX/Y`, `skewX` to the position props |
-| G8 | **Per-layer tint / grade** (tint losers red, keep hero in colour while the world drains) | ≈8 | `tint`, `saturation` on any layer; make `grade.drainAt` skip layers flagged `keepColor` |
-| G9 | **Colour sweep fill** (keyword colour fills L→R over 12–20 f) | 3 (v32 v71 v79) | animate a gradient stop on `background-clip: text` |
-| G10 | **Text on a path / circular text** | 5 (v12 v54 v78 v82) | SVG `<textPath>`; `path: "arc"\|"circle"`, `radius` |
-| G11 | **Hard (0-blur) drop shadow** and colour misregistration copy | ≈10 | `fx.hardShadow: {x, y, color}`; `fx.offsetCopy: {x, y, color}` |
-| G12 | **Tracking collapse** (+400 → 0) and glyph-to-icon substitution | 3 (v57 v75), 1 (v59) | animate `letterSpacing`; `icons: {char: src}` inline images at cap height |
-| G13 | **Selection-handle box** (dashed rect + 4 square handles growing with the text) | 4 (v10 v45 v52 v57) | `text.frame: "selection"` |
-| G14 | **Backgrounds**: cutting mat with rulers, sunburst rays, chalkboard, harlequin, blueprint, lens barrel warp | mat 15, sunburst 8, chalk 7, blueprint 6 | new `background.kind`s; barrel warp as an SVG displacement filter on the background only |
-| G15 | **Vertical line screen** (ribbed paper, v24 v73) | 2 | `finish.scanlines` with `orientation: "vertical"` |
+Status checked against `remotion/src/engine/types.ts`. **DONE** = use the named field; **PARTIAL** = the field covers the common case, the rest is open; **OPEN** = no field yet.
+
+| ID | Gap | Frequency | Status | Build |
+|---|---|---|---|---|
+| G1 | **Per-layer font weight** (Black + Light Italic in one family; Regular → SemiBold) | weight contrast ≈15; weight-morph entrance 1 (v57) | **PARTIAL**: `weight` on `text` | Loaded weights: Inter 400/600/800, Poppins 600/800/900, Nunito 300/800/900, Playfair 700/900 (+ italic 400/700), Roboto Slab 400/800, Space Grotesk 400/700. Open: Inter 300 / Light Italic, and the weight-morph entrance (animate `font-variation-settings` on Inter's variable axis) |
+| G2 | **Missing families**: rounded heavy, heavy geometric, typewriter, signature script, tall marker, slab/wood-type, techno, comic, blackletter, Cinzel | rounded 34, heavy geometric 27, slab 16, typewriter 16, signature 9, comic 7, techno 6 | **PARTIAL**: `geometric` (Poppins 900), `rounded` (Nunito 900), `slab` (Roboto Slab 800), `typewriter` (Special Elite), `signature` (Mrs Saint Delafield), `bebas`, `didone` (DM Serif Display), `tech` (Space Grotesk) | Open: comic (Bangers), squared techno (Orbitron), tall marker (Shadows Into Light), blackletter, Cinzel |
+| G3 | **Per-line / per-word sizes in one stack** (lead-in + payoff, see-saw) | 41 | **DONE** (per line): `lineSizes: [0.45, 1.6, 0.45]` | Open: per-word sizes inside one line (`sizes: {word: mult}`); stack separate layers meanwhile |
+| G4 | **Gradient and texture fills** (silver gradient, lit-from-left, halftone/grunge inside letters) | gradient 13, texture ≈8 | **DONE**: `fill` = a CSS gradient string or an image `src` | Open: a procedural halftone/pattern fill; `fill` with `fx.extrude` (the extrude shadows paint under the transparent glyphs) |
+| G5 | **Text behind a subject in footage** (roto) | ≈6 footage cases (v41 v45 v56 v73 v77) | **DONE** (by hand): `video` `transparent: true` + `tools/matte.py` | Stack `video` background → text → matte `video` (`transparent: true, muted: true`) with the same `trimStart`; for stills use an `image` cut-out with higher `z`. Open: a `foreground` field that keeps plate and matte locked |
+| G6 | **Covered-letter outline read-through** | 1 (v37) | **DONE** (manual) | duplicate the text layer with `fx.stroke` above the cut-out |
+| G7 | **Perspective / skew text on surfaces** (pitch, road, facade, notebook) | ≈10 | **PARTIAL**: `tilt: [rotX, rotY]`, `tiltTo` | Open: `skewX`, rotateZ inside the tilt, a custom `perspective` |
+| G8 | **Per-layer tint / grade** (tint losers red, keep hero in colour while the world drains) | ≈8 | **OPEN** | `tint`, `saturation` on any layer; make `grade.drainAt` skip layers flagged `keepColor`. Today: `image.grayscale`, `video.grayscale` |
+| G9 | **Colour sweep fill** (keyword colour fills L→R over 12–20 f) | 3 (v32 v71 v79) | **OPEN** | animate a gradient stop on `background-clip: text` (the static `fill` exists) |
+| G10 | **Text on a path / circular text** | 5 (v12 v54 v78 v82) | **OPEN** | SVG `<textPath>`; `path: "arc"\|"circle"`, `radius` |
+| G11 | **Hard (0-blur) drop shadow** and colour misregistration copy | ≈10 | **PARTIAL**: `fx.doubled` (same-colour offset copy) | Open: `fx.hardShadow: {x, y, color}`, `fx.offsetCopy: {x, y, color}`; meanwhile a second text layer offset by 0.4–0.6% fw |
+| G12 | **Tracking collapse** (+400 → 0) and glyph-to-icon substitution | 3 (v57 v75), 1 (v59) | **OPEN** | animate `letterSpacing`; `icons: {char: src}` inline images at cap height |
+| G13 | **Selection-handle box** (dashed rect + 4 square handles growing with the text) | 4 (v10 v45 v52 v57) | **OPEN** | `text.frame: "selection"` |
+| G14 | **Backgrounds**: cutting mat with rulers, sunburst rays, chalkboard, harlequin, blueprint, lens barrel warp | mat 15, sunburst 8, chalk 7, blueprint 6 | **OPEN** | new `background.kind`s; barrel warp as an SVG displacement filter on the background only |
+| G15 | **Vertical line screen** (ribbed paper, v24 v73) | 2 | **OPEN** | `finish.scanlines` with `orientation: "vertical"` |

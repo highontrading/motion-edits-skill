@@ -25,7 +25,8 @@ export const UIView: React.FC<{layer: UILayer; startFrame: number}> = ({layer, s
 	const {fps, width} = useVideoConfig();
 	const {palette} = useSpec();
 	const frameOf = useSceneFrameOf();
-	const u = width / 1080;
+	// sizes scale with the layer box (designed at w = 80% of a 1080-wide frame)
+	const u = (width / 1080) * ((layer.w ?? 80) / 80);
 	const f = frame - startFrame;
 	const dark = layer.theme === 'dark';
 	const surface = dark ? '#16171b' : '#f7f7f5';

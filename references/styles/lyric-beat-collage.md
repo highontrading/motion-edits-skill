@@ -64,7 +64,7 @@ Saturation is a beat-level switch: crush it 65 → 0 in 4 f between lines, or bl
 | (+2) | CTA | dark card, one keyword in quotes, held 1 s | `black` |
 
 ## 7. Example VideoSpec (1:1, asset-free, 120 BPM ⇒ beat = 0.5 s)
-Scene starts are beat refs against an inline 120 BPM grid. For a real track, replace `beats` with the `tools/beats.py` output path and add `"audio": {"music": "PLACEHOLDER_track.mp3"}`. With a VO, anchor on words instead and add `"snap": "beat"`. **Always set the top-level `duration` when scenes start on beat refs.** The engine currently computes the composition length before it registers the beat grid, so without it the video comes out 1 s long.
+Scene starts are beat refs against an inline 120 BPM grid. For a real track, replace `beats` with the `tools/beats.py` output path and add `"audio": {"music": "PLACEHOLDER_track.mp3"}`. With a VO, anchor on words instead and add `"snap": "beat"`. **Give the last scene a `duration` (or set the top-level `duration`).** With no VO, the video length is the last scene's start + duration; without either, the video comes out 1 s long. (Frame 45 here is the 1-frame white `flash` into `line2`, on beat 3.)
 ```json
 {
   "width": 1080, "height": 1080, "fps": 30, "animFps": 15, "duration": 10.5,
@@ -77,16 +77,16 @@ Scene starts are beat refs against an inline 120 BPM grid. For a real track, rep
      "layers": [
        {"type": "text", "text": "KEEP", "style": "grotesk", "size": 22, "y": 30, "anim": "slam"},
        {"type": "text", "text": "your", "style": "script", "size": 14, "y": 47, "caps": false, "color": "#e07b2a", "at": 0.5, "anim": "pop", "fx": {"extrude": 5, "extrudeColor": "#7a4318"}},
-       {"type": "text", "text": "HEAD DOWN", "style": "impact", "size": 26, "y": 66, "at": 1.0, "color": "#060606", "anim": "letters", "stagger": 1}
+       {"type": "text", "text": "HEAD DOWN", "style": "impact", "size": 17, "y": 70, "at": 1.0, "color": "#060606", "anim": "letters", "stagger": 1}
      ]},
     {"id": "line2", "start": {"beat": 3}, "transition": {"type": "flash", "frames": 1}, "background": {"kind": "radial", "color": "#3a3a3a", "color2": "#060606"}, "camera": {"settle": 1.12, "settleR": 0.8, "punch": [{"at": 1.0, "scale": 1.1, "frames": 4}]},
      "layers": [
        {"type": "badge", "text": "WHILE THEY", "variant": "solid", "color": "#ffffff", "textColor": "#060606", "size": 6, "y": 30, "anim": "wipe"},
-       {"type": "text", "text": "TALK\nTALK\nTALK", "style": "impact", "size": 20, "y": 62, "lineHeight": 0.82, "at": 1.0, "anim": "words", "stagger": 2}
+       {"type": "text", "text": "TALK\nTALK\nTALK", "style": "impact", "size": 20, "y": 62, "lineHeight": 0.9, "at": 1.0, "anim": "words", "stagger": 2}
      ]},
     {"id": "line3-scroll", "start": {"beat": 7}, "transition": {"type": "whip-left"}, "background": {"kind": "solid", "color": "#880a0c"}, "camera": {"settle": 1.1, "settleR": 0.8, "pan": [{"at": 0.2, "x": 80, "y": 50, "frames": 40}]},
      "layers": [
-       {"type": "text", "text": "LOUDERRRRRR", "style": "impact", "size": 40, "x": 50, "y": 50, "w": 260, "color": "#ffffff", "anim": "mask", "fx": {"stroke": 3, "strokeColor": "#4e0c09", "shadow": true}}
+       {"type": "text", "text": "LOUDERRRRRR", "style": "impact", "size": 40, "x": 50, "y": 50, "w": 260, "color": "#ffffff", "anim": "mask", "fx": {"extrude": 4, "extrudeColor": "#4e0c09", "shadow": true}}
      ]},
     {"id": "line4", "start": {"beat": 11}, "transition": {"type": "desat"}, "background": {"kind": "halftone", "color": "#1e3d22"}, "camera": {"settle": 1.12, "settleR": 0.8},
      "layers": [
@@ -95,8 +95,8 @@ Scene starts are beat refs against an inline 120 BPM grid. For a real track, rep
      ]},
     {"id": "finale", "start": {"beat": 15}, "duration": 3.0, "transition": {"type": "zoom"}, "background": {"kind": "solid", "color": "#4e0c09"}, "camera": {"settle": 1.25, "settleR": 0.9, "drift": 0.02},
      "layers": [
-       {"type": "text", "text": "WHEN IT'S DONE", "style": "impact", "size": 26, "y": 46, "color": "#a77849", "anim": "slam", "fx": {"extrude": 10, "extrudeColor": "#2a0705"}},
-       {"type": "shape", "kind": "burst", "x": 50, "y": 46, "w": 90, "h": 50, "color": "#e07b2a", "stroke": 4, "at": 0.5, "z": -1}
+       {"type": "text", "text": "WHEN IT'S DONE", "style": "impact", "size": 26, "y": 46, "color": "#a77849", "anim": "slam", "z": 3, "fx": {"extrude": 10, "extrudeColor": "#2a0705"}},
+       {"type": "shape", "kind": "burst", "x": 50, "y": 46, "w": 90, "h": 50, "color": "#e07b2a", "stroke": 4, "at": 0.5, "z": 1}
      ]}
   ]
 }
@@ -116,7 +116,7 @@ In `line3-scroll`, `w: 260` lets the stretched word run past the frame and the c
 
 ## 9. Engine notes and gaps
 - **Beat timing is covered**: `spec.beats` plus `{"beat": n}` / `{"downbeat": n}` / `{"onset": n}` refs, and `scene.snap`. Layer `at` also accepts beat refs (they are absolute), so slams can sit on onsets.
-- **Bug:** `specDurationInFrames` (SpecVideo.tsx) runs before `setBeats`, so beat-anchored scenes resolve to `undefined` and the composition defaults to 1 s. Workaround: set `duration`. Fix: call `setBeats` inside `specDurationInFrames`/`calculateMetadata`.
+- **Video length:** beat refs now resolve in `calculateMetadata`, but a music-only spec's length is the last scene's `start + duration`. If the last scene has no `duration` it gets 2.5 s; give it an explicit `duration` (or set a top-level `duration`) so the end lands on the bar.
 - **Scene length in beats** is not a field. Give every scene a beat `start` and let the next start end it.
 - **Smear frames / motion-stretch on whips**: not built in. `whip-*` adds directional blur, which is the closest substitute.
 - **Layout "falling apart" physics** ("wrecked", v28): needs a custom component.

@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {AbsoluteFill, Audio, Sequence, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Audio, Sequence, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CaptionTrack} from './Captions';
 import {defaultPalette, SpecContext} from './context';
 import {FinishPass} from './fx/Finish';
@@ -13,6 +13,13 @@ import {LayerView} from './layers/LayerView';
 import type {TimedScene} from './lib/time';
 
 /** postFinish: grain/halftone are applied afterwards by tools/render.py (ffmpeg) — much faster renders. */
+/** Dip-to-colour for `dissolve` with `through`: colour fades in over the first half, the next scene fades in over it. */
+const DipColour: React.FC<{color: string; frames: number; z: number}> = ({color, frames, z}) => {
+	const f = useCurrentFrame();
+	if (f > frames) return null;
+	return <AbsoluteFill style={{background: color, zIndex: z, opacity: Math.min(1, f / Math.max(1, frames / 2))}} />;
+};
+
 export type SpecVideoProps = {spec: VideoSpec; postFinish?: boolean};
 
 export const specWords = (spec: VideoSpec): Word[] => (Array.isArray(spec.words) ? spec.words : []);
@@ -76,7 +83,7 @@ export const SpecVideo: React.FC<SpecVideoProps> = ({spec, postFinish}) => {
 				return (
 					<Sequence key={i} from={s.from} durationInFrames={s.durationInFrames + overlap} premountFor={Math.round(fps)} name={s.id ?? `scene ${i + 1}`}>
 						{s.transition?.type === 'dissolve' && s.transition.through ? (
-							<AbsoluteFill style={{background: s.transition.through, zIndex: i, opacity: 1}} />
+							<DipColour color={s.transition.through} frames={s.transition.frames ?? CUT_FRAMES.dissolve ?? 10} z={i} />
 						) : null}
 						<SpecContext.Provider value={{words, palette, sceneStartSec: s.from / fps, sceneDurationInFrames: s.durationInFrames}}>
 							<AbsoluteFill style={{zIndex: i}}>

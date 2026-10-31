@@ -75,7 +75,8 @@ The wallpaper is a procedural `mesh`. To use a real photo, swap in `{"kind": "im
      "background": {"kind": "mesh", "color": "#71a2f4", "color2": "#f2c6a0"},
      "camera": {"settle": 1.035, "settleR": 0.72, "drift": 0.02},
      "layers": [
-       {"type": "ui", "kind": "phone", "text": "Your finished edit", "theme": "dark", "y": 50, "w": 18, "anim": "rise"},
+       {"type": "ui", "kind": "phone", "theme": "dark", "y": 50, "w": 18, "anim": "rise"},
+       {"type": "text", "text": "Your\nfinished\nedit", "style": "clean", "size": 2.2, "y": 50, "w": 14, "caps": false, "color": "#ffffff", "weight": 800, "at": 0.3, "anim": "words", "stagger": 4, "z": 20},
        {"type": "text", "text": "You see\nthis edit?", "style": "clean", "size": 2.6, "x": 30, "y": 50, "caps": false, "anim": "focus", "fx": {"shadow": true}, "color": "#ffffff"},
        {"type": "text", "text": "No editor\ntouched it.", "style": "clean", "size": 2.6, "x": 70, "y": 50, "caps": false, "at": 1.4, "anim": "focus", "fx": {"shadow": true}, "color": "#ffffff"}
      ]},
@@ -105,8 +106,8 @@ The wallpaper is a procedural `mesh`. To use a real photo, swap in `{"kind": "im
      "background": {"kind": "solid", "color": "#0a070b"},
      "camera": {"settle": 1.02, "settleR": 0.8, "drift": 0},
      "layers": [
-       {"type": "text", "text": "Try it free", "style": "clean", "size": 4.4, "y": 44, "caps": false, "color": "#ffffff", "anim": "focus"},
-       {"type": "ui", "kind": "button", "text": "Comment \"AGENT\"", "theme": "dark", "accent": "#1a6ff8", "y": 58, "w": 18, "at": 0.8, "anim": "pop"}
+       {"type": "text", "text": "Try it free", "style": "clean", "size": 4.4, "y": 40, "caps": false, "color": "#ffffff", "anim": "focus"},
+       {"type": "ui", "kind": "button", "text": "Comment \"AGENT\"", "theme": "dark", "accent": "#1a6ff8", "y": 62, "w": 56, "at": 0.8, "anim": "pop"}
      ]}
   ]
 }
@@ -127,4 +128,5 @@ The wallpaper is a procedural `mesh`. To use a real photo, swap in `{"kind": "im
 - **Blurred photo wallpapers**: `background.image` with `blur` works but needs a user photo. `mesh` is the asset-free stand-in.
 - **Glass (backdrop-blur) UI cards and curved/bent panels** (v49 v35): `tilt`/`tiltTo` give the perspective, but there is no glass material and no curve. Possible fix: `ui.glass: true` and `ui.curve`.
 - **Real product skins**: `ui` kinds are generic. For a recognisable app, supply screenshots via `ui.src` (window/phone) or `image` with `radius`.
+- **Typed text inside a `ui` phone** is a fixed ~3.7% of frame width with fixed padding, so it does not scale with the phone's `w`: on a phone narrower than ~25% of the frame, long words clip. Leave the phone's `text` empty and put a `text` layer (higher `z`) over the screen, as in the example.
 - **Streaming text inside a window body** (code logs scrolling): not built in. Use `typewriter` with `mono`, or a custom component.

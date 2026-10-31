@@ -166,13 +166,19 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 	if (inType === 'ink' && f < inF + 1) clip = inkPolygon(curves.settle(clamp01(f / inF)) * 95, index * 7, 0.35);
 	if (inType === 'slide' && f < inF + 1) tx += width * (1 - decay(f, 0.68));
 	let sceneOpacity = 1;
-	if (inType === 'dissolve' && f < inF + 1) sceneOpacity = clamp01(f / inF);
+	if (inType === 'dissolve' && f < inF + 1) sceneOpacity = inT?.through ? clamp01((f - inF / 2) / (inF / 2)) : clamp01(f / inF);
 	if (inType === 'wipe' && f < inF + 1) {
-		const p = 1 - decay(f + 1, 0.62);
-		const q = (1 - p) * 100;
+		// q = % of the incoming scene still hidden: 100 on the cut frame → 0, fast-out decay
+		const q = (1 - decay(f, Math.pow(0.03, 1 / Math.max(2, inF)))) * 100;
 		const dir = inT?.direction ?? 'left';
 		const shape = inT?.shape ?? 'line';
-		if (shape === 'diagonal') clip = `polygon(${q * 1.4 - 20}% 0, 120% 0, 120% 100%, ${q * 1.4 - 40}% 100%)`;
+		if (shape === 'diagonal' || shape === 'slab') {
+			const e = q * 1.4 - 20;
+			clip =
+				dir === 'right'
+					? `polygon(-20% 0, ${120 - e}% 0, ${100 - e}% 100%, -20% 100%)`
+					: `polygon(${e}% 0, 120% 0, 120% 100%, ${e - 20}% 100%)`;
+		}
 		else if (shape === 'split') clip = `inset(${q / 2}% 0 ${q / 2}% 0)`;
 		else if (dir === 'left') clip = `inset(0 0 0 ${q}%)`;
 		else if (dir === 'right') clip = `inset(0 ${q}% 0 0)`;
@@ -180,7 +186,7 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 		else clip = `inset(0 0 ${q}% 0)`;
 	}
 	if (inType === 'circle' && inT?.at && f < inF + 1) clip = `circle(${curves.settle(clamp01(f / inF)) * 140}% at ${inT.at[0]}% ${inT.at[1]}%)`;
-	if (inType === 'iris-close' && f < inF + 1) clip = `circle(${curves.settle(clamp01(f / inF)) * 75}% at 50% 50%)`;
+	if (inType === 'iris-close' && f < inF + 1) clip = `circle(${curves.settle(clamp01(f / inF)) * 140}% at ${inT?.at?.[0] ?? 50}% ${inT?.at?.[1] ?? 45}%)`;
 	if (inType === 'pixel' && f < inF + 1) mask = pixelMask(clamp01(f / inF) * 1.25, index * 13, width / height);
 	if (inType === 'strobe' && f < inF && f % 2 === 0) invert = 1;
 	if (inType === 'flip') rotY += -90 * (1 - decay(f, 0.7));
@@ -340,7 +346,7 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 				}}
 			>
 				{/* bleed: grow the background while the camera translates/rotates so frame edges never show */}
-				<AbsoluteFill style={{transform: bgBleed > 1.001 ? `scale(${bgBleed})` : undefined}}>
+				<AbsoluteFill style={{transform: bgBleed > 1.001 ? `scale(${bgBleed})` : undefined, zIndex: -10000}}>
 					<SceneBackground bg={scene.background} sceneIndex={index} />
 				</AbsoluteFill>
 				<CameraContext.Provider value={{tx, ty, scale, focusDepth, parallax: cam.parallax ?? 60}}>
