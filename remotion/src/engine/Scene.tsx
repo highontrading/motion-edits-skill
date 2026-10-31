@@ -227,13 +227,38 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 			scale *= 1 + ((p.scale ?? 1.1) - 1) * (f - pf <= n ? ramp(f - pf, n, 1.6) : 1);
 		}
 	}
+	for (const r of cam.rotate ?? []) {
+		const rf = frameOf(r.at, -1);
+		if (rf >= 0 && f >= rf) rot += r.deg * curves.settle(clamp01((f - rf) / (r.frames ?? 18)));
+	}
+	if (cam.exit && tail < 0) {
+		const n = cam.exit.frames ?? 8;
+		const ef = f - (D - n) + 1;
+		if (ef > 0) {
+			const p = ramp(ef, n, 1.4);
+			const sp = rampSpeed(ef, n, 1.4);
+			if (cam.exit.zoom) {
+				scale *= 1 + (cam.exit.zoom - 1) * p;
+				blur += sp * 6 * u;
+			}
+			if (cam.exit.x) {
+				tx += (cam.exit.x / 100) * width * p;
+				blurX += sp * 30 * u;
+			}
+			if (cam.exit.y) {
+				ty += (cam.exit.y / 100) * height * p;
+				blurY += sp * 30 * u;
+			}
+			if (cam.exit.rotate) rot += cam.exit.rotate * p;
+		}
+	}
 	let panX = 0;
 	let panY = 0;
 	for (const p of cam.pan ?? []) {
 		const pf = frameOf(p.at, -1);
 		if (pf >= 0 && f >= pf) {
 			const n = p.frames ?? 20;
-			const pp = curves.glide(clamp01((f - pf) / n));
+			const pp = curves[p.curve ?? 'glide'](clamp01((f - pf) / n));
 			if (p.blur !== false && f - pf < n) {
 				// directional blur proportional to pan speed (bell-shaped for the glide curve)
 				const sp = Math.sin(Math.PI * clamp01((f - pf) / n));

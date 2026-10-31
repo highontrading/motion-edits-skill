@@ -2,6 +2,7 @@ import React from 'react';
 import {Sequence, useCurrentFrame, useVideoConfig} from 'remotion';
 import {useCamera, useSceneFrameOf, useSpec} from '../context';
 import {ParticlesView} from './Particles';
+import {Unstepped} from '../lib/stepped';
 import {clamp01} from '../lib/motion';
 import type {Layer, TextLayer} from '../types';
 import {typeStyles} from '../lib/fonts';
@@ -56,7 +57,16 @@ const defaultAnim = (layer: Layer) => {
 };
 
 /** Positions a layer (centre x/y in %, width in %), handles its time window, entrance, exit and idle motion. */
-export const LayerView: React.FC<{layer: Layer; index: number}> = ({layer, index}) => {
+export const LayerView: React.FC<{layer: Layer; index: number}> = (props) =>
+	'smooth' in props.layer && props.layer.smooth ? (
+		<Unstepped>
+			<LayerViewInner {...props} />
+		</Unstepped>
+	) : (
+		<LayerViewInner {...props} />
+	);
+
+const LayerViewInner: React.FC<{layer: Layer; index: number}> = ({layer, index}) => {
 	const frame = useCurrentFrame();
 	const {fps, width, height} = useVideoConfig();
 	const {sceneDurationInFrames} = useSpec();
@@ -166,10 +176,20 @@ export const LayerView: React.FC<{layer: Layer; index: number}> = ({layer, index
 		const p = clamp01(f / Math.max(1, end - start));
 		tiltT = `perspective(${1200 * u}px) rotateX(${a[0] + (b[0] - a[0]) * p}deg) rotateY(${a[1] + (b[1] - a[1]) * p}deg)`;
 	}
-	const transforms = [depthT, tiltT, ent.transform, ex.transform, idle, layer.rotate ? `rotate(${layer.rotate}deg)` : ''].filter(Boolean).join(' ');
+	let loopT = '';
+	let loopOpacity = 1;
+	if (layer.loop) {
+		const lt = f / fps;
+		if (layer.loop === 'bob') loopT = `translateY(${Math.sin(lt * 2.2 + index) * 6 * u}px)`;
+		if (layer.loop === 'sway') loopT = `rotate(${Math.sin(lt * 2.4 + index) * 2.5}deg)`;
+		if (layer.loop === 'pulse') loopT = `scale(${1 + Math.sin(lt * 5) * 0.025})`;
+		if (layer.loop === 'breathe') loopOpacity = 0.78 + 0.22 * Math.sin(lt * 2.6);
+		if (layer.loop === 'blink') loopOpacity = Math.floor(lt * 2) % 2 === 0 ? 1 : 0.15;
+	}
+	const transforms = [depthT, tiltT, ent.transform, ex.transform, idle, loopT, layer.rotate ? `rotate(${layer.rotate}deg)` : ''].filter(Boolean).join(' ');
 	const totalBlur = (layer.blur ?? 0) + focusBlur;
 	const filter = [ent.filter, ex.filter, totalBlur ? `blur(${totalBlur * u}px)` : ''].filter(Boolean).join(' ');
-	const opacity = (layer.opacity ?? 1) * Number(ent.opacity ?? 1) * Number(ex.opacity ?? 1);
+	const opacity = (layer.opacity ?? 1) * Number(ent.opacity ?? 1) * Number(ex.opacity ?? 1) * loopOpacity;
 
 	if (full) {
 		return <div style={{position: 'absolute', inset: 0, zIndex: layer.z ?? index, opacity, filter: filter || undefined, transform: transforms || undefined}}>{inner}</div>;

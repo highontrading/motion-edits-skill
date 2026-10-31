@@ -18,7 +18,7 @@ npx remotion still  src/index.ts MotionVideo out/frame.jpg --frame=120 --props=.
 | `width`, `height` | **Required.** 1080×1920 (9:16 Reels/Shorts/TikTok), 1920×1080 (16:9 YouTube), 1080×1080 (1:1), 1080×1350 (4:5 feed), 1440×1800, 3840×2160… Anything works; every size in the engine is relative to frame width. |
 | `fps` | 30 by default. Use 24 for a cinematic feel, 60 only for UI/product demos. |
 | `duration` | Seconds. Default: last VO word + 0.6 s, or the sum of scene durations. |
-| `animFps` | **Stepped animation**: 12 = collage/stop-motion feel (most of the reference library), 15 = a bit smoother, 0 = silky. Cuts stay frame-accurate. A scene can override it. |
+| `animFps` | **Stepped animation** ("on twos"): **15 is the most common rate in the library (26 videos)**, 12 gives a rougher stop-motion feel (9), 16–18 is subtle. 0 = smooth, used by UI, 3D and cinematic styles (27 of 82). Cuts stay frame-accurate. A scene can override it; layers with `smooth: true` (footage, typing, cursors) stay fluid. |
 | `palette` | `{bg, ink, accent, accent2, paper}`, used as defaults by every layer. |
 | `words` | VO word timestamps: an array, or a path under `public/` to the JSON from `tools/transcribe.py`. Enables word refs and `sync`. |
 | `audio` | `{vo, music, musicVolume=0.35, duckTo, musicStart, musicFadeOut=0.6, musicLoop=true, sfx:[{src, at, volume}]}`. `duckTo` (e.g. 0.12) ducks the music smoothly under speech, holding through pauses under 0.6 s. Scene `sfx` can lead into and ring past their scene. |
@@ -52,9 +52,11 @@ npx remotion still  src/index.ts MotionVideo out/frame.jpg --frame=120 --props=.
   "custom": "MyComponent", "customProps": {}
 }
 ```
+- `snap: "beat" | "downbeat"` snaps a (word-anchored) start to the nearest beat within ±0.12 s. 29 of 82 references lock their cuts to the beat this way.
 - `start` / `duration`: if `start` is missing, the scene follows the previous one. If `duration` is missing, the scene runs until the next scene's start.
 - **Camera:** every scene gets an expo-out **settle** from `settle` to 1 (the most consistent pattern in the library; ~1.08–1.15). `drift` is a slow push across the scene. `punch` adds 4-frame punch-ins on words. `pan` takes `[{at, x, y, frames, blur=true}]` (with motion blur on the move) and moves the virtual camera to centre on (x, y)%, for exploring a big collage canvas.
 - **`letterbox`**: % of the height per bar. Bars close in over ~7 frames when the value changes between scenes (UI scenes inside bars vs. full-bleed posters, v04 v78).
+- **Camera `rotate`**: `[{at, deg, frames=18}]` rolls the camera (1–8° is typical). **Camera `exit`**: `{zoom, x, y, rotate, frames=8}` accelerates out into a plain cut with no transition effect. `pan[].curve`: `glide` (symmetric), `reframe` (quick start, long settle) or `settle`.
 - **Camera `focus`**: `[{at, depth, frames=6}]` racks focus between depth planes. Layers with `depth` off the focus plane blur ~16 px per depth unit. Camera `parallax` (default 60) sets how strongly `depth` layers separate during drift.
 - **Camera `origin`**: `[x, y]` % is the transform origin for settle and punch moves.
 - **Grade:** `drainAt` drains the colour to B/W over 6 frames on a story beat.
@@ -135,7 +137,7 @@ Label badge (`anim: "swap"` with `"A | B | C"` swaps words and the badge resizes
 ### `embed`
 `scene` (another scene's `id`), `mode`: `last` (frozen on that scene's final frame, the default) or `live`, `radius`, `aspect`, `shadow`. It renders that scene inside the box: the scene becomes a phone screen, TV, post or window. Pair it with `transition: {type: "shrink"}` for nested reveals.
 
-Every positioned layer also takes `blur` (px), `tilt: [rotX, rotY]` and `tiltTo` (3D planes; UI at 6–18°), and `depth` (parallax and rack-focus plane: <1 far, >1 near).
+Every positioned layer also takes `loop` (idle motion after the entrance: `bob`, `sway`, `pulse`, `breathe` or `blink`), `smooth` (stays at full fps in a stepped scene), `blur` (px), `tilt: [rotX, rotY]` and `tiltTo` (3D planes; UI at 6–18°), and `depth` (parallax and rack-focus plane: <1 far, >1 near).
 
 ### `particles`
 `kind`: `dust` · `sparkle` · `embers` · `bokeh` · `confetti` · `snow`, plus `count`, `color`, `size`, `speed`, `seed`, `opacity`, `area: [x, y, w, h]` %. Seen in 41/82 references; use for atmosphere at low counts. Use it for depth-of-field planes, e.g. a huge blurred copy of a word in the foreground.

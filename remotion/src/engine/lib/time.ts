@@ -53,7 +53,18 @@ export type TimedScene = Scene & {index: number; from: number; durationInFrames:
  * Cuts by default lead the VO phrase by ~0.12s (measured median across references).
  */
 export const layoutScenes = (spec: VideoSpec, words: Word[], fps: number, totalSec: number): TimedScene[] => {
-	const starts: (number | undefined)[] = spec.scenes.map((s) => resolveTime(s.start, words, 0, true));
+	const snapTo = (t: number | undefined, mode?: 'beat' | 'downbeat') => {
+		if (t === undefined || !mode) return t;
+		const grid = mode === 'downbeat' ? BEATS.downbeats ?? [] : BEATS.beats;
+		let best = t;
+		let bd = 0.121;
+		for (const b of grid) if (Math.abs(b - t) < bd) {
+			bd = Math.abs(b - t);
+			best = b;
+		}
+		return best;
+	};
+	const starts: (number | undefined)[] = spec.scenes.map((s) => snapTo(resolveTime(s.start, words, 0, true), s.snap));
 	const out: TimedScene[] = [];
 	let cursor = 0;
 	spec.scenes.forEach((s, i) => {

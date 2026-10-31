@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {createContext, useContext} from 'react';
 import {Freeze, useCurrentFrame, useVideoConfig} from 'remotion';
 
 /**
@@ -9,13 +9,26 @@ import {Freeze, useCurrentFrame, useVideoConfig} from 'remotion';
  * For a 30 fps master and 12 fps animation the hold pattern alternates 2,3,2,3 frames —
  * exactly the cadence measured in the references.
  */
+/** Real (un-stepped) frame of the enclosing scene, so individual layers can opt out of stepping. */
+export const RealFrameContext = createContext<number | null>(null);
+
 export const Stepped: React.FC<{animFps?: number; children: React.ReactNode}> = ({animFps, children}) => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	if (!animFps || animFps >= fps) return <>{children}</>;
 	const step = fps / animFps;
 	const stepped = Math.floor(Math.floor(frame / step) * step + 1e-6);
-	return <Freeze frame={stepped}>{children}</Freeze>;
+	return (
+		<RealFrameContext.Provider value={frame}>
+			<Freeze frame={stepped}>{children}</Freeze>
+		</RealFrameContext.Provider>
+	);
+};
+
+/** Wrap a layer that must stay smooth inside a stepped scene. */
+export const Unstepped: React.FC<{children: React.ReactNode}> = ({children}) => {
+	const real = useContext(RealFrameContext);
+	return real === null ? <>{children}</> : <Freeze frame={real}>{children}</Freeze>;
 };
 
 export const steppedFrame = (frame: number, fps: number, animFps?: number) => {

@@ -49,7 +49,7 @@ Follow `references/script-structure.md`. The reference formula is **hook (≤1.5
 - Leave the music ducked under VO (`duckTo: 0.12–0.18`).
 
 ### 4. Style and look
-Choose a style family from `references/styles/` that fits the content (see the index there). Fix the **palette**: bg/ink plus one or two accents with fixed meanings (e.g. red = problem, green = money/positive). Choose the **type pairing**: a heavy display voice plus a whisper-weight accent voice. Choose the **finish**: grain always; halftone/paper/scanlines per style. Choose the **animFps**: 12 for collage, 0 for UI/3D/cinematic.
+Choose a style family from `references/styles/` that fits the content (see the index there). Fix the **palette**: bg/ink plus one or two accents with fixed meanings (e.g. red = problem, green = money/positive). Choose the **type pairing**: a heavy display voice plus a whisper-weight accent voice. Choose the **finish**: grain always; halftone/paper/scanlines per style. Choose the **animFps**: 15 for collage/editorial (12 for rougher stop-motion), 0 for UI/3D/cinematic.
 
 ### 5. Assets
 - **User footage** → `python3 tools/analyze_footage.py clips/*.mp4 --out work/footage.json --sheets work/sheets`, then look at the sheets. Pick the best moments, cut the silences, and find where the energy is. See `references/footage-editing.md`.
@@ -86,4 +86,4 @@ When asked for several videos or versions, vary on purpose:
 Keep the script structure. For a channel series, lock a **series kit** (palette, type pairing, finish, CTA card, 2–3 signature transitions) and save it as a JSON snippet in `remotion/src/specs/kits/` so every episode matches.
 
 ## Defaults when unsure
-9:16 at 1080×1920, 30 fps, `animFps` 12 for collage/explainer or 0 for UI/product, `grain` 0.07, `vignette` 0.35. Keywords use `impact` at size 14–24 with `anim: "slam"` or `"words"`. Labels use `stitched` badges in a deep accent. Scene length is 1.2–2.5 s. Cuts: `zoom` for momentum, `cut` for punch, `flash` for reveals, `circle` for the CTA.
+9:16 at 1080×1920, 30 fps, `animFps` 15 for collage/explainer or 0 for UI/product, `grain` 0.07, `vignette` 0.35. Keywords use `impact` at size 14–24 with `anim: "slam"` or `"words"`. Labels use `stitched` badges in a deep accent. Scene length is 1.2–2.5 s. Cuts: `zoom` for momentum, `cut` for punch, `flash` for reveals, `circle` for the CTA.

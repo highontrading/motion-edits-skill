@@ -45,6 +45,8 @@ export const curves = {
 	snap: Easing.bezier(0.2, 0.9, 0.1, 1),
 	/** Symmetric camera move inside a shot (ease-in 15f / ease-out 15f). */
 	glide: Easing.bezier(0.65, 0, 0.35, 1),
+	/** Out-biased reframe of a virtual camera over a big canvas (v35, v69: quick start, long settle). */
+	reframe: Easing.bezier(0.6, 0, 0.2, 1),
 	/** Ease-in into a cut. */
 	accelerate: Easing.bezier(0.55, 0, 1, 0.45),
 	linear: Easing.linear,
@@ -55,7 +57,7 @@ export type CurveName = keyof typeof curves;
 /** Spring presets (Remotion `spring` config). */
 export const springs = {
 	/** Sticker / prop pop with ~8% overshoot. */
-	pop: {damping: 11, stiffness: 190, mass: 0.6},
+	pop: {damping: 14, stiffness: 220, mass: 0.6},
 	/** Phone/device rise with a small overshoot (~4%). */
 	device: {damping: 16, stiffness: 120, mass: 0.9},
 	/** Critically damped, no overshoot. */

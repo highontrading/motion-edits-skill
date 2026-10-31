@@ -30,6 +30,10 @@ export type Pos = {
 	opacity?: number;
 	/** static gaussian blur in px (depth-of-field planes, foreground ghost type) */
 	blur?: number;
+	/** idle loop after the entrance: gentle bob, pendulum sway, scale pulse, glow breathe, or blink */
+	loop?: 'bob' | 'sway' | 'pulse' | 'breathe' | 'blink';
+	/** keep this layer smooth (full fps) inside a stepped (animFps) scene — footage, typing, cursors */
+	smooth?: boolean;
 	/** 3D tilt [rotateX, rotateY] in degrees (UI planes 6–18°, cards, posters) */
 	tilt?: [number, number];
 	/** animate the tilt to this value across the layer's lifetime (slow 3D drift) */
@@ -448,7 +452,11 @@ export type Camera = {
 	/** additional mid-scene punch-ins */
 	punch?: {at: TimeRef; scale?: number; frames?: number}[];
 	/** pan target in % of frame (moves the whole scene) */
-	pan?: {at: TimeRef; x: number; y: number; frames?: number; blur?: boolean}[];
+	pan?: {at: TimeRef; x: number; y: number; frames?: number; blur?: boolean; curve?: 'glide' | 'reframe' | 'settle'}[];
+	/** rotate / roll the camera: [{at, deg, frames}] (camera roll appears in ~45/82 references, usually 1–8°) */
+	rotate?: {at: TimeRef; deg: number; frames?: number}[];
+	/** exit ramp into the next cut without a transition effect: accelerate zoom/pan/rotation over the last `frames` */
+	exit?: {zoom?: number; x?: number; y?: number; rotate?: number; frames?: number};
 	/** handheld shake amplitude (px) */
 	shake?: number;
 	/** transform origin in % for settle/punch (e.g. the centre of an embed box for nested reveals) */
@@ -475,6 +483,8 @@ export type Scene = {
 	id?: string;
 	/** start time (seconds or word ref). Defaults to the previous scene's end. */
 	start?: TimeRef;
+	/** snap the start to the nearest beat/downbeat within ±0.12 s (needs spec.beats) */
+	snap?: 'beat' | 'downbeat';
 	/** duration in seconds (alternative to the next scene's start) */
 	duration?: number;
 	background?: Background;
