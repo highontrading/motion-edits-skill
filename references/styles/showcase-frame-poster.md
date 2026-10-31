@@ -65,7 +65,7 @@ Rule: warm, strictly limited print colours, so *any* inner footage reads against
   "finish": {"grain": 0.05, "vignette": 0.1, "paper": 0.15},
   "overlay": [
     {"type": "shape", "kind": "line", "x": 50, "y": 5, "x2": 94.5, "y2": 5, "color": "#231d16", "stroke": 2, "draw": 1},
-    {"type": "text", "text": "EPISODE 01", "style": "condensed", "size": 17, "x": 36, "y": 11, "color": "#231d16", "align": "left", "anim": "none"},
+    {"type": "text", "text": "EPISODE 01", "style": "condensed", "size": 13, "x": 38, "y": 11, "color": "#231d16", "anim": "none"},
     {"type": "shape", "kind": "line", "x": 50, "y": 18, "x2": 94.5, "y2": 18, "color": "#231d16", "stroke": 5, "draw": 1},
     {"type": "text", "text": "NOW PLAYING / SIDE A", "style": "clean", "size": 1.8, "x": 22, "y": 21, "color": "#cf4113", "tracking": 0.12, "caps": true, "anim": "none"},
     {"type": "text", "text": "YOUR STUDIO / SCREENING ROOM", "style": "clean", "size": 1.8, "x": 78, "y": 21, "color": "#231d16", "tracking": 0.12, "caps": true, "anim": "none"},
