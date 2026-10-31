@@ -1,89 +1,122 @@
 ---
 name: motion-edits
-description: Create high-end motion-graphics videos, explainer videos, short-form edits (Reels/Shorts/TikTok) and YouTube videos as rendered MP4s with Remotion, in any aspect ratio. Use when asked to make, design, animate, edit or storyboard a motion graphic, explainer, kinetic-typography piece, promo/ad, product or UI demo, lyric/music edit, or to add motion graphics, captions and transitions to the user's own footage. Built from frame-level analysis of 82 professional reference edits.
+description: Create high-end motion-graphics videos, explainer videos and short-form edits (Reels/Shorts/TikTok/YouTube) as rendered MP4s in any aspect ratio, using a Remotion engine built from frame-level analysis of 82 professional edits. Use when asked to make, design, animate, script, storyboard or edit a motion graphic, explainer, kinetic-typography piece, promo/ad, product or UI demo, lyric/music edit, or a series of such videos for a channel, or to add motion graphics, captions, punch-ins and transitions to the user's own footage.
 ---
 
 # Motion Edits
 
-This skill produces finished, premium-looking motion videos. Its knowledge comes from frame-by-frame breakdowns of 82 high-end reference edits: collage explainers, brand-story documentaries, UI/product promos, kinetic lyric edits and footage-led edits. That knowledge is turned into rules, timing numbers and a Remotion engine that renders a JSON **VideoSpec**.
+This skill produces finished, premium motion videos. It works from four things:
+- **rules and numbers** measured frame by frame from 82 reference edits (`references/`)
+- **12 style families** to choose and mix from (`references/styles/`)
+- a **Remotion engine** (`remotion/`) that renders a JSON **VideoSpec**: one scene per clause, measured easing, momentum cuts, word-synced type, procedural textures and a film finish
+- **tools** for voice-over, beats, footage analysis, cut-outs, mattes, rendering and QA (`tools/`)
 
-There are two modes. Pick one, or mix them in the same video:
-- **Standalone motion graphics**: no footage. Type, cut-outs, UI, charts, textures and transitions carry everything.
-- **Footage edit**: the user's clips are the backbone. The skill tightens the edit, adds punch-ins, captions, keyword type, overlays, B-roll cards and transitions, and makes it look like one designed piece.
+Two modes, which can be mixed in one video:
+- **Standalone motion graphics**: no footage needed. Type, cut-outs, UI mockups, charts, counters, particles and textures carry it.
+- **Footage edit**: the user's clips are the backbone. Tighten, punch in, caption, add keyword slams and B-roll cards, put text behind the subject, grade, add transitions.
 
-Any aspect ratio: set `width`/`height` in the spec. Every size in the engine is relative to frame width.
+Any aspect ratio: set `width`/`height` in the spec (9:16 1080×1920 by default; 16:9, 1:1, 4:5 and others all work).
 
-## Files
-- `references/engine-spec.md`: **read before writing a spec.** All fields, layers, transitions and render commands.
-- `references/playbook.md`: the high-end rules. Pacing, sync, the motion vocabulary with measured numbers, type and colour systems, script structure. **Read every time.**
-- `references/styles/`: style families (look, when to use, spec skeleton). Pick one per video.
-- `references/transitions.md`, `references/motion-language.md`, `references/typography-color.md`, `references/script-structure.md`, `references/sound-design.md`, `references/footage-editing.md`: deep dives.
-- `references/breakdowns/vNN.md`: 82 shot-by-shot reference breakdowns. Grep them by tag (`_TAXONOMY.md`) when you need a precedent for a specific device.
-- `remotion/`: the engine. `src/engine/` holds the primitives, `src/custom/` holds bespoke components, `src/specs/` holds example specs.
-- `tools/`: `transcribe.py` (VO → word timings), `beats.py` (music → beat grid), `analyze_footage.py` (user clips → shots, silences, transcript, contact sheets), `cutout.py` (photo → transparent cut-out), `matte.py` (footage → alpha subject matte for text-behind-subject), `tighten.py` (remove dead air + re-transcribe), `render.py` (**the way to render**: Remotion + ffmpeg finish), `review_render.py` (render → contact sheets for QA).
+## Read first
+1. `references/playbook.md`: **the rules. Read it every time.**
+2. `references/engine-spec.md`: every spec field, layer, transition and render command. Read it before writing a spec.
+3. `references/styles/README.md`: pick a style family, then read that family's file (its example spec is a good starting point).
+
+Deep dives, when a decision needs them:
+- `script-structure.md`: genre templates, hooks, clause → scene → prop rules, worked examples
+- `motion-language.md`: easing, frame rates, pacing, sync numbers
+- `transitions.md`: 63 transitions with frame counts and how to build each one
+- `typography-color.md`: type classes, pairings, sizes, safe zones, palettes, finish amounts
+- `sound-design.md`: bed, ducking, SFX placement, beat sync, music-only edits
+- `footage-editing.md`: integration modes, punch-ins, montage, captions, two worked footage specs
+- `engine-gaps.md`: what the engine still can't do, and workarounds
+- `breakdowns/vNN.md` + `breakdowns/_TAXONOMY.md`: shot-by-shot evidence. Grep by tag for a precedent (`grep -l "text-behind-subject" references/breakdowns/*.md`).
+
+A complete worked example (script → scratch VO → spec) is in `remotion/src/specs/examples/zeigarnik.json` (script: `work/zeigarnik.script.txt`).
 
 ## Workflow
 
+### 0. Setup (once per environment)
+```bash
+cd remotion && npm install
+```
+```bash
+pip install faster-whisper librosa opencv-python-headless "rembg[cpu]" piper-tts pillow numpy
+```
+`ffmpeg` is required. If librosa crashes with a segfault, set `NUMBA_CACHE_DIR=/tmp/numba_cache`.
+
 ### 1. Brief
-Find out, or default sensibly without stalling:
+Get these, or choose sensible defaults without stalling:
 - topic or message
-- platform and aspect ratio (default 9:16 at 1080×1920)
-- length (default 30–45 s for shorts)
-- voice-over (provided audio, a script to be voiced, or none: music/text-led)
-- footage and photos
-- brand colours and fonts
+- platform and aspect ratio
+- length (shorts: 20–45 s)
+- voice: the user's VO file, a script to voice, or none
+- footage or photos
+- brand (palette, fonts, logo)
 - tone
+- how many versions
 
-If the user gives only a topic, write the script yourself (step 2) and go.
+If the user only gives a topic, write the script yourself.
 
-### 2. Script and beat sheet
-Follow `references/script-structure.md`. The reference formula is **hook (≤1.5 s, a concrete shock or claim) → setup → turn → named principle/payoff → proof ×2 → moral → CTA**. Split the script into **clauses: one clause = one scene = one visual idea**, roughly 1–2.5 s each. For every clause, decide:
-- the **literal prop or picture**: the noun made physical
-- the **keyword** that becomes giant type: the verb or claim, 1–3 words
-- the **device**: badge, counter, UI, chart, doodle, swap
-- the **cut into it**: a transition type
+### 2. Script → clause sheet
+Use `script-structure.md`. Hook in the first sentence (8–15 words, shock in the first 3 words) → setup → turn → named principle at 16–40% → proof → antithesis moral → CTA (last 10–14%, ≥2.5 s). Split it into clauses: **one clause = one scene ≈ 6 words ≈ 2–2.8 s**. For each clause, write down:
+- the literal **prop or picture** for the noun
+- the **keyword**: 1–3 words that become type
+- a **device**: badge, counter, UI, chart, doodle, swap, particles
+- the **cut into it**
 
-### 3. Audio and timing
-- **VO file** → run `python3 tools/transcribe.py vo.mp3 remotion/public/vo.words.json`, then set `"words": "vo.words.json"`. Drive scene starts and keyword reveals from word refs. Scenes start ~0.1 s **before** their clause (`offset: -0.12`); keywords land **on** their word.
-- **No VO** → use a music bed with `tools/beats.py`. Scenes change on beats or downbeats, slams and flashes land on strong onsets, and montages speed up on the beat grid.
-- Leave the music ducked under VO (`duckTo: 0.12–0.18`).
+### 3. Voice and timing
+- **User VO:** `python3 tools/transcribe.py vo.mp3 remotion/public/<proj>/vo.words.json`
+- **No VO yet:** `python3 tools/tts.py script.txt remotion/public/<proj>/vo.wav --speed 1.15 --words remotion/public/<proj>/vo.words.json` gives an offline scratch voice. Tell the user it's a placeholder; their own VO can replace it later, since word refs re-time automatically when it's re-transcribed.
+- **Music-led or no VO:** `python3 tools/beats.py music.mp3 remotion/public/<proj>/beats.json`, then set `"beats"` and use `{beat|downbeat|onset: n}` refs and `snap`.
+- **Scene starts:** `{"word": "...", "offset": -0.06}` on each clause's first word. Scene word refs resolve in order, but use a multi-word ref ("why writing") when the word also appears just before. Keywords use `sync` or `at: {word}`.
 
-### 4. Style and look
-Choose a style family from `references/styles/` that fits the content (see the index there). Fix the **palette**: bg/ink plus one or two accents with fixed meanings (e.g. red = problem, green = money/positive). Choose the **type pairing**: a heavy display voice plus a whisper-weight accent voice. Choose the **finish**: grain always; halftone/paper/scanlines per style. Choose the **animFps**: 15 for collage/editorial (12 for rougher stop-motion), 0 for UI/3D/cinematic.
+### 4. Look
+Pick **one style family** (styles README). Then lock in:
+- **palette**: field colours that rotate per scene, plus 1–2 accents with fixed meanings
+- **type pairing**: a heavy display voice plus a whisper-weight voice
+- **animFps**: 15 for collage/editorial, 12 for rough print, 0 for UI/3D/cinematic
+- **finish**: grain + vignette, plus halftone for print looks
+- **one signature transition**, repeated, plus 1–3 supporting types
 
 ### 5. Assets
-- **User footage** → `python3 tools/analyze_footage.py clips/*.mp4 --out work/footage.json --sheets work/sheets`, then look at the sheets. Pick the best moments, cut the silences, and find where the energy is. See `references/footage-editing.md`.
-- **Photos** → make cut-outs with `tools/cutout.py --trim` and use them with `"cutout": true`.
-- **No assets** → build the frames from type, procedural backgrounds, UI mockups, charts, counters, doodles and shapes. The engine needs no stock files. Generate simple SVG props in a custom component when a literal object is essential.
-- Only use logos, brand marks or people's likenesses the user supplies or has the rights to. Never imitate a specific creator's branded intro or end card.
+- **Footage:**
+  - `python3 tools/analyze_footage.py clips/*.mp4 --out work/footage.json --sheets work/sheets`, then **look at the sheets**
+  - `tools/tighten.py` removes dead air
+  - `tools/matte.py` makes a subject matte for text-behind-subject
+- **Photos:** `python3 tools/cutout.py photos/* --out remotion/public/<proj>/cutouts --trim`, then use them as `image` with `cutout: true`. Put type at a lower `z` than the cut-out to tuck it behind.
+- **No assets:** type, procedural backgrounds, UI mockups, charts, counters, shapes, particles and `embed`. Write a custom component in `remotion/src/custom/` only when a literal object is essential.
+- Only use logos, likenesses, music and SFX the user supplies or has rights to. Learn techniques; never copy a creator's branding, characters, end cards or scripts.
 
 ### 6. Write the spec
-Write it to `work/<name>.spec.json` as `{"spec": {...}}`, following `references/engine-spec.md`. Apply the **high-end checklist**:
-1. A new background/set **and** a new focal object every scene. Never two consecutive scenes with the same composition.
-2. Every scene opens with a settle (default), and roughly every third cut is a *motion* cut (zoom, whip, spin) whose exit ramps into the cut. The rest are hard cuts, flashes, iris or object wipes. Vary them, but keep 2–4 types per video.
-3. On-screen type = keywords only (or a separate subtitle track). Keywords are 12–30% of frame width in the display face, with one accent colour.
-4. At least one "physical" device per 3 scenes: a cut-out with shadow, a stitched badge, a doodle circling a word, a UI element, a counter, a swap.
-5. One accent colour per scene, a dominant hue per scene, and the hue changes on every cut.
-6. Grain on everything. Halftone or paper texture for editorial and collage styles.
-7. Safe zones for 9:16: key content between y 12–78%, x 6–94%.
-8. CTA scene: 3–5 s, the simplest composition in the video.
+Write `work/<proj>.spec.json` as `{"spec": {...}}`, starting from the chosen family's example. Assets go under `remotion/public/<proj>/`. Apply the playbook checklist while writing.
 
-### 7. Render, review, fix
-1. Render 3–5 stills at key frames (`npx remotion still … --frame=N`) and look at them. Fix overflow, contrast, empty frames and clutter.
-2. Render the MP4.
-3. Run `python3 tools/review_render.py out/video.mp4 out/review/` and read the contact sheets and cut strips. Check that cuts land on clauses, that nothing is unreadable for less than 0.5 s, and that no scene is static for more than 1.5 s without a new event.
-4. Fix, re-render, and deliver the MP4 path plus a short shot list.
+### 7. Preview, render, review, fix
+1. **Stills first:**
+   ```bash
+   cd remotion && npx remotion still src/index.ts MotionVideo /tmp/f.jpg --frame=N --props=../work/<proj>.spec.json --scale=0.4
+   ```
+   Do one per scene (mid-scene frame), tile them, look, and fix overflow, contrast, clutter and empty frames.
+2. **Render:**
+   ```bash
+   python3 tools/render.py work/<proj>.spec.json out/<proj>.mp4
+   ```
+   Add `--draft` for a half-resolution preview. It applies the grain and halftone finish in ffmpeg, which is much faster.
+3. **Review:**
+   ```bash
+   python3 tools/review_render.py out/<proj>.mp4 out/review/
+   ```
+   Read the contact sheets and cut strips. Check that cuts sit on clause starts, nothing is unreadable for less than 0.5 s, no dead stretch runs longer than 1.5 s, and nothing has broken (blank layers, black gaps, edge reveals).
+4. Fix and re-render. Deliver the MP4 with a short shot list and anything the user should replace (scratch VO, placeholder assets, music).
 
-### 8. Variations and series
-When asked for several videos or versions, vary on purpose:
-- the style family
-- the palette
-- the type pairing
-- the transition set
-- the background textures
-- the hook device
-
-Keep the script structure. For a channel series, lock a **series kit** (palette, type pairing, finish, CTA card, 2–3 signature transitions) and save it as a JSON snippet in `remotion/src/specs/kits/` so every episode matches.
+### 8. Versions and series
+- **Variations:** keep the script and vary the style family, palette, type pairing, signature transition, textures and hook device. Render each.
+- **Channel series:** lock a kit (palette, type pairing, finish, overlay badge, CTA card, 2–3 signature transitions). Save it in `remotion/src/specs/kits/<channel>.json` and start every episode from it (see `kits/README.md`).
 
 ## Defaults when unsure
-9:16 at 1080×1920, 30 fps, `animFps` 15 for collage/explainer or 0 for UI/product, `grain` 0.07, `vignette` 0.35. Keywords use `impact` at size 14–24 with `anim: "slam"` or `"words"`. Labels use `stitched` badges in a deep accent. Scene length is 1.2–2.5 s. Cuts: `zoom` for momentum, `cut` for punch, `flash` for reveals, `circle` for the CTA.
+- **Format:** 1080×1920, 30 fps.
+- **Style:** halftone-poster-collage for explainers, native-ui-explainer for business/tech, dark-product-promo for tools.
+- **Motion:** `animFps` 15, settle 1.10 (the default), scenes 1.2–2.8 s.
+- **Type:** keywords in `impact`/`bebas` at size 18–30, with a `serif-italic` or `script` whisper word. `stitched` badges in a deep accent.
+- **Cuts:** `zoom` as the signature, plain `cut` for punch, `flash` or `invert` for reveals, `circle` into the CTA.
+- **Finish and audio:** `grain` 0.07, `vignette` 0.35. Music bed at `musicVolume` 0.3 with `duckTo` 0.12.
