@@ -346,7 +346,7 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 - **Seen:** 6/82: v45 v49 v54 v65 v71 v83. v12, v16, v22 and v57 end on a 1-frame black tail.
 - **Frame by frame:** a linear opacity ramp to black over 8–10 f (v45 8, v49 10, v65 8). v71 uses a 2 s ramp from end card to black; v83 cuts to 3 black frames "to close the loop".
 - **Frames:** 8–10 (3–60).
-- **When to use:** only at the very end, after the CTA. In 81/82 videos nothing fades mid-story.
+- **When to use:** only at the very end, after the CTA. No reference fades to black mid-story (mid-story darkness is a 1–6-frame dip, 2.1).
 - **Build:** a final scene with `background: {kind: "void"}` whose layers have `until: duration − 0.3` and `exit: "fade"`, or a 3-frame `black` scene to close a loop.
 
 ### 2.12 Glow-silhouette reveal
@@ -905,6 +905,6 @@ Every distinct transition found in the 82 reference breakdowns (v01–v83; there
 4. **Punctuate turns with stillness.** Before "but", the twist or the moral: a void or statement card (10/82), a dip to black, or a ramp-into-cut that stops dead (v16). A grade drain sits on the turn word (v05, v17, v21).
 5. **Chapter changes get the strongest polarity flip:** an invert flash (v68: story → footage, footage → CTA), a luma flip (v29, v37), or a red or white flash to kick off a montage (v78, v17).
 6. **Pair transitions.** A letterbox closes with an eased move but always opens with an instant hard cut (v78). Punch-in → punch-out bracket a contrast (v25). A zoom-in chain ends with a zoom-out to return to the hero layout (v26).
-7. **Tone sets the family:** calm VO uses focus pulls and dips to black (v24, v29, v70); hype uses zoom-punch, invert and glitch (v11, v45, v71). Don't mix focus-pull and zoom-punch as co-signatures in one video; none of the 82 does.
+7. **Tone sets the family:** calm VO uses focus pulls and dips to black (v24, v29, v70); hype uses zoom-punch, invert and glitch (v11, v45, v71). When a video uses both focus-pull and zoom-punch (v12, v26, v30, v37, v74), one is the signature and the other appears once.
 8. **Never repeat a non-signature effect back to back.** Alternate the signature with hard cuts (the signature lands every 2–4 joins in v11, v15, v37).
 9. **Ending:** the CTA, then hold or loop. 6/82 fade to black over 8–10 f, and v12, v16, v22, v57 and v83 end on 1–3 black frames to close the loop.
