@@ -81,16 +81,16 @@ Hue tracks mood (v19): cool blues and teals while the claim is optimistic, musta
      "background": {"kind": "paper", "color": "#ece6d8"},
      "camera": {"settle": 1.06, "settleR": 0.88, "drift": 0.015},
      "layers": [
-       {"type": "text", "text": "what if your desk could think?", "style": "serif-italic", "size": 7.5, "y": 42, "caps": false,
+       {"type": "text", "text": "a glue that didn't stick?", "style": "serif-italic", "size": 7.5, "y": 42, "caps": false,
         "anim": "typewriter", "cps": 18, "leadColor": "#f2d43a"}
      ]},
     {"id": "prop-wall", "duration": 3.2, "transition": {"type": "zoom"},
      "background": {"kind": "wood", "color": "#6b432f", "gobo": true},
      "camera": {"settle": 1.12, "settleR": 0.87, "drift": 0.02, "punch": [{"at": 2.0, "scale": 1.08}]},
      "layers": [
-       {"type": "image", "src": "PLACEHOLDER_device_cutout.png", "cutout": true, "shadow": "soft", "x": 50, "y": 44, "w": 58, "rotate": -6, "anim": "drop"},
+       {"type": "image", "src": "PLACEHOLDER_glue_tube_cutout.png", "cutout": true, "shadow": "soft", "x": 50, "y": 44, "w": 58, "rotate": -6, "anim": "drop"},
        {"type": "image", "src": "PLACEHOLDER_pen_cutout.png", "x": 8, "y": 70, "w": 40, "rotate": 30, "blur": 18, "z": 5},
-       {"type": "text", "text": "IT FITS\nIN YOUR MOUTH", "style": "grotesk", "size": 13, "y": 22, "at": 1.0, "color": "#f2c230",
+       {"type": "text", "text": "A FAILED\nEXPERIMENT", "style": "grotesk", "size": 13, "y": 22, "at": 1.0, "color": "#f2c230",
         "anim": "words", "stagger": 3, "fx": {"extrude": 4, "extrudeColor": "#d8332a"}}
      ]},
     {"id": "name-card", "duration": 2.6, "transition": {"type": "cut"},
@@ -98,23 +98,23 @@ Hue tracks mood (v19): cool blues and teals while the claim is optimistic, musta
      "camera": {"settle": 1.1, "settleR": 0.88},
      "animFps": 0,
      "layers": [
-       {"type": "ui", "kind": "dialog", "title": "IMPORTANT MESSAGE", "text": "It's called the MouthPad.", "theme": "light", "y": 40, "w": 80, "cps": 14, "anim": "pop"},
+       {"type": "ui", "kind": "dialog", "title": "IMPORTANT MESSAGE", "text": "It became the sticky note.", "theme": "light", "y": 40, "w": 80, "cps": 14, "anim": "pop"},
        {"type": "shape", "kind": "ellipse", "x": 62, "y": 43, "w": 44, "h": 7, "color": "#c8323a", "stroke": 7, "at": 1.8, "draw": 6},
-       {"type": "badge", "text": "2025", "variant": "tape", "color": "#f2d43a", "textColor": "#1a1a1a", "size": 5, "x": 24, "y": 24, "rotate": -8, "at": 0.4}
+       {"type": "badge", "text": "1968", "variant": "tape", "color": "#f2d43a", "textColor": "#1a1a1a", "size": 5, "x": 24, "y": 24, "rotate": -8, "at": 0.4}
      ]},
     {"id": "number", "duration": 2.8, "transition": {"type": "zoom"},
      "background": {"kind": "fabric", "color": "#541717"},
      "camera": {"settle": 1.12, "settleR": 0.86},
      "layers": [
-       {"type": "counter", "from": 0, "to": 70, "duration": 1.0, "mode": "flip", "style": "impact", "size": 30, "y": 40, "color": "#f2c230"},
-       {"type": "text", "text": "years nobody cared", "style": "marker", "size": 8, "y": 58, "caps": false, "at": 1.1, "anim": "letters", "stagger": 2}
+       {"type": "counter", "from": 0, "to": 12, "duration": 1.0, "mode": "flip", "style": "impact", "size": 30, "y": 40, "color": "#f2c230"},
+       {"type": "text", "text": "years to reach a shelf", "style": "marker", "size": 8, "y": 58, "caps": false, "at": 1.1, "anim": "letters", "stagger": 2}
      ]},
     {"id": "moral", "duration": 2.6, "transition": {"type": "black", "frames": 1},
      "background": {"kind": "solid", "color": "#0e493c"},
      "camera": {"settle": 1.08, "settleR": 0.88},
      "layers": [
-       {"type": "text", "text": "BEING FIRST", "style": "grotesk", "size": 14, "y": 36, "color": "#e1b15c", "anim": "slam"},
-       {"type": "text", "text": "ISN'T BEING\nREMEMBERED", "style": "grotesk", "size": 11, "y": 52, "color": "#ffffff", "at": 0.6, "anim": "words", "stagger": 4,
+       {"type": "text", "text": "FAILURE", "style": "grotesk", "size": 14, "y": 36, "color": "#e1b15c", "anim": "slam"},
+       {"type": "text", "text": "IS A FIRST\nDRAFT", "style": "grotesk", "size": 11, "y": 52, "color": "#ffffff", "at": 0.6, "anim": "words", "stagger": 4,
         "underline": "scribble", "underlineColor": "#c8323a"}
      ]}
   ]

@@ -20,7 +20,7 @@ Any aspect ratio: set `width`/`height` in the spec. Every size in the engine is 
 - `references/transitions.md`, `references/motion-language.md`, `references/typography-color.md`, `references/script-structure.md`, `references/sound-design.md`, `references/footage-editing.md`: deep dives.
 - `references/breakdowns/vNN.md`: 82 shot-by-shot reference breakdowns. Grep them by tag (`_TAXONOMY.md`) when you need a precedent for a specific device.
 - `remotion/`: the engine. `src/engine/` holds the primitives, `src/custom/` holds bespoke components, `src/specs/` holds example specs.
-- `tools/`: `transcribe.py` (VO → word timings), `beats.py` (music → beat grid), `analyze_footage.py` (user clips → shots, silences, transcript, contact sheets), `cutout.py` (photo → transparent cut-out), `review_render.py` (render → contact sheets for QA).
+- `tools/`: `transcribe.py` (VO → word timings), `beats.py` (music → beat grid), `analyze_footage.py` (user clips → shots, silences, transcript, contact sheets), `cutout.py` (photo → transparent cut-out), `matte.py` (footage → alpha subject matte for text-behind-subject), `tighten.py` (remove dead air + re-transcribe), `render.py` (**the way to render**: Remotion + ffmpeg finish), `review_render.py` (render → contact sheets for QA).
 
 ## Workflow
 

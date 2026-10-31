@@ -1,5 +1,5 @@
 import React from 'react';
-import {useCurrentFrame, useVideoConfig} from 'remotion';
+import {Sequence, useCurrentFrame, useVideoConfig} from 'remotion';
 import {useSceneFrameOf, useSpec} from '../context';
 import type {Layer, TextLayer} from '../types';
 import {typeStyles} from '../lib/fonts';
@@ -77,7 +77,7 @@ export const LayerView: React.FC<{layer: Layer; index: number}> = ({layer, index
 	if (layer.type === 'image' || layer.type === 'ui' || layer.type === 'group') anim = layer.anim ?? defaultAnim(layer);
 	else if (layer.type === 'embed') anim = undefined;
 	else if (layer.type === 'counter' || layer.type === 'chart') anim = defaultAnim(layer);
-	else if (layer.type === 'video') anim = 'fade';
+	else if (layer.type === 'video') anim = layer.anim ?? (layer.w === undefined ? undefined : 'fade');
 	const ent = entranceStyle(anim as never, f, fps, u);
 	const ex = frame >= end ? exitStyle(layer.exit, frame - end, u) : {};
 	const idle = layer.type === 'image' ? idleStyle(f, index * 13 + 1, (layer.float ?? 0) * u, (layer.jitter ?? 0) * u) : '';
@@ -105,7 +105,12 @@ export const LayerView: React.FC<{layer: Layer; index: number}> = ({layer, index
 			inner = <ImageView layer={layer} startFrame={start} />;
 			break;
 		case 'video':
-			inner = <VideoView layer={layer} startFrame={start} />;
+			// own Sequence so the clip starts at trimStart when the layer appears (not at scene start)
+			inner = (
+				<Sequence from={start} layout="none">
+					<VideoView layer={layer} startFrame={start} />
+				</Sequence>
+			);
 			break;
 		case 'shape':
 			inner = <ShapeView layer={layer} startFrame={start} />;

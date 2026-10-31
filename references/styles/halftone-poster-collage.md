@@ -81,9 +81,9 @@ Change the display face with the set when the prop suggests one (road sign → c
      "background": {"kind": "solid", "color": "#c2694b"},
      "camera": {"settle": 1.14, "settleR": 0.78, "drift": 0.025},
      "layers": [
-       {"type": "text", "text": "YOUR BRAIN\nHAS A GLITCH", "style": "impact", "size": 24, "y": 70, "lineHeight": 0.85, "z": 1,
+       {"type": "text", "text": "THE PRICE TAG\nIS LYING", "style": "impact", "size": 24, "y": 70, "lineHeight": 0.85, "z": 1,
         "anim": "slam", "fx": {"extrude": 8, "extrudeColor": "#7a3a24"}},
-       {"type": "image", "src": "PLACEHOLDER_head_cutout.png", "cutout": true, "shadow": "soft", "x": 50, "y": 44, "w": 62, "z": 2, "anim": "pop"},
+       {"type": "image", "src": "PLACEHOLDER_price_tag_cutout.png", "cutout": true, "shadow": "soft", "x": 50, "y": 44, "w": 62, "z": 2, "anim": "pop"},
        {"type": "shape", "kind": "burst", "x": 76, "y": 26, "w": 22, "color": "#f7d637", "at": 0.6, "draw": 6}
      ]},
     {"id": "principle", "duration": 2.4, "transition": {"type": "black", "frames": 2},
@@ -91,8 +91,8 @@ Change the display face with the set when the prop suggests one (road sign → c
      "camera": {"settle": 1.1, "settleR": 0.8},
      "layers": [
        {"type": "text", "text": "this is the", "style": "script", "size": 7, "y": 34, "caps": false, "anim": "pop"},
-       {"type": "text", "text": "SCARCITY\nEFFECT", "style": "grotesk", "size": 15, "y": 46, "at": 0.3, "anim": "focus",
-        "accent": ["scarcity"], "accentColor": "#e8730c"},
+       {"type": "text", "text": "ANCHORING\nEFFECT", "style": "grotesk", "size": 15, "y": 46, "at": 0.3, "anim": "focus",
+        "accent": ["anchoring"], "accentColor": "#e8730c"},
        {"type": "shape", "kind": "ellipse", "x": 50, "y": 42, "w": 80, "h": 9, "color": "#e8730c", "stroke": 8, "at": 0.9, "draw": 7}
      ]},
     {"id": "proof", "duration": 2.8, "transition": {"type": "zoom"},
@@ -100,18 +100,18 @@ Change the display face with the set when the prop suggests one (road sign → c
      "camera": {"settle": 1.12, "settleR": 0.8, "punch": [{"at": 1.6, "scale": 1.1}]},
      "animFps": 0,
      "layers": [
-       {"type": "ui", "kind": "notification", "label": "Store", "title": "Hurry!", "text": "Only 2 left in stock", "y": 30, "w": 84, "anim": "slide-down"},
-       {"type": "badge", "text": "ONLY 2 LEFT", "variant": "stitched", "color": "#7a0f12", "size": 6.5, "y": 58, "at": 0.8, "anim": "wipe"},
-       {"type": "counter", "from": 9, "to": 2, "duration": 0.8, "mode": "flip", "style": "impact", "size": 22, "y": 74, "at": 1.4, "color": "#111111"}
+       {"type": "ui", "kind": "notification", "label": "Store", "title": "Today only", "text": "Was $199, now $79", "y": 30, "w": 84, "anim": "slide-down"},
+       {"type": "badge", "text": "62% OFF", "variant": "stitched", "color": "#7a0f12", "size": 6.5, "y": 58, "at": 0.8, "anim": "wipe"},
+       {"type": "counter", "from": 199, "to": 79, "duration": 0.8, "mode": "flip", "prefix": "$", "style": "impact", "size": 22, "y": 74, "at": 1.4, "color": "#111111"}
      ]},
     {"id": "moral", "duration": 2.4, "transition": {"type": "invert"},
      "background": {"kind": "halftone", "color": "#de3333"},
      "camera": {"settle": 1.12, "settleR": 0.78},
      "grade": {"drainAt": 1.8},
      "layers": [
-       {"type": "text", "text": "LESS FEELS LIKE MORE", "style": "impact", "size": 20, "y": 40, "anim": "words", "stagger": 4,
+       {"type": "text", "text": "THE FIRST NUMBER WINS", "style": "impact", "size": 20, "y": 40, "anim": "words", "stagger": 4,
         "fx": {"extrude": 8, "extrudeColor": "#7d1414"}},
-       {"type": "badge", "text": "SCARCITY", "variant": "solid", "color": "#040404", "size": 6, "y": 60, "at": 1.0, "anim": "pop"}
+       {"type": "badge", "text": "ANCHORING", "variant": "solid", "color": "#040404", "size": 6, "y": 60, "at": 1.0, "anim": "pop"}
      ]},
     {"id": "cta", "duration": 2.6, "transition": {"type": "zoom"},
      "background": {"kind": "studio", "color": "#1a1a1a"},

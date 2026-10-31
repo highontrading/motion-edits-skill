@@ -184,6 +184,12 @@ export type VideoLayer = Pos &
 		grayscale?: boolean;
 		/** card treatment (rounded + shadow) when not full-frame */
 		card?: boolean;
+		/** box aspect ratio when `w` is set (default 16/9; use 9/16 for vertical clips, 1 for square) */
+		aspect?: number;
+		/** entrance animation (default 'fade'; cards often use 'rise', 'pop' or 'slide-*') */
+		anim?: ImageAnim;
+		/** play a transparent (alpha) WebM — e.g. a subject matte from tools/matte.py layered over type */
+		transparent?: boolean;
 	};
 
 export type ShapeLayer = Pos &

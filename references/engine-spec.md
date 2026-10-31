@@ -109,7 +109,11 @@ Label badge (`variant`: `stitched` dashed inner border · `solid` · `outline` �
 `src` (under `public/` or a URL), `cutout: true` (white paper edge + contact shadow, for PNG cut-outs from `tools/cutout.py`), `print: true` (bordered photo print), `shadow`: `soft|hard|long|none`, `anim`: `pop|drop|rise|slide-*|fade|focus|spin-in|stamp`, `float` (bob px), `jitter` (stop-motion px), `grayscale`, `halftone`, `swap: {src, at, glow}` (swap in place on a word with a glow flash), `cycle: {srcs, every=3, until}` (flicker-montage through several images). Extra `anim` values: `swing` (pendulum hang) and `flip` (3D card flip in).
 
 ### `video` (the user's footage)
-`src`, `trimStart`, `playbackRate`, `volume`/`muted`, `fit`, `punch: [{at, scale=1.12, frames=4, hold}]`, `grayscale`, `card: true` (rounded floating card when `w` is set). With no `w` it fills the frame.
+`src`, `trimStart` (where the clip starts *when the layer appears*), `playbackRate`, `volume`/`muted`, `fit`, `punch: [{at, scale=1.12, frames=4, hold}]`, `grayscale`, `card: true` (rounded floating card when `w` is set), `aspect` (box ratio when `w` is set; default 16/9, use 9/16 for vertical clips), `anim` (entrance), `transparent: true` (alpha WebM from `tools/matte.py`). With no `w` it fills the frame.
+
+**Text behind a person in footage:** add `background: {kind: 'video', src: clip, trimStart: T}`, then a `text` layer, then `{type: 'video', src: 'matte.webm', transparent: true, muted: true}` (from `tools/matte.py clip --start T`).
+**Footage + animFps:** stepping also steps the footage, which is a deliberate stylised look (v11). Set the scene's `animFps: 0` for smooth footage.
+**Grade** applies to the whole scene, type included.
 
 ### `shape`
 `kind`: `ellipse` (marker circle around a word) · `circle` · `underline` · `scribble` · `arrow` · `cross` · `check` · `bracket` · `line` · `rect` · `burst` (comic starburst). Draws on over `draw` frames, with `color`, `stroke`, `fill`.

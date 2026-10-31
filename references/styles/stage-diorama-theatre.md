@@ -78,34 +78,34 @@ Rationed: v37 sets only **3 VO phrases** as type in 29 s. The rest is carried by
      "background": {"kind": "radial", "color": "#633432", "color2": "#100e0d"},
      "camera": {"settle": 1.14, "settleR": 0.84, "drift": 0.03},
      "layers": [
-       {"type": "text", "text": "JOKER", "style": "impact", "size": 26, "y": 38, "z": 1, "anim": "mask"},
-       {"type": "image", "src": "PLACEHOLDER_hero_card.png", "cutout": true, "shadow": "soft", "x": 50, "y": 46, "w": 46, "z": 2, "anim": "spin-in"},
+       {"type": "text", "text": "PAWN", "style": "impact", "size": 26, "y": 38, "z": 1, "anim": "mask"},
+       {"type": "image", "src": "PLACEHOLDER_pawn_card.png", "cutout": true, "shadow": "soft", "x": 50, "y": 46, "w": 46, "z": 2, "anim": "spin-in"},
        {"type": "image", "src": "PLACEHOLDER_curtain_swag.png", "x": 12, "y": 10, "w": 60, "blur": 16, "z": 5}
      ]},
     {"id": "assets", "duration": 3.4, "transition": {"type": "zoom"},
      "background": {"kind": "fabric", "color": "#1f3a2a"},
      "camera": {"settle": 1.12, "settleR": 0.84, "drift": 0.03},
      "layers": [
-       {"type": "badge", "text": "MONEY", "variant": "solid", "color": "#e9deca", "textColor": "#19191d", "size": 5, "x": 22, "y": 46, "rotate": -8, "at": 0.2, "anim": "pop"},
-       {"type": "badge", "text": "POWER", "variant": "solid", "color": "#e9deca", "textColor": "#19191d", "size": 5, "x": 50, "y": 42, "at": 0.9, "anim": "pop"},
-       {"type": "badge", "text": "RESPECT", "variant": "solid", "color": "#e9deca", "textColor": "#19191d", "size": 5, "x": 78, "y": 46, "rotate": 8, "at": 1.6, "anim": "pop"},
-       {"type": "text", "text": "he has it all", "style": "script", "size": 8, "y": 64, "caps": false, "at": 2.2, "anim": "pop", "color": "#ce9936"}
+       {"type": "badge", "text": "SMALL", "variant": "solid", "color": "#e9deca", "textColor": "#19191d", "size": 5, "x": 22, "y": 46, "rotate": -8, "at": 0.2, "anim": "pop"},
+       {"type": "badge", "text": "SLOW", "variant": "solid", "color": "#e9deca", "textColor": "#19191d", "size": 5, "x": 50, "y": 42, "at": 0.9, "anim": "pop"},
+       {"type": "badge", "text": "EXPENDABLE", "variant": "solid", "color": "#e9deca", "textColor": "#19191d", "size": 5, "x": 78, "y": 46, "rotate": 8, "at": 1.6, "anim": "pop"},
+       {"type": "text", "text": "or so they say", "style": "script", "size": 8, "y": 64, "caps": false, "at": 2.2, "anim": "pop", "color": "#ce9936"}
      ]},
     {"id": "twist", "duration": 2.8, "transition": {"type": "circle"},
      "background": {"kind": "radial", "color": "#2a2622", "color2": "#050505"},
      "camera": {"settle": 1.1, "settleR": 0.84, "punch": [{"at": 1.5, "scale": 1.1}]},
      "layers": [
-       {"type": "text", "text": "SUDDENLY", "style": "serif", "size": 5, "y": 32, "color": "#e9deca", "anim": "words"},
-       {"type": "text", "text": "NO RULES", "style": "serif", "size": 18, "y": 40, "color": "#c92f31", "at": 0.35, "anim": "slam", "fx": {"shadow": true}},
-       {"type": "text", "text": "APPLY TO HIM", "style": "serif", "size": 5, "y": 48, "color": "#e9deca", "at": 0.8, "anim": "words"}
+       {"type": "text", "text": "UNTIL", "style": "serif", "size": 5, "y": 32, "color": "#e9deca", "anim": "words"},
+       {"type": "text", "text": "THE LAST ROW", "style": "serif", "size": 18, "y": 40, "color": "#c92f31", "at": 0.35, "anim": "slam", "fx": {"shadow": true}},
+       {"type": "text", "text": "CHANGES EVERYTHING", "style": "serif", "size": 5, "y": 48, "color": "#e9deca", "at": 0.8, "anim": "words"}
      ]},
     {"id": "evolve", "duration": 3.2, "transition": {"type": "zoom"},
      "background": {"kind": "paper", "color": "#d8c9a8"},
      "camera": {"settle": 1.12, "settleR": 0.84, "drift": 0.03},
      "layers": [
-       {"type": "image", "src": "PLACEHOLDER_figure_a.png", "cutout": true, "shadow": "soft", "x": 50, "y": 46, "w": 50, "anim": "drop",
-        "swap": {"src": "PLACEHOLDER_figure_b.png", "at": 1.6, "glow": true}},
-       {"type": "badge", "text": "OUTCAST", "variant": "tape", "color": "#c92f31", "size": 4.5, "y": 70, "at": 1.6, "anim": "wipe"}
+       {"type": "image", "src": "PLACEHOLDER_pawn_figure.png", "cutout": true, "shadow": "soft", "x": 50, "y": 46, "w": 50, "anim": "drop",
+        "swap": {"src": "PLACEHOLDER_queen_figure.png", "at": 1.6, "glow": true}},
+       {"type": "badge", "text": "PROMOTED", "variant": "tape", "color": "#c92f31", "size": 4.5, "y": 70, "at": 1.6, "anim": "wipe"}
      ]},
     {"id": "cta", "duration": 2.6, "transition": {"type": "flash-ramp"},
      "background": {"kind": "solid", "color": "#e2e00d"},

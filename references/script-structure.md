@@ -32,15 +32,15 @@ Beat starts and ends are % of runtime. Seconds are given for 20 / 30 / 45 / 60 s
 
 | Genre | Count | Typical runtime | Videos |
 |---|---|---|---|
-| Story-explainer (history / case study / named principle) | 34 | 32–50 s | v05 v06 v09 v10 v11 v12 v14 v16 v17 v20 v22 v24 v25 v29–v32 v34 v47 v50 v63 v64 v66 v68 v74 v76; news variant v08 v13 v15 v19 v21 v26 v44 v45 v56 v67 |
+| Story-explainer (history / case study / named principle) | 37 | 32–50 s | v05 v06 v09 v10 v11 v12 v14 v16 v17 v20 v22 v24 v25 v27 v29–v32 v34 v47 v50 v63 v64 v66 v68 v74 v76; news variant v08 v13 v15 v19 v21 v26 v44 v45 v56 v67 |
 | Product / tool promo | 22 | 18–40 s | v01 v02 v03 v07 v18 v33 v35 v36 v38 v46 v49 v51 v52 v53 v55 v57 v58 v59 v65 v70 v71 v83 |
 | Tutorial / process reel | 7 | 20–96 s | v60 v61 v62 v69; process reels v39 v48 v73 |
 | Listicle | 1 pure + list sections in 9 more | 39 s | v77; list sections v03 v09 v15 v21 v34 v37 v54 v57 v62 |
 | Lyric / music edit | 5 | 10–30 s | v23 v28; music-only v18 v33 v36 |
-| Manifesto / motivational | 10 | 13–45 s | v04 v41 v42 v43 v75 v78 v79 v80 v81 (v40 wrapper) |
+| Manifesto / motivational / opinion essay | 11 | 13–45 s | v04 v41 v42 v43 v54 v75 v78 v79 v80 v81 (v40 wrapper) |
 | Comparison / antithesis | 3 pure + antithesis close in 7 more | 28–38 s | v37 v39 v82; closes v05 v14 v20 v29 v54 v64 v77 |
 
-Durations in the library: <20 s 10, 20–30 s 16, 30–40 s 30, 40–50 s 22, 50 s+ 4 (median 37 s).
+Music-only promos (v18 v33 v36) and v39 (antithesis told as a process reel) sit in two rows. Durations in the library: <20 s 10, 20–30 s 16, 30–40 s 30, 40–50 s 22, 50 s+ 4 (median 37 s).
 
 ### 1.1 Story-explainer: history → named principle → proof → moral → CTA
 
@@ -267,7 +267,7 @@ Rule: **plant the payoff in the hook.** Put the object of the final punchline in
 
 Limits: **≤3 display words per clause** (v01 v25 v47 v68) and **≤4 words readable at once** (v33). Some edits ration type to 3 phrases in the whole video, which makes each hit harder (v37 v39).
 
-### 4.2 Two-tier text system (20+ videos)
+### 4.2 Two-tier text system (6 videos: v08 v13 v14 v16 v25 v45)
 
 A constant, small subtitle track carries the full VO for comprehension, and the hero keyword carries emotion. The pill switches on the word; the hero type lands ~0.3 s later (v08 v13 v14 v16 v25 v45). Engine: `captions: {enabled: true, style: "pill", y: 74–76, maxWords: 3–4}` plus `text` keyword layers.
 
@@ -358,11 +358,11 @@ Engine: a final scene with `ui kind: search|chat|button`, `text` 1–2 lines, `b
 
 ## 8. Worked examples (original topics)
 
-All brand names below are invented placeholders. Times assume 2.6 words/s (example A, C) and 2.9 words/s (example B).
+All brand names below are invented placeholders. Each script was timed against the measured reading rates in §5.
 
 ### Example A: story-explainer, 30 s, "The open loop"
 
-**Script (76 words)**
+**Script (77 words, 2.6 words/s)**
 > In the 1920s, a Berlin waiter remembered every unpaid order. The moment a bill was paid, he forgot it completely. A young psychologist tested it. This is the Zeigarnik effect. Unfinished tasks stay stuck in your head. Finished ones get deleted. It's why a cliffhanger keeps you watching, and why a half-full progress bar makes you finish the form. Your brain hates an open loop. So don't close every loop. Leave one open. Follow for part two.
 
 **Clause sheet**
@@ -387,7 +387,7 @@ All brand names below are invented placeholders. Times assume 2.6 words/s (examp
 
 ### Example B: product promo, 20 s, fictional focus app "Hush"
 
-**Script (49 words)**
+**Script (48 words, 2.4 words/s overall, with the CTA hold)**
 > Your phone buzzed. Again. Every ping steals your focus, and getting it back takes forever. Meet Hush. One tap starts a focus block. Hush holds every notification and delivers them when you're done. Two hours. Zero pings. And it's free to start. Try Hush today. Link in bio.
 
 **Clause sheet**
@@ -410,7 +410,7 @@ All brand names below are invented placeholders. Times assume 2.6 words/s (examp
 
 ### Example C: comparison / antithesis, 30 s, "Busy vs. productive"
 
-**Script (64 words, read at ~2.3 words/s with a 0.3 s pause between halves)**
+**Script (61 words, 2.0 words/s overall: a deliberate read with 0.3–0.5 s pauses between halves, at the slow end of the measured 2.02–3.62 range)**
 > Busy and productive look the same from the outside. Busy answers every message. Productive answers the right one. Busy starts ten things. Productive finishes three. Busy measures hours. Productive measures results. Busy says yes to everything. Productive says no, kindly. Here's the flip. Busy feels like progress. Productive is progress. Pick one task today and finish it. Save this for Monday.
 
 **World rules:** BUSY = a cluttered warm world (`background: stripes` orange/red, `animFps: 12`, 5–8 layers, `camera.shake 0.3`, `style: impact`). PRODUCTIVE = a calm white world (`background: solid #f4f2ee`, `animFps: 0`, one object, `style: serif-italic`). Every half alternates, so each cut is also a luma flip.
@@ -441,7 +441,7 @@ All brand names below are invented placeholders. Times assume 2.6 words/s (examp
 | Technique | Frequency | Status / how to build |
 |---|---|---|
 | Object-as-letter (an icon replaces a glyph) | 5 videos (v10 v59 v81) | No glyph-replacement option. Place an `image` in a gap of the `text` manually, or add a `text.glyphs: [{index, src}]` option that measures the letter box and swaps it. |
-| Two-tier text with the hero keyword trailing the pill by ~0.3 s | 20+ videos | Possible with `captions` + `text` `at: {word, offset: 0.3}`, but there is no paraphrase-aware sync. Write the hero text with the spoken keyword inside it. |
+| Two-tier text with the hero keyword trailing the pill by ~0.3 s | 6 videos (v08 v13 v14 v16 v25 v45) | Possible with `captions` + `text` `at: {word, offset: 0.3}`, but there is no paraphrase-aware sync. Write the hero text with the spoken keyword inside it. |
 | Ghost pre-show of the next line (~30% opacity, then solid on its word) | v42 v02 | `anim: ghost` covers single lines; a `preview` opacity before `at` would generalise it. |
 | Same set regraded for a reversal | v26 v17 | `grade.drainAt` covers drain to B/W. There is no timed tint change mid-scene (`grade.tintAt`). |
 | Sung-syllable stretch (repeated letters that scroll) | v28 | Needs a custom component, or `text` + `camera.pan` across a long repeated word. |

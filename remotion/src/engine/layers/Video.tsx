@@ -17,8 +17,9 @@ export const VideoView: React.FC<{layer: VideoLayer; startFrame: number}> = ({la
 
 	let scale = 1;
 	for (const p of layer.punch ?? []) {
-		const pf = frameOf(p.at, -1);
-		if (pf < 0 || frame < pf) continue;
+		// frame is relative to the layer (it lives in its own Sequence); punch times are scene-relative
+		const pf = frameOf(p.at, -1e9) - startFrame;
+		if (pf < -1e8 || frame < pf) continue;
 		const target = p.scale ?? 1.12;
 		const inF = p.frames ?? 4;
 		const local = frame - pf;
@@ -34,7 +35,7 @@ export const VideoView: React.FC<{layer: VideoLayer; startFrame: number}> = ({la
 			style={{
 				width: '100%',
 				height: full ? '100%' : undefined,
-				aspectRatio: full ? undefined : '16 / 9',
+				aspectRatio: full ? undefined : `${layer.aspect ?? 16 / 9}`,
 				overflow: 'hidden',
 				borderRadius: layer.radius ? layer.radius * unit : layer.card ? 22 * unit : undefined,
 				boxShadow: layer.card ? `0 ${18 * unit}px ${40 * unit}px rgba(0,0,0,0.5)` : undefined,
@@ -42,7 +43,8 @@ export const VideoView: React.FC<{layer: VideoLayer; startFrame: number}> = ({la
 		>
 			<OffthreadVideo
 				src={resolveSrc(layer.src)}
-				startFrom={Math.round((layer.trimStart ?? 0) * fps) + Math.max(0, -startFrame)}
+				startFrom={Math.round((layer.trimStart ?? 0) * fps)}
+				transparent={layer.transparent}
 				playbackRate={layer.playbackRate ?? 1}
 				volume={layer.muted ? 0 : layer.volume ?? 1}
 				muted={layer.muted}
