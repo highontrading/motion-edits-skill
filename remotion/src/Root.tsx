@@ -19,7 +19,7 @@ const calculateMetadata: CalculateMetadataFunction<SpecVideoProps> = async ({pro
 	}
 	const fps = spec.fps ?? 30;
 	return {
-		props: {spec},
+		props: {spec, postFinish: props.postFinish},
 		fps,
 		width: spec.width,
 		height: spec.height,

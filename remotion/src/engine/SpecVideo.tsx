@@ -9,7 +9,8 @@ import {CUT_FRAMES, OVERLAP_CUTS, SceneView} from './Scene';
 import {CutOverlay, overlayPost, overlayPre} from './transitions/CutOverlay';
 import type {VideoSpec, Word} from './types';
 
-export type SpecVideoProps = {spec: VideoSpec};
+/** postFinish: grain/halftone are applied afterwards by tools/render.py (ffmpeg) — much faster renders. */
+export type SpecVideoProps = {spec: VideoSpec; postFinish?: boolean};
 
 export const specWords = (spec: VideoSpec): Word[] => (Array.isArray(spec.words) ? spec.words : []);
 
@@ -19,7 +20,7 @@ export const specDurationInFrames = (spec: VideoSpec) => {
 };
 
 /** Renders a VideoSpec: scenes on the timeline, cut transitions, captions, audio and the finishing pass. */
-export const SpecVideo: React.FC<SpecVideoProps> = ({spec}) => {
+export const SpecVideo: React.FC<SpecVideoProps> = ({spec, postFinish}) => {
 	const {fps, durationInFrames} = useVideoConfig();
 	const words = specWords(spec);
 	const palette = useMemo(() => ({...defaultPalette, ...spec.palette}), [spec.palette]);
@@ -78,7 +79,7 @@ export const SpecVideo: React.FC<SpecVideoProps> = ({spec}) => {
 			{spec.captions?.enabled && words.length ? <CaptionTrack words={words} spec={spec.captions} /> : null}
 
 			<AbsoluteFill style={{zIndex: 950, pointerEvents: 'none'}}>
-				<FinishPass finish={spec.finish} />
+				<FinishPass finish={postFinish ? {...spec.finish, grain: 0, halftone: 0} : spec.finish} />
 			</AbsoluteFill>
 
 			{spec.audio?.vo ? <Audio src={resolveSrc(spec.audio.vo)} /> : null}
