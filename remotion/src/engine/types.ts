@@ -414,7 +414,10 @@ export type CutType =
 	| 'strobe' // 4–6 frames alternating inverted/normal on the incoming shot (v65, v71)
 	| 'pixel' // incoming scene revealed through randomly appearing tiles (v35, v46, v58)
 	| 'flip' // card flip: outgoing turns edge-on, incoming turns in (v44, v64)
-	| 'shrink'; // nested reveal: outgoing scene shrinks into an `embed` box of the incoming scene (v76)
+	| 'shrink' // nested reveal: outgoing scene shrinks into an `embed` box of the incoming scene (v76)
+	| 'dissolve' // cross-dissolve (optionally `through` a colour) — rare in the library, use for time jumps
+	| 'wipe' // a hard-edged wipe of the incoming scene; `shape`: line | diagonal | slab | split
+	| 'iris-close'; // outgoing closes to a circle (spotlight) before the cut, incoming opens (v32, v47)
 
 export type Transition = {
 	type: CutType;
@@ -427,6 +430,12 @@ export type Transition = {
 	target?: [number, number];
 	/** for 'zoom': peak scale at the cut (default 1.55; 3–6 for a true zoom-through into an object) */
 	peak?: number;
+	/** for 'wipe': edge shape; for 'dissolve': `through` colour */
+	shape?: 'line' | 'diagonal' | 'slab' | 'split';
+	through?: string;
+	/** for 'wipe' / 'circle': direction or origin */
+	direction?: 'left' | 'right' | 'up' | 'down';
+	at?: [number, number];
 };
 
 export type Camera = {
@@ -439,7 +448,7 @@ export type Camera = {
 	/** additional mid-scene punch-ins */
 	punch?: {at: TimeRef; scale?: number; frames?: number}[];
 	/** pan target in % of frame (moves the whole scene) */
-	pan?: {at: TimeRef; x: number; y: number; frames?: number}[];
+	pan?: {at: TimeRef; x: number; y: number; frames?: number; blur?: boolean}[];
 	/** handheld shake amplitude (px) */
 	shake?: number;
 	/** transform origin in % for settle/punch (e.g. the centre of an embed box for nested reveals) */

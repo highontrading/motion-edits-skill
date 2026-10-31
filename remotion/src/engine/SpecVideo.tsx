@@ -75,6 +75,9 @@ export const SpecVideo: React.FC<SpecVideoProps> = ({spec, postFinish}) => {
 				const overlap = outT && OVERLAP_CUTS.includes(outT.type) ? outT.frames ?? CUT_FRAMES[outT.type] ?? 8 : 0;
 				return (
 					<Sequence key={i} from={s.from} durationInFrames={s.durationInFrames + overlap} premountFor={Math.round(fps)} name={s.id ?? `scene ${i + 1}`}>
+						{s.transition?.type === 'dissolve' && s.transition.through ? (
+							<AbsoluteFill style={{background: s.transition.through, zIndex: i, opacity: 1}} />
+						) : null}
 						<SpecContext.Provider value={{words, palette, sceneStartSec: s.from / fps, sceneDurationInFrames: s.durationInFrames}}>
 							<AbsoluteFill style={{zIndex: i}}>
 								<SceneView

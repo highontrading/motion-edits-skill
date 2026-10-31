@@ -75,22 +75,22 @@ Durations are whole beats. Compute them from `tools/beats.py` for your track and
      "background": {"kind": "paper", "color": "#9c8371"},
      "camera": {"settle": 1.14, "settleR": 0.8, "drift": 0.03},
      "layers": [
-       {"type": "text", "text": "DON'T", "style": "grotesk", "size": 22, "y": 30, "anim": "slam"},
-       {"type": "text", "text": "say", "style": "script", "size": 14, "y": 47, "caps": false, "color": "#e07b2a", "at": 0.5, "anim": "pop", "fx": {"extrude": 5, "extrudeColor": "#7a4318"}},
-       {"type": "text", "text": "PLANS", "style": "impact", "size": 34, "y": 66, "at": 1.0, "color": "#060606", "anim": "letters", "stagger": 1}
+       {"type": "text", "text": "KEEP", "style": "grotesk", "size": 22, "y": 30, "anim": "slam"},
+       {"type": "text", "text": "your", "style": "script", "size": 14, "y": 47, "caps": false, "color": "#e07b2a", "at": 0.5, "anim": "pop", "fx": {"extrude": 5, "extrudeColor": "#7a4318"}},
+       {"type": "text", "text": "HEAD DOWN", "style": "impact", "size": 26, "y": 66, "at": 1.0, "color": "#060606", "anim": "letters", "stagger": 1}
      ]},
     {"id": "line2", "duration": 2.0, "transition": {"type": "flash", "frames": 1},
      "background": {"kind": "radial", "color": "#3a3a3a", "color2": "#060606"},
      "camera": {"settle": 1.12, "settleR": 0.8, "punch": [{"at": 1.0, "scale": 1.1, "frames": 4}]},
      "layers": [
-       {"type": "badge", "text": "TO EVERYBODY", "variant": "solid", "color": "#ffffff", "textColor": "#060606", "size": 6, "y": 30, "anim": "wipe"},
-       {"type": "text", "text": "AROUND\nAROUND\nAROUND", "style": "impact", "size": 20, "y": 62, "lineHeight": 0.82, "at": 1.0, "anim": "words", "stagger": 2}
+       {"type": "badge", "text": "WHILE THEY", "variant": "solid", "color": "#ffffff", "textColor": "#060606", "size": 6, "y": 30, "anim": "wipe"},
+       {"type": "text", "text": "TALK\nTALK\nTALK", "style": "impact", "size": 20, "y": 62, "lineHeight": 0.82, "at": 1.0, "anim": "words", "stagger": 2}
      ]},
     {"id": "line3-scroll", "duration": 2.0, "transition": {"type": "whip-left"},
      "background": {"kind": "solid", "color": "#880a0c"},
      "camera": {"settle": 1.1, "settleR": 0.8, "pan": [{"at": 0.2, "x": 80, "y": 50, "frames": 40}]},
      "layers": [
-       {"type": "text", "text": "QUIETTTTTTT", "style": "impact", "size": 40, "x": 50, "y": 50, "w": 260, "color": "#ffffff", "anim": "mask",
+       {"type": "text", "text": "LOUDERRRRRR", "style": "impact", "size": 40, "x": 50, "y": 50, "w": 260, "color": "#ffffff", "anim": "mask",
         "fx": {"stroke": 3, "strokeColor": "#4e0c09", "shadow": true}}
      ]},
     {"id": "line4", "duration": 2.0, "transition": {"type": "desat"},

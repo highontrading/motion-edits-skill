@@ -33,10 +33,13 @@ export const CUT_FRAMES: Partial<Record<CutType, number>> = {
 	pixel: 10,
 	flip: 7,
 	shrink: 14,
+	dissolve: 10,
+	wipe: 8,
+	'iris-close': 10,
 };
 
 /** Transitions whose incoming scene is revealed over the outgoing one (needs overlap). */
-export const OVERLAP_CUTS: CutType[] = ['ink', 'circle', 'slide', 'pixel'];
+export const OVERLAP_CUTS: CutType[] = ['ink', 'circle', 'slide', 'pixel', 'dissolve', 'wipe'];
 
 /** SVG mask of randomly-appearing tiles (pixel dissolve). Small data URI, cheap to rasterise. */
 const pixelMask = (p: number, seed: number, aspect: number) => {
@@ -162,6 +165,22 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 	if (inType === 'circle' && f < inF + 1) clip = `circle(${curves.settle(clamp01(f / inF)) * 75}% at 50% 50%)`;
 	if (inType === 'ink' && f < inF + 1) clip = inkPolygon(curves.settle(clamp01(f / inF)) * 95, index * 7, 0.35);
 	if (inType === 'slide' && f < inF + 1) tx += width * (1 - decay(f, 0.68));
+	let sceneOpacity = 1;
+	if (inType === 'dissolve' && f < inF + 1) sceneOpacity = clamp01(f / inF);
+	if (inType === 'wipe' && f < inF + 1) {
+		const p = 1 - decay(f + 1, 0.62);
+		const q = (1 - p) * 100;
+		const dir = inT?.direction ?? 'left';
+		const shape = inT?.shape ?? 'line';
+		if (shape === 'diagonal') clip = `polygon(${q * 1.4 - 20}% 0, 120% 0, 120% 100%, ${q * 1.4 - 40}% 100%)`;
+		else if (shape === 'split') clip = `inset(${q / 2}% 0 ${q / 2}% 0)`;
+		else if (dir === 'left') clip = `inset(0 0 0 ${q}%)`;
+		else if (dir === 'right') clip = `inset(0 ${q}% 0 0)`;
+		else if (dir === 'up') clip = `inset(${q}% 0 0 0)`;
+		else clip = `inset(0 0 ${q}% 0)`;
+	}
+	if (inType === 'circle' && inT?.at && f < inF + 1) clip = `circle(${curves.settle(clamp01(f / inF)) * 140}% at ${inT.at[0]}% ${inT.at[1]}%)`;
+	if (inType === 'iris-close' && f < inF + 1) clip = `circle(${curves.settle(clamp01(f / inF)) * 75}% at 50% 50%)`;
 	if (inType === 'pixel' && f < inF + 1) mask = pixelMask(clamp01(f / inF) * 1.25, index * 13, width / height);
 	if (inType === 'strobe' && f < inF && f % 2 === 0) invert = 1;
 	if (inType === 'flip') rotY += -90 * (1 - decay(f, 0.7));
@@ -191,6 +210,7 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 		}
 		if (outType === 'desat') sat *= 1 - p;
 		if (outType === 'flip') rotY += 90 * p;
+		if (outType === 'iris-close') clip = `circle(${(1 - curves.accelerate(p)) * 75}% at ${outT?.at?.[0] ?? 50}% ${outT?.at?.[1] ?? 45}%)`;
 		if (outType === 'flash-ramp') bright *= 1 + 1.6 * p;
 	}
 	if (tail >= 0 && outType === 'slide') {
@@ -212,7 +232,14 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 	for (const p of cam.pan ?? []) {
 		const pf = frameOf(p.at, -1);
 		if (pf >= 0 && f >= pf) {
-			const pp = curves.glide(clamp01((f - pf) / (p.frames ?? 20)));
+			const n = p.frames ?? 20;
+			const pp = curves.glide(clamp01((f - pf) / n));
+			if (p.blur !== false && f - pf < n) {
+				// directional blur proportional to pan speed (bell-shaped for the glide curve)
+				const sp = Math.sin(Math.PI * clamp01((f - pf) / n));
+				blurX += Math.abs(p.x - 50) > Math.abs(p.y - 50) ? sp * 18 * u : 0;
+				blurY += Math.abs(p.y - 50) >= Math.abs(p.x - 50) ? sp * 18 * u : 0;
+			}
 			panX = panX + ((50 - p.x) / 100) * width * pp - panX * pp;
 			panY = panY + ((50 - p.y) / 100) * height * pp - panY * pp;
 		}
@@ -269,6 +296,7 @@ const SceneInner: React.FC<{scene: SceneSpec; index: number; durationInFrames: n
 				maskSize: '100% 100%',
 				WebkitMaskSize: '100% 100%',
 				perspective: rotY ? '1800px' : undefined,
+				opacity: sceneOpacity < 1 ? sceneOpacity : undefined,
 				background: rotY ? '#000' : undefined,
 			}}
 		>

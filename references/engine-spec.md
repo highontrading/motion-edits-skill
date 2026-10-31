@@ -53,7 +53,7 @@ npx remotion still  src/index.ts MotionVideo out/frame.jpg --frame=120 --props=.
 }
 ```
 - `start` / `duration`: if `start` is missing, the scene follows the previous one. If `duration` is missing, the scene runs until the next scene's start.
-- **Camera:** every scene gets an expo-out **settle** from `settle` to 1 (the most consistent pattern in the library; ~1.08–1.15). `drift` is a slow push across the scene. `punch` adds 4-frame punch-ins on words. `pan` takes `[{at, x, y, frames}]` and moves the virtual camera to centre on (x, y)%, for exploring a big collage canvas.
+- **Camera:** every scene gets an expo-out **settle** from `settle` to 1 (the most consistent pattern in the library; ~1.08–1.15). `drift` is a slow push across the scene. `punch` adds 4-frame punch-ins on words. `pan` takes `[{at, x, y, frames, blur=true}]` (with motion blur on the move) and moves the virtual camera to centre on (x, y)%, for exploring a big collage canvas.
 - **`letterbox`**: % of the height per bar. Bars close in over ~7 frames when the value changes between scenes (UI scenes inside bars vs. full-bleed posters, v04 v78).
 - **Camera `focus`**: `[{at, depth, frames=6}]` racks focus between depth planes. Layers with `depth` off the focus plane blur ~16 px per depth unit. Camera `parallax` (default 60) sets how strongly `depth` layers separate during drift.
 - **Camera `origin`**: `[x, y]` % is the transform origin for settle and punch moves.
@@ -76,7 +76,7 @@ npx remotion still  src/index.ts MotionVideo out/frame.jpg --frame=120 --props=.
 | `desat` | the outgoing drains to grey, the incoming colour returns | v06 |
 | `focus` | the incoming pulls focus from heavy blur | v24 v26 v29 |
 | `glitch` | 3 frames of RGB split + jitter | v16 |
-| `circle` | iris opens on the incoming | v08 v25 v35 |
+| `circle` | iris opens on the incoming (`at: [x, y]` grows it from a meaningful point: a lamp, a dot, an eye) | v08 v25 v35 |
 | `ink` | organic blot reveal | v10 v42 |
 | `slide` | the incoming card slides over the dimming outgoing | v12 |
 | `wash` | a flat colour (`color`) floods the frame for ~4 frames around the cut | v58 v59 v69 |
@@ -84,6 +84,9 @@ npx remotion still  src/index.ts MotionVideo out/frame.jpg --frame=120 --props=.
 | `strobe` | the incoming shot alternates inverted/normal for 6 frames | v65 v71 |
 | `pixel` | the incoming scene appears through random tiles | v35 v46 v58 |
 | `flip` | card flip: the outgoing turns edge-on, the incoming turns in | v44 v64 |
+| `dissolve` | cross-dissolve, optionally `through` a colour (rare in the library; use for time jumps) | v10 v31 |
+| `wipe` | hard-edged wipe: `shape` line/diagonal/slab/split, `direction` left/right/up/down | v12 v58 v82 |
+| `iris-close` | the outgoing scene closes to a spotlight circle (at `at` [x, y]), then the incoming opens | v32 v47 |
 | `shrink` | **nested reveal**: needs an `embed` layer in the incoming scene. It starts zoomed so the box fills the frame (showing the previous scene's last frame) and pulls back into its container | v76 v77 v51 |
 | `object` | a big blurred object (`src` PNG or a dark disc) crosses and wipes | v05 |
 `frames` overrides the default length. `color` applies to flash/black/object.
